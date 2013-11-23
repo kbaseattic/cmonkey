@@ -89,7 +89,7 @@ public class CmonkeyServerImpl {
 		System.out.println(commandLine);
 		//run
 		if (jobId != null) updateJobProgress (jobId, "Input prepared. Starting cMonkey program...", token);
-		executeCommand (commandLine, CMONKEY_PATH + "/" + jobName+"_log.txt");
+		executeCommand (commandLine, CMONKEY_PATH + "/" + jobName+"_log.txt", jobId, token);
 		//parse results
 
 		if (jobId != null) updateJobProgress (jobId, "cMonkey finished. Processing output...", token);

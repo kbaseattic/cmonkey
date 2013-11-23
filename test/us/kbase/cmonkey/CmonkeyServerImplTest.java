@@ -21,7 +21,7 @@ import us.kbase.common.service.UObject;
 import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
 import us.kbase.userandjobstate.Results;
-import us.kbase.util.WSRegisterType;
+//import us.kbase.util.WSRegisterType;
 //import us.kbase.util.WSUtil;
 import us.kbase.workspaceservice.GetObjectOutput;
 import us.kbase.workspaceservice.GetObjectParams;
