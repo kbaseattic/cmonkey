@@ -38,7 +38,7 @@ class StreamGobbler extends Thread
             BufferedReader br = new BufferedReader(isr);
             String line=null;
             while ( (line = br.readLine()) != null)
-            	//System.out.println(type + ">" + line);
+            	System.out.println(type + ">" + line);
             //Catch "INFO     Iteration # " pattern
            		if (iterationPattern.matcher(line).find()){
             		//call CmonkeyServerImpl

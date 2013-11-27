@@ -36,9 +36,10 @@ import us.kbase.workspaceservice.WorkspaceServiceClient;
 
 public class CmonkeyServerImpl {
 	private static Integer tempFileId = 0;
-	private static final String CMONKEY_PATH = "/var/tmp/kbase/";
-	private static final String DATA_PATH = "/home/kbase/dev_container/modules/cmonkey/data/KEGG_taxonomy";
-	//private static final String CMONKEY_PATH = "/media/sf_Shared/cmonkey-python-master/";
+	private static final String JOB_PATH = "/var/tmp/kbase/";
+//	private static final String CMONKEY_COMMAND = "cmonkey-python";
+	private static final String CMONKEY_COMMAND = "/home/kbase/cmonkey20131126/cmonkey.py";
+	private static final String DATA_PATH = "data/KEGG_taxonomy";
 	private static final String ID_SERVICE_URL = "http://kbase.us/services/idserver";
 	private static final String WS_SERVICE_URL = "http://kbase.us/services/workspace";
 	private static final String JOB_SERVICE_URL = "http://140.221.84.180:7083";
@@ -77,7 +78,7 @@ public class CmonkeyServerImpl {
 	public static CmonkeyRunResult buildCmonkeyNetwork(ExpressionDataSeries expressionDataSeries, CmonkeyRunParameters params, String jobId, String token) throws Exception{
 		CmonkeyRunResult cmonkeyRunResult = new CmonkeyRunResult();
 		cmonkeyRunResult.setId(getKbaseId("CmonkeyRunResult"));
-		String jobPath = CMONKEY_PATH + tempFileId.toString() + "/";
+		String jobPath = JOB_PATH + tempFileId.toString() + "/";
 		Runtime.getRuntime().exec("mkdir " + jobPath);
 		tempFileId++;
 		//prepare input
@@ -153,7 +154,7 @@ public class CmonkeyServerImpl {
 		String cacheDirectory = jobPath+"cache";
 		String inputFile = jobPath+"input.txt";
 		
-		String commandLine = "cmonkey-python --organism "+ organismCode +" --ratios "+inputFile+" --out "+outputDirectory+" --cachedir "+cacheDirectory;
+		String commandLine = CMONKEY_COMMAND + " --organism "+ organismCode +" --ratios "+inputFile+" --out "+outputDirectory+" --cachedir "+cacheDirectory;
 		//Set options
 		if (params.getNoMotifs() == 1L) {
 			commandLine += " --nomotifs";
@@ -372,7 +373,7 @@ public class CmonkeyServerImpl {
 	
 	protected static void executeCommand(String commandLine, String logFile, String jobId, String token) throws InterruptedException {
 		try {
-			Process p = Runtime.getRuntime().exec(commandLine, null, new File(CMONKEY_PATH));
+			Process p = Runtime.getRuntime().exec(commandLine, null, new File(JOB_PATH));
 			
 			StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), "ERROR", jobId, token);            
 	            

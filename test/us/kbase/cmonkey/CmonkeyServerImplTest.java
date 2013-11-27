@@ -86,15 +86,15 @@ public class CmonkeyServerImplTest {
 	public final void testBuildCmonkeyNetwork() throws Exception {
 		String testFile = "test/halo_ratios5.tsv";
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
-		params.setNoMotifs(0L);
-		params.setNoNetworks(0L);
-		params.setNoOperons(0L);
-		params.setNoString(0L);
+		params.setNoMotifs(1L);
+		params.setNoNetworks(1L);
+		params.setNoOperons(1L);
+		params.setNoString(1L);
 		ExpressionDataSeries testCollection = readCollectionFromFile(testFile);
 		System.out.println(testCollection.getId());
 		CmonkeyRunResult result = CmonkeyServerImpl.buildCmonkeyNetwork(testCollection, params);
 		showCmonkeyRun(result);
-		assertEquals(Integer.valueOf("43"), result.getClustersNumber());
+		assertEquals(Long.valueOf("43"), result.getClustersNumber());
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class CmonkeyServerImplTest {
 		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
 		
 		
-		assertEquals(Integer.valueOf("43"), result.getClustersNumber());
+		assertEquals(Long.valueOf("43"), result.getClustersNumber());
 	}
 	
 	@Test
@@ -158,12 +158,10 @@ public class CmonkeyServerImplTest {
 	@Test
 	public final void testParseCmonkeySql() throws Exception {
 		CmonkeyRunResult cmonkeyRun = new CmonkeyRunResult();
-//		String database = "/media/sf_Shared/cmonkey-python-master/0_out/cmonkey_run.db";
 		CmonkeyServerImpl.parseCmonkeySql(TEST_DATABASE_PATH, cmonkeyRun);
-//		KbasecmonkeyServerImp.parseCmonkeySql(database, cmonkeyRun);
 		showCmonkeyRun(cmonkeyRun);
 		assertNotNull(cmonkeyRun);
-		assertEquals(Integer.valueOf("43"), cmonkeyRun.getClustersNumber());
+		assertEquals(Long.valueOf("43"), cmonkeyRun.getClustersNumber());
 		assertEquals(2, cmonkeyRun.getNetwork().getClusters().get(0).getMotifs().size());
 
 	}
