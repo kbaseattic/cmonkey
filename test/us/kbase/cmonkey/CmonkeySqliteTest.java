@@ -66,6 +66,13 @@ public class CmonkeySqliteTest {
 	}
 
 	@Test
+	public final void testGetMotifSites() {
+		String motifInfoId = "1540";
+		List<SiteMeme> result = database.getMotifSites(motifInfoId);
+		assertEquals("GTTTTTGGCTC", result.get(1).getSequence());
+	}
+
+	@Test
 	public final void testGetListOfGenes() {
 		String clusterId = "43";
 		List<String> genes = database.getListOfGenes (iterationNumber, clusterId);

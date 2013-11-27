@@ -123,6 +123,7 @@ public class CmonkeySqlite {
         for (CmonkeyMotif motif:motifList){
 			motif.setPssmRows(this.getMotifPssm(motif.getId()));
 			motif.setHits(this.getMotifAnnotation(motif.getId(), motif.getPssmRows().size()));
+			motif.setSites(this.getMotifSites(motif.getId()));
         }
 		return motifList;
 	}
@@ -194,6 +195,40 @@ public class CmonkeySqlite {
 		return result;
 	}
 	
+	protected List<SiteMeme> getMotifSites (String motifId){
+		List<SiteMeme> result = new ArrayList<SiteMeme>();
+        String sqlQuery = "SELECT * FROM meme_motif_sites m WHERE m.motif_info_id="+motifId;
+        ResultSet resultSet = null;
+		try {
+			resultSet = statement.executeQuery(sqlQuery);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        try {
+			while (resultSet.next()){
+				SiteMeme site = new SiteMeme();
+				site.setSourceSequenceId(resultSet.getString("seq_name"));
+				site.setPvalue(resultSet.getDouble("pvalue"));
+				site.setStart(resultSet.getLong("start"));
+				site.setLeftFlank(resultSet.getString("flank_left"));
+				site.setSequence(resultSet.getString("seq"));
+				site.setRightFlank(resultSet.getString("flank_right"));
+				result.add(site);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        try {
+			resultSet.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	protected String convertStrandIntoSequnce (Boolean strand){
 		if (strand){
 			return "+";

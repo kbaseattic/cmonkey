@@ -23,6 +23,7 @@ import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.Tuple11;
 import us.kbase.common.service.UObject;
 import us.kbase.common.service.UnauthorizedException;
+import us.kbase.idserverapi.IDServerAPIClient;
 import us.kbase.userandjobstate.InitProgress;
 import us.kbase.userandjobstate.Results;
 import us.kbase.userandjobstate.UserAndJobStateClient;
@@ -35,8 +36,10 @@ import us.kbase.workspaceservice.WorkspaceServiceClient;
 
 public class CmonkeyServerImpl {
 	private static Integer tempFileId = 0;
-	private static final String CMONKEY_PATH = ".";
+	private static final String CMONKEY_PATH = "/var/tmp/kbase/";
+	private static final String DATA_PATH = "/home/kbase/dev_container/modules/cmonkey/data/KEGG_taxonomy";
 	//private static final String CMONKEY_PATH = "/media/sf_Shared/cmonkey-python-master/";
+	private static final String ID_SERVICE_URL = "http://kbase.us/services/idserver";
 	private static final String WS_SERVICE_URL = "http://kbase.us/services/workspace";
 	private static final String JOB_SERVICE_URL = "http://140.221.84.180:7083";
 	private static WorkspaceServiceClient _wsClient = null;
@@ -73,7 +76,9 @@ public class CmonkeyServerImpl {
 	
 	public static CmonkeyRunResult buildCmonkeyNetwork(ExpressionDataSeries expressionDataSeries, CmonkeyRunParameters params, String jobId, String token) throws Exception{
 		CmonkeyRunResult cmonkeyRunResult = new CmonkeyRunResult();
-		String jobName = tempFileId.toString();
+		cmonkeyRunResult.setId(getKbaseId("CmonkeyRunResult"));
+		String jobPath = CMONKEY_PATH + tempFileId.toString() + "/";
+		Runtime.getRuntime().exec("mkdir " + jobPath);
 		tempFileId++;
 		//prepare input
 			//convert input data
@@ -81,26 +86,29 @@ public class CmonkeyServerImpl {
 			//check list of genes
 		String organismCode = getOrganismCode(expressionDataSeries);
 			//save input file
-		writeInputFile (jobName+"_input.txt", inputTable);
+		writeInputFile (jobPath+"input.txt", inputTable);
 			//generate command line
-		String commandLine = generateCmonkeyCommandLine (jobName, params, organismCode);
+		String commandLine = generateCmonkeyCommandLine (jobPath, params, organismCode);
 				
 				
 		System.out.println(commandLine);
 		//run
 		if (jobId != null) updateJobProgress (jobId, "Input prepared. Starting cMonkey program...", token);
-		executeCommand (commandLine, CMONKEY_PATH + "/" + jobName+"_log.txt", jobId, token);
+		executeCommand (commandLine, jobPath +"log.txt", jobId, token);
 		//parse results
 
 		if (jobId != null) updateJobProgress (jobId, "cMonkey finished. Processing output...", token);
 
-		String sqlFile=CMONKEY_PATH + "/" + jobName+"_out"+"/cmonkey_run.db";
+		String sqlFile=jobPath+"out/cmonkey_run.db";
 		System.out.println(sqlFile);
 		parseCmonkeySql(sqlFile, cmonkeyRunResult);
+		cmonkeyRunResult.setId(getKbaseId("CmonkeyRunResult"));
 
 		//clean up
-		Runtime.getRuntime().exec("rm " + jobName + "_input.txt");
-		Runtime.getRuntime().exec("rm -r " + jobName + "_out");
+		//Runtime.getRuntime().exec("rm " + jobPath + "input.txt");
+		//Runtime.getRuntime().exec("rm -r " + jobPath + "out");
+		Runtime.getRuntime().exec("rm -r " + jobPath + "cache");
+		//delete checkpoint files Runtime.getRuntime().exec("rm -r " + "");
 
 		return cmonkeyRunResult;
 	}
@@ -139,11 +147,11 @@ public class CmonkeyServerImpl {
 		return jobId;
 	}
 
-	protected static String generateCmonkeyCommandLine (String jobName, CmonkeyRunParameters params, String organismCode) {
+	protected static String generateCmonkeyCommandLine (String jobPath, CmonkeyRunParameters params, String organismCode) {
 
-		String outputDirectory = jobName+"_out";
-		String cacheDirectory = jobName+"_cache";
-		String inputFile = jobName+"_input.txt";
+		String outputDirectory = jobPath+"out";
+		String cacheDirectory = jobPath+"cache";
+		String inputFile = jobPath+"input.txt";
 		
 		String commandLine = "cmonkey-python --organism "+ organismCode +" --ratios "+inputFile+" --out "+outputDirectory+" --cachedir "+cacheDirectory;
 		//Set options
@@ -226,6 +234,29 @@ public class CmonkeyServerImpl {
 
 	}
 
+	protected static String getKbaseId(String entityType) throws Exception {
+		String returnVal = null;
+		URL idServerUrl = new URL(ID_SERVICE_URL);
+		IDServerAPIClient idClient = new IDServerAPIClient(idServerUrl);
+		
+		if (entityType.equals("CmonkeyRunResult")) {
+			returnVal = "kb|cmonkeyrunresult." + idClient.allocateIdRange("cmonkeyrunresult", 1L).toString();
+		} else if (entityType.equals("CmonkeyNetwork")) {
+			returnVal = "kb|cmonkeynetwork." + idClient.allocateIdRange("cmonkeynetwork", 1L).toString();
+		} else if (entityType.equals("CmonkeyCluster")) {
+			returnVal = "kb|cmonkeycluster." + idClient.allocateIdRange("cmonkeycluster", 1L).toString();
+		} else if (entityType.equals("CmonkeyMotif")) {
+			returnVal = "kb|cmonkeymotif." + idClient.allocateIdRange("cmonkeymotif", 1L).toString();
+		} else if (entityType.equals("MastHit")) {
+			returnVal = "kb|masthit." + idClient.allocateIdRange("masthit", 1L).toString();
+		} else if (entityType.equals("ExpressionDataSeries")) {
+			returnVal = "kb|expressiondataseries." + idClient.allocateIdRange("expressiondataseries", 1L).toString();
+		} else {
+			System.out.println("ID requested for unknown type " + entityType);
+		}
+		return returnVal;
+	}
+
 
 	protected static String getOrganismCode (ExpressionDataSeries series) throws Exception {
 		String organismName = null;
@@ -259,7 +290,7 @@ public class CmonkeyServerImpl {
 		
 		try {
 			String line = null;
-			BufferedReader br = new BufferedReader(new FileReader(CMONKEY_PATH+"/data/KEGG_taxonomy"));
+			BufferedReader br = new BufferedReader(new FileReader(DATA_PATH));
 			while ((line = br.readLine()) != null) {
 				if ((line.equals("")) || (line.matches("#.*"))){
 					//do nothing

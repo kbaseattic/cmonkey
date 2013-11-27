@@ -152,7 +152,7 @@ public class CmonkeyServerImplTest {
 		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
 		
 		
-		assertEquals(Integer.valueOf("43"), result.getClustersNumber());
+		assertEquals(Long.valueOf("43"), result.getClustersNumber());
 	}
 	
 	@Test
@@ -427,7 +427,7 @@ public class CmonkeyServerImplTest {
 	}
 	@Test
 	public void testWsWriteRead() throws Exception {
-//		WSRegisterType registerType = new WSRegisterType("ExpressionDataSeries");
+//		WSRegisterType registerType = new WSRegisterType("MastHit");
 //		WSRegisterType registerType2 = new WSRegisterType("CmonkeyRunResult");
 		String id = "HalobacteriumExpressionSeries";
 		String testFile = "test/halo_ratios5.tsv";
@@ -443,6 +443,13 @@ public class CmonkeyServerImplTest {
 		assertEquals(testCollection.getId(),result.getId());		
 	}
 
+	@Test
+	public final void testGetKbaseId() throws Exception {
+		String id = CmonkeyServerImpl.getKbaseId("CmonkeyRunResult");
+		System.out.println(id);
+		assertNotNull(id);
+		
+	}
 
 }
 

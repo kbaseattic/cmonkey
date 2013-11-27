@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * float evalue - motif e-value
  * list<PssmRow> pssm - PSSM 
  * list<HitMast> hits - hits (motif annotations)
+ * list<SiteMeme> sites - training set
  * </pre>
  * 
  */
@@ -33,7 +34,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "pssm_id",
     "evalue",
     "pssm_rows",
-    "hits"
+    "hits",
+    "sites"
 })
 public class CmonkeyMotif {
 
@@ -49,6 +51,8 @@ public class CmonkeyMotif {
     private List<List<Double>> pssmRows;
     @JsonProperty("hits")
     private List<MastHit> hits;
+    @JsonProperty("sites")
+    private List<SiteMeme> sites;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("id")
@@ -141,6 +145,21 @@ public class CmonkeyMotif {
         return this;
     }
 
+    @JsonProperty("sites")
+    public List<SiteMeme> getSites() {
+        return sites;
+    }
+
+    @JsonProperty("sites")
+    public void setSites(List<SiteMeme> sites) {
+        this.sites = sites;
+    }
+
+    public CmonkeyMotif withSites(List<SiteMeme> sites) {
+        this.sites = sites;
+        return this;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -153,7 +172,7 @@ public class CmonkeyMotif {
 
     @Override
     public String toString() {
-        return ((((((((((((((("CmonkeyMotif"+" [id=")+ id)+", seqType=")+ seqType)+", pssmId=")+ pssmId)+", evalue=")+ evalue)+", pssmRows=")+ pssmRows)+", hits=")+ hits)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((("CmonkeyMotif"+" [id=")+ id)+", seqType=")+ seqType)+", pssmId=")+ pssmId)+", evalue=")+ evalue)+", pssmRows=")+ pssmRows)+", hits=")+ hits)+", sites=")+ sites)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
