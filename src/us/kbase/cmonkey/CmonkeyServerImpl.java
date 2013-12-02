@@ -131,8 +131,7 @@ public class CmonkeyServerImpl {
 		return returnVal;		
 	}
 	
-	public static String buildCmonkeyNetworkJobFromWs (String wsId, String seriesId, CmonkeyRunParameters params, AuthToken token) throws Exception {
-		String jobId = jobClient(token.toString()).createJob();
+	public static void buildCmonkeyNetworkJobFromWs (String wsId, String seriesId, CmonkeyRunParameters params, String jobId, String token) throws Exception {
 		String desc = "Cmonkey service job. Method: buildCmonkeyNetworkJobFromWs. Input: " + seriesId + ". Workspace: " + wsId + ".";
 		if (jobId != null) startJob (jobId, desc, 25L, token.toString());
 
@@ -140,12 +139,11 @@ public class CmonkeyServerImpl {
 		GetObjectOutput output = wsClient(token.toString()).getObject(objectParams);
 		ExpressionDataSeries input = UObject.transformObjectToObject(output.getData(), ExpressionDataSeries.class);
 
-		CmonkeyRunResult runResult = buildCmonkeyNetwork(input, params, jobId, token.toString());
+		CmonkeyRunResult runResult = buildCmonkeyNetwork(input, params, jobId, token);
 		
 		saveObjectToWorkspace (UObject.transformObjectToObject(runResult, UObject.class), runResult.getClass().getSimpleName(), wsId, runResult.getId(), token.toString());
 		if (jobId != null) finishJob (jobId, wsId, runResult.getId(), token.toString());
 		
-		return jobId;
 	}
 
 	protected static String generateCmonkeyCommandLine (String jobPath, CmonkeyRunParameters params, String organismCode) {

@@ -13,13 +13,28 @@ SERVICE_SPEC = ./kbase_cmonkey.spec
 SERVICE_PORT = $(TARGET_PORT)
 SERVICE_DIR = $(TARGET_DIR)
 SERVLET_CLASS = us.kbase.cmonkey.CmonkeyServer
+MAIN_CLASS = us.kbase.cmonkey.CmonkeyInvoker
 SERVICE_PSGI = $(SERVICE_NAME).psgi
 TPAGE_ARGS = --define kb_top=$(TARGET) --define kb_runtime=$(DEPLOY_RUNTIME) --define kb_service_name=$(SERVICE_NAME) --define kb_service_dir=$(SERVICE_DIR) --define kb_service_port=$(SERVICE_PORT) --define kb_psgi=$(SERVICE_PSGI)
 SCRIPTS_TESTS = $(wildcard script-tests/*.t)
-	
+DEPLOY_CLUSTER = /kb/deployment/cmonkey
+SCRIPTS_TESTS_CLUSTER = $(wildcard script-test-cluster/*.t)
+
 default: compile
 
 deploy: distrib deploy-client
+
+deploy-cluster: compile-cluster deploy-cluster-logic test-cluster
+
+compile-cluster: src lib
+	./make_jar.sh $(MAIN_CLASS)
+
+deploy-cluster-logic:
+	rm -r $(DEPLOY_CLUSTER)
+	mkdir $(DEPLOY_CLUSTER)
+	mkdir $(DEPLOY_CLUSTER)/lib
+	cp ./lib/*.jar $(DEPLOY_CLUSTER)/lib
+	cp ./dist/cmonkey_cluster.jar $(DEPLOY_CLUSTER)
 
 deploy-all: distrib deploy-client
 
@@ -89,6 +104,9 @@ distrib:
 	chmod +x $(TARGET_DIR)/start_service.sh
 	echo "./glassfish_stop_service.sh $(TARGET_PORT)" > $(TARGET_DIR)/stop_service.sh
 	chmod +x $(TARGET_DIR)/stop_service.sh
+
+test-cluster:
+	@echo "nothing to test"
 
 clean:
 	@echo "nothing to clean"

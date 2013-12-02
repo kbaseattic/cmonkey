@@ -31,11 +31,11 @@ public class CmonkeyServerImplTest {
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
 	private final String TEST_DATABASE_PATH = "test/cmonkey_run_test.db";
-	private ExpressionDataSeries collection = new ExpressionDataSeries();
+	private ExpressionDataSeries series = new ExpressionDataSeries();
 
 	@Before
 	public void setUp() throws Exception {
-		collection.setId("testExpressionCollection");
+		series.setId("testExpressionSeries");
 		ExpressionDataSample set1 = new ExpressionDataSample();
 		ExpressionDataSample set2 = new ExpressionDataSample();
 		// points for set 1
@@ -73,7 +73,7 @@ public class CmonkeyServerImplTest {
 		List<ExpressionDataSample> sets = new ArrayList<ExpressionDataSample>();
 		sets.add(set1);
 		sets.add(set2);
-		collection.setSamples(sets);
+		series.setSamples(sets);
 		// String result = KbasecmonkeyServerImp.getInputTable(collection);
 
 	}
@@ -124,7 +124,7 @@ public class CmonkeyServerImplTest {
 		params.setNoNetworks(0L);
 		params.setNoOperons(0L);
 		params.setNoString(0L);
-		String jobId = CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(workspaceName, collectionId, params, token);
+		String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, collectionId, params, token);
 		
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);
@@ -168,7 +168,7 @@ public class CmonkeyServerImplTest {
 
 	@Test
 	public final void testGetInputTable() {
-		String result = CmonkeyServerImpl.getInputTable(collection);
+		String result = CmonkeyServerImpl.getInputTable(series);
 		System.out.println(result);
 		assertEquals(
 				"GENE\tcondition1\tcondition2\nVNG1659G\t-0.082\t-0.059\nVNG1282G\t0.152\t0.153\nVNG1951G\t0.026\t-0.002\n",
@@ -189,7 +189,7 @@ public class CmonkeyServerImplTest {
 	public final void testGetOrganismCode() {
 		String result;
 		try {
-			result = CmonkeyServerImpl.getOrganismCode(collection);
+			result = CmonkeyServerImpl.getOrganismCode(series);
 			assertEquals("Halobacterium sp. NRC-1", result);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -275,12 +275,12 @@ public class CmonkeyServerImplTest {
 	@Test
 	public void testWsRead() throws Exception {
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String id = "testExpressionCollection";
+		String id = "testExpressionSeries";
 //		WSUtil.saveObject(objectId, object, false);
 		GetObjectParams params = new GetObjectParams().withType("ExpressionDataCollection").withId(id).withWorkspace(workspaceName).withAuth(token.toString());
 		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(params);
 		ExpressionDataSeries result = us.kbase.common.service.UObject.transformObjectToObject(output.getData(), ExpressionDataSeries.class);
-		assertEquals(collection.getId(),result.getId());
+		assertEquals(series.getId(),result.getId());
 	}
 
 
@@ -448,6 +448,7 @@ public class CmonkeyServerImplTest {
 		assertNotNull(id);
 		
 	}
+	
 
 }
 

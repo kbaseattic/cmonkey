@@ -56,7 +56,7 @@ public class CmonkeyServer extends JsonServerServlet {
     public CmonkeyRunResult buildCmonkeyNetwork(ExpressionDataSeries series, CmonkeyRunParameters params) throws Exception {
         CmonkeyRunResult returnVal = null;
         //BEGIN build_cmonkey_network
-        returnVal = CmonkeyServerImpl.buildCmonkeyNetwork(series, params);
+        returnVal = CmonkeyServerCaller.buildCmonkeyNetwork(series, params);
         //END build_cmonkey_network
         return returnVal;
     }
@@ -79,7 +79,7 @@ public class CmonkeyServer extends JsonServerServlet {
     public String buildCmonkeyNetworkFromWs(String wsId, String collectionId, CmonkeyRunParameters params, AuthToken authPart) throws Exception {
         String returnVal = null;
         //BEGIN build_cmonkey_network_from_ws
-        returnVal = CmonkeyServerImpl.buildCmonkeyNetworkFromWs(wsId, collectionId, params, authPart);
+        returnVal = CmonkeyServerCaller.buildCmonkeyNetworkFromWs(wsId, collectionId, params, authPart);
         //END build_cmonkey_network_from_ws
         return returnVal;
     }
@@ -102,7 +102,7 @@ public class CmonkeyServer extends JsonServerServlet {
     public String buildCmonkeyNetworkJobFromWs(String wsId, String seriesId, CmonkeyRunParameters params, AuthToken authPart) throws Exception {
         String returnVal = null;
         //BEGIN build_cmonkey_network_job_from_ws
-        returnVal = CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(wsId, seriesId, params, authPart);
+        returnVal = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(wsId, seriesId, params, authPart);
         //END build_cmonkey_network_job_from_ws
         return returnVal;
     }

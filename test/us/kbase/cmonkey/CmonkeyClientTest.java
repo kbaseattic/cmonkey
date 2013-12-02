@@ -73,7 +73,7 @@ public class CmonkeyClientTest {
 		String collectionId = "HalobacteriumExpressionSeries";
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
-		params.setNoMotifs(0L);
+		params.setNoMotifs(1L);
 		params.setNoNetworks(1L);
 		params.setNoOperons(1L);
 		params.setNoString(1L);
