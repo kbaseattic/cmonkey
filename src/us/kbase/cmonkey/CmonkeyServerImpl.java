@@ -89,9 +89,14 @@ public class CmonkeyServerImpl {
 		writer.write(inputTable);
 		writer.newLine();
 			//check list of genes
-		String organismCode = getOrganismCode(expressionDataSeries);
+		String organismName = getOrganismName(expressionDataSeries);
+		writer.write("Organism name = " + organismName);
+		writer.newLine();
+		
+		String organismCode = getKeggCode(organismName);
 		writer.write("Organism code = " + organismCode);
 		writer.newLine();
+
 			//save input file
 		writeInputFile (jobPath+"input.txt", inputTable);
 			//generate command line
@@ -268,7 +273,7 @@ public class CmonkeyServerImpl {
 	}
 
 
-	protected static String getOrganismCode (ExpressionDataSeries series) throws Exception {
+	protected static String getOrganismName (ExpressionDataSeries series) throws Exception {
 		String organismName = null;
 		Microbesonline microbesonline = new Microbesonline();
 		List<String> geneNames = new ArrayList<String>();
@@ -291,8 +296,7 @@ public class CmonkeyServerImpl {
 				throw new Exception();
 			}
 		}
-		String result = getKeggCode(organismName);
-		return result;
+		return organismName;
 	}
 
 	protected static String getKeggCode(String organismName) {

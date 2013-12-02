@@ -189,7 +189,7 @@ public class CmonkeyServerImplTest {
 	public final void testGetOrganismCode() {
 		String result;
 		try {
-			result = CmonkeyServerImpl.getOrganismCode(series);
+			result = CmonkeyServerImpl.getOrganismName(series);
 			assertEquals("Halobacterium sp. NRC-1", result);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -240,7 +240,7 @@ public class CmonkeyServerImplTest {
 		testCollection.setSamples(sets);
 		String result = null;
 		try {
-			result = CmonkeyServerImpl.getOrganismCode(testCollection);
+			result = CmonkeyServerImpl.getOrganismName(testCollection);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			assertNull(result);
