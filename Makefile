@@ -95,11 +95,11 @@ compile: src lib
 distrib:
 	@echo "Target folder: $(TARGET_DIR)"
 	mkdir -p $(TARGET_DIR)
-	mkdir -p $(TARGET_DIR)/data
+	mkdir -p /var/tmp/kbase/data
 	cp -f ./dist/service.war $(TARGET_DIR)
 	cp -f ./glassfish_start_service.sh $(TARGET_DIR)
 	cp -f ./glassfish_stop_service.sh $(TARGET_DIR)
-	cp -f ./data/KEGG_taxonomy $(TARGET_DIR)/data/
+	cp -f ./data/KEGG_taxonomy /var/tmp/kbase/data/
 	echo "./glassfish_start_service.sh $(TARGET_DIR)/service.war $(TARGET_PORT) $(THREADPOOL_SIZE)" > $(TARGET_DIR)/start_service.sh
 	chmod +x $(TARGET_DIR)/start_service.sh
 	echo "./glassfish_stop_service.sh $(TARGET_PORT)" > $(TARGET_DIR)/stop_service.sh

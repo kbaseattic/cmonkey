@@ -39,7 +39,7 @@ public class CmonkeyServerImpl {
 	private static final String JOB_PATH = "/var/tmp/kbase/";
 //	private static final String CMONKEY_COMMAND = "cmonkey-python";
 	private static final String CMONKEY_COMMAND = "/kb/runtime/cmonkey-python/cmonkey.py";
-	private static final String DATA_PATH = "data/KEGG_taxonomy";
+	private static final String DATA_PATH = JOB_PATH + "data/KEGG_taxonomy";
 	private static final String ID_SERVICE_URL = "http://kbase.us/services/idserver";
 	private static final String WS_SERVICE_URL = "http://kbase.us/services/workspace";
 	private static final String JOB_SERVICE_URL = "http://140.221.84.180:7083";
@@ -86,6 +86,8 @@ public class CmonkeyServerImpl {
 
 		String inputTable = getInputTable(expressionDataSeries);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(jobPath+"serveroutput.txt"));
+		writer.write("");
+		
 		writer.write(inputTable);
 		writer.newLine();
 			//check list of genes
@@ -386,7 +388,7 @@ public class CmonkeyServerImpl {
 	
 	protected static void executeCommand(String commandLine, String jobPath, String jobId, String token) throws InterruptedException {
 		try {
-			Process p = Runtime.getRuntime().exec(commandLine, null, new File("."));
+			Process p = Runtime.getRuntime().exec(commandLine, null, new File(JOB_PATH));
 			
 			StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), "ERROR", jobId, token, jobPath+"errorlog.txt");            
 	            
