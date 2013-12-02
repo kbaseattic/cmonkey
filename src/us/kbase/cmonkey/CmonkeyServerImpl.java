@@ -79,20 +79,24 @@ public class CmonkeyServerImpl {
 		CmonkeyRunResult cmonkeyRunResult = new CmonkeyRunResult();
 		cmonkeyRunResult.setId(getKbaseId("CmonkeyRunResult"));
 		String jobPath = JOB_PATH + tempFileId.toString() + "/";
+		BufferedWriter writer = new BufferedWriter(new FileWriter(jobPath+"serveroutput.txt"));
 		Runtime.getRuntime().exec("mkdir " + jobPath);
 		tempFileId++;
 		//prepare input
 			//convert input data
 		String inputTable = getInputTable(expressionDataSeries);
+		writer.write(inputTable);
+		writer.newLine();
 			//check list of genes
 		String organismCode = getOrganismCode(expressionDataSeries);
+		writer.write("Organism code = " + organismCode);
+		writer.newLine();
 			//save input file
 		writeInputFile (jobPath+"input.txt", inputTable);
 			//generate command line
-		String commandLine = generateCmonkeyCommandLine (jobPath, params, organismCode);
-				
-		BufferedWriter writer = new BufferedWriter(new FileWriter(jobPath+"serveroutput.txt"));
+		String commandLine = generateCmonkeyCommandLine (jobPath, params, organismCode);				
 		writer.write(commandLine);
+		writer.newLine();
 		
 		//run
 		if (jobId != null) updateJobProgress (jobId, "Input prepared. Starting cMonkey program...", token);
@@ -103,8 +107,12 @@ public class CmonkeyServerImpl {
 
 		String sqlFile=jobPath+"out/cmonkey_run.db";
 		writer.write(sqlFile);
+		writer.newLine();
 		parseCmonkeySql(sqlFile, cmonkeyRunResult);
-		cmonkeyRunResult.setId(getKbaseId("CmonkeyRunResult"));
+		String resultId = getKbaseId("CmonkeyRunResult");
+		writer.write(resultId);
+		writer.newLine();
+		cmonkeyRunResult.setId(resultId);
 
 		//clean up
 		//Runtime.getRuntime().exec("rm " + jobPath + "input.txt");
