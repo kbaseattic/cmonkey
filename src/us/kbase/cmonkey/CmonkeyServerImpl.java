@@ -373,7 +373,7 @@ public class CmonkeyServerImpl {
 	
 	protected static void executeCommand(String commandLine, String jobPath, String jobId, String token) throws InterruptedException {
 		try {
-			Process p = Runtime.getRuntime().exec(commandLine, null, new File(JOB_PATH));
+			Process p = Runtime.getRuntime().exec(commandLine, null, new File("."));
 			
 			StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), "ERROR", jobId, token, jobPath+"errorlog.txt");            
 	            
