@@ -64,7 +64,11 @@ class StreamGobbler extends Thread
             		}
             	}
             }
-       		if (logfileName != null) writer.close();
+       		if (logfileName != null) {
+        		writer.write("STREAMGOBBLER RUN FINISHED");
+        		writer.newLine();
+        		writer.close();
+       		}
         } catch (IOException ioe)
         {
         	ioe.printStackTrace();  

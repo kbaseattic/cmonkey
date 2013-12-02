@@ -108,7 +108,15 @@ public class CmonkeyServerImpl {
 		
 		//run
 		if (jobId != null) updateJobProgress (jobId, "Input prepared. Starting cMonkey program...", token);
-		executeCommand (commandLine, jobPath, jobId, token);
+		Integer exitVal = executeCommand (commandLine, jobPath, jobId, token);
+		if (exitVal != null) { 
+			writer.write("ExitValue: " + exitVal.toString());
+			writer.newLine();
+		} else {
+			writer.write("ExitValue: null");
+			writer.newLine();
+		}
+		
 		//parse results
 
 		if (jobId != null) updateJobProgress (jobId, "cMonkey finished. Processing output...", token);
@@ -381,12 +389,14 @@ public class CmonkeyServerImpl {
 
 	}
 
-	protected static void executeCommand(String commandLine, String jobPath) throws InterruptedException {
-		executeCommand (commandLine, jobPath, null, null);
+	protected static Integer executeCommand(String commandLine, String jobPath) throws InterruptedException {
+		Integer exitVal = executeCommand (commandLine, jobPath, null, null);
+		return exitVal;
 	}
 
 	
-	protected static void executeCommand(String commandLine, String jobPath, String jobId, String token) throws InterruptedException {
+	protected static Integer executeCommand(String commandLine, String jobPath, String jobId, String token) throws InterruptedException {
+		Integer exitVal = null;
 		try {
 			Process p = Runtime.getRuntime().exec(commandLine, null, new File(JOB_PATH));
 			
@@ -400,12 +410,13 @@ public class CmonkeyServerImpl {
 			outputGobbler.start();
 	                                    
 	            // any error???
-			int exitVal = p.waitFor();
+			exitVal = p.waitFor();
 			System.out.println("ExitValue: " + exitVal);      
 		} catch (IOException e) {
 			System.out.println(e.getLocalizedMessage());
 		} finally {
 		}
+		return exitVal;
 
 		
 	}
