@@ -91,11 +91,13 @@ public class CmonkeyServerImpl {
 			//generate command line
 		String commandLine = generateCmonkeyCommandLine (jobPath, params, organismCode);
 				
-				
-		System.out.println(commandLine);
+		BufferedWriter writer = new BufferedWriter(new FileWriter(jobPath+"out.txt"));
+		writer.write(commandLine);
+		writer.close();
+		
 		//run
 		if (jobId != null) updateJobProgress (jobId, "Input prepared. Starting cMonkey program...", token);
-		executeCommand (commandLine, jobPath +"log.txt", jobId, token);
+		executeCommand (commandLine, jobPath, jobId, token);
 		//parse results
 
 		if (jobId != null) updateJobProgress (jobId, "cMonkey finished. Processing output...", token);
@@ -108,7 +110,7 @@ public class CmonkeyServerImpl {
 		//clean up
 		//Runtime.getRuntime().exec("rm " + jobPath + "input.txt");
 		//Runtime.getRuntime().exec("rm -r " + jobPath + "out");
-		Runtime.getRuntime().exec("rm -r " + jobPath + "cache");
+		//Runtime.getRuntime().exec("rm -r " + jobPath + "cache");
 		//delete checkpoint files Runtime.getRuntime().exec("rm -r " + "");
 
 		return cmonkeyRunResult;
@@ -364,19 +366,19 @@ public class CmonkeyServerImpl {
 
 	}
 
-	protected static void executeCommand(String commandLine, String logFile) throws InterruptedException {
-		executeCommand (commandLine, logFile, null, null);
+	protected static void executeCommand(String commandLine, String jobPath) throws InterruptedException {
+		executeCommand (commandLine, jobPath, null, null);
 	}
 
 	
-	protected static void executeCommand(String commandLine, String logFile, String jobId, String token) throws InterruptedException {
+	protected static void executeCommand(String commandLine, String jobPath, String jobId, String token) throws InterruptedException {
 		try {
 			Process p = Runtime.getRuntime().exec(commandLine, null, new File(JOB_PATH));
 			
-			StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), "ERROR", jobId, token, logFile);            
+			StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), "ERROR", jobId, token, jobPath+"errorlog.txt");            
 	            
 	            // any output?
-			StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream(), "OUTPUT", jobId, token, null);
+			StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream(), "OUTPUT", jobId, token, jobPath+"out.txt");
 	                
 	            // kick them off
 			errorGobbler.start();

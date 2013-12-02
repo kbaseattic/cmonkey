@@ -355,11 +355,11 @@ public class CmonkeyServerImplTest {
 					.exec(commandLine, null, cmonkeyDir);
 			
 			StreamGobbler errorGobbler = new 
-	                StreamGobbler(p.getErrorStream(), "ERROR");            
+	                StreamGobbler(p.getErrorStream(), "ERROR", null);            
 	            
 	            // any output?
 	            StreamGobbler outputGobbler = new 
-	                StreamGobbler(p.getInputStream(), "OUTPUT");
+	                StreamGobbler(p.getInputStream(), "OUTPUT", null);
 	                
 	            // kick them off
 	            errorGobbler.start();
