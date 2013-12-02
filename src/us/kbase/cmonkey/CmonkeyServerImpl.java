@@ -79,11 +79,11 @@ public class CmonkeyServerImpl {
 		CmonkeyRunResult cmonkeyRunResult = new CmonkeyRunResult();
 		cmonkeyRunResult.setId(getKbaseId("CmonkeyRunResult"));
 		String jobPath = JOB_PATH + tempFileId.toString() + "/";
-		BufferedWriter writer = new BufferedWriter(new FileWriter(jobPath+"serveroutput.txt"));
-		Runtime.getRuntime().exec("mkdir " + jobPath);
 		tempFileId++;
+		Runtime.getRuntime().exec("mkdir " + jobPath);
+		BufferedWriter writer = new BufferedWriter(new FileWriter(jobPath+"serveroutput.txt"));
 		//prepare input
-			//convert input data
+
 		String inputTable = getInputTable(expressionDataSeries);
 		writer.write(inputTable);
 		writer.newLine();
