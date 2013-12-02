@@ -373,10 +373,10 @@ public class CmonkeyServerImpl {
 		try {
 			Process p = Runtime.getRuntime().exec(commandLine, null, new File(JOB_PATH));
 			
-			StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), "ERROR", jobId, token);            
+			StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), "ERROR", jobId, token, logFile);            
 	            
 	            // any output?
-			StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream(), "OUTPUT", jobId, token);
+			StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream(), "OUTPUT", jobId, token, null);
 	                
 	            // kick them off
 			errorGobbler.start();
