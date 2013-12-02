@@ -47,8 +47,11 @@ class StreamGobbler extends Thread
             };
             String line=null;
             while ( (line = br.readLine()) != null) {
-            	if (writer != null) writer.write(line);
-            	//System.out.println(type + ">" + line);
+            	System.out.println(type + ">" + line);
+            	if (logfileName != null) {
+            		writer.write(line);
+            		writer.newLine();
+            	}
             	//Catch "INFO     Iteration # " pattern
            		if (iterationPattern.matcher(line).find()){
             		//call CmonkeyServerImpl
@@ -60,8 +63,8 @@ class StreamGobbler extends Thread
             			CmonkeyServerImpl.updateJobProgress(jobId, status, token);
             		}
             	}
-           		if (writer != null) writer.close();
             }
+       		if (logfileName != null) writer.close();
         } catch (IOException ioe)
         {
         	ioe.printStackTrace();  
