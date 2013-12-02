@@ -81,10 +81,11 @@ public class CmonkeyServerImpl {
 		String jobPath = JOB_PATH + tempFileId.toString() + "/";
 		tempFileId++;
 		Runtime.getRuntime().exec("mkdir " + jobPath);
-		BufferedWriter writer = new BufferedWriter(new FileWriter(jobPath+"serveroutput.txt"));
+
 		//prepare input
 
 		String inputTable = getInputTable(expressionDataSeries);
+		BufferedWriter writer = new BufferedWriter(new FileWriter(jobPath+"serveroutput.txt"));
 		writer.write(inputTable);
 		writer.newLine();
 			//check list of genes
