@@ -38,7 +38,7 @@ public class CmonkeyServerImpl {
 	private static Integer tempFileId = 0;
 	private static final String JOB_PATH = "/var/tmp/kbase/";
 //	private static final String CMONKEY_COMMAND = "cmonkey-python";
-	private static final String CMONKEY_COMMAND = "/home/kbase/cmonkey20131126/cmonkey.py";
+	private static final String CMONKEY_COMMAND = "/kb/runtime/cmonkey-python/cmonkey.py";
 	private static final String DATA_PATH = "data/KEGG_taxonomy";
 	private static final String ID_SERVICE_URL = "http://kbase.us/services/idserver";
 	private static final String WS_SERVICE_URL = "http://kbase.us/services/workspace";
@@ -91,9 +91,8 @@ public class CmonkeyServerImpl {
 			//generate command line
 		String commandLine = generateCmonkeyCommandLine (jobPath, params, organismCode);
 				
-		BufferedWriter writer = new BufferedWriter(new FileWriter(jobPath+"out.txt"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(jobPath+"serveroutput.txt"));
 		writer.write(commandLine);
-		writer.close();
 		
 		//run
 		if (jobId != null) updateJobProgress (jobId, "Input prepared. Starting cMonkey program...", token);
@@ -103,7 +102,7 @@ public class CmonkeyServerImpl {
 		if (jobId != null) updateJobProgress (jobId, "cMonkey finished. Processing output...", token);
 
 		String sqlFile=jobPath+"out/cmonkey_run.db";
-		System.out.println(sqlFile);
+		writer.write(sqlFile);
 		parseCmonkeySql(sqlFile, cmonkeyRunResult);
 		cmonkeyRunResult.setId(getKbaseId("CmonkeyRunResult"));
 
@@ -112,6 +111,7 @@ public class CmonkeyServerImpl {
 		//Runtime.getRuntime().exec("rm -r " + jobPath + "out");
 		//Runtime.getRuntime().exec("rm -r " + jobPath + "cache");
 		//delete checkpoint files Runtime.getRuntime().exec("rm -r " + "");
+		writer.close();
 
 		return cmonkeyRunResult;
 	}

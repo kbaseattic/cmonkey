@@ -20,8 +20,8 @@ public class CmonkeyClientTest {
 	private static final String USER_NAME = "aktest";
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
-//	private String serverUrl = "http://140.221.84.195:7049";
-	private String serverUrl = "http://localhost:7049";
+	private String serverUrl = "http://140.221.84.195:7049";
+//	private String serverUrl = "http://localhost:7049";
 
 	
 	@Test
