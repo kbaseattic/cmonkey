@@ -30,7 +30,7 @@ public class CmonkeyClientTest {
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
 		params.setNoMotifs(1L);
-		params.setNoNetworks(1L);
+		params.setNoNetworks(0L);
 		params.setNoOperons(1L);
 		params.setNoString(1L);
 		URL url = new URL(serverUrl);

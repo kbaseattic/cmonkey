@@ -1,6 +1,7 @@
 package us.kbase.cmonkey;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,16 +39,17 @@ class StreamGobbler extends Thread
     {
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
-        FileWriter writer = null;
+        BufferedWriter writer = null;
        	try {
             if (logfileName != null) {
-					writer = new FileWriter(logfileName);
+					writer = new BufferedWriter (new FileWriter(logfileName));
             };
             String line=null;
 			while ( (line = br.readLine()) != null) {
 				//System.out.println(type + ">" + line);
 				if (logfileName != null) {
 					writer.write(line);
+					writer.newLine();
 				}
 				//Catch "INFO     Iteration # " pattern
 				if (iterationPattern.matcher(line).find()){
