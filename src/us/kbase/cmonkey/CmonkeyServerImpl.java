@@ -86,11 +86,10 @@ public class CmonkeyServerImpl {
 
 		String inputTable = getInputTable(expressionDataSeries);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(jobPath+"serveroutput.txt"));
-		writer.write("");
-		
-		writer.write(inputTable);
-		writer.newLine();
-			//check list of genes
+		//writer.write(inputTable);
+		//writer.newLine();
+
+		//check list of genes
 		String organismName = getOrganismName(expressionDataSeries);
 		writer.write("Organism name = " + organismName);
 		writer.newLine();
