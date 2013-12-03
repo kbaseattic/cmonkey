@@ -91,23 +91,26 @@ public class CmonkeyServerImpl {
 		//check list of genes
 		String organismName = getOrganismName(expressionDataSeries);
 		writer.write("Organism name = " + organismName + "\n");
-		
+		writer.flush();
 		String organismCode = getKeggCode(organismName);
 		writer.write("Organism code = " + organismCode + "\n");
+		writer.flush();
 
 			//save input file
 		writeInputFile (jobPath+"input.txt", inputTable);
 			//generate command line
 		String commandLine = generateCmonkeyCommandLine (jobPath, params, organismCode);				
 		writer.write(commandLine + "\n");
-		
+		writer.flush();
 		//run
 		if (jobId != null) updateJobProgress (jobId, "Input prepared. Starting cMonkey program...", token);
 		Integer exitVal = executeCommand (commandLine, jobPath, jobId, token);
 		if (exitVal != null) { 
 			writer.write("ExitValue: " + exitVal.toString() + "\n");
+			writer.flush();
 		} else {
 			writer.write("ExitValue: null\n");
+			writer.flush();
 		}
 		
 		//parse results
@@ -116,6 +119,7 @@ public class CmonkeyServerImpl {
 
 		String sqlFile=jobPath+"out/cmonkey_run.db";
 		writer.write(sqlFile + "\n");
+		writer.flush();
 		parseCmonkeySql(sqlFile, cmonkeyRunResult);
 		String resultId = getKbaseId("CmonkeyRunResult");
 		writer.write(resultId + "\n");
