@@ -10,6 +10,7 @@ import org.junit.Test;
 import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
 import us.kbase.common.service.JsonClientException;
+import us.kbase.common.service.Tuple7;
 import us.kbase.common.service.UObject;
 import us.kbase.userandjobstate.Results;
 import us.kbase.workspaceservice.GetObjectOutput;
@@ -20,8 +21,8 @@ public class CmonkeyClientTest {
 	private static final String USER_NAME = "aktest";
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
-	private String serverUrl = "http://140.221.84.195:7049";
-//	private String serverUrl = "http://localhost:7049";
+//	private String serverUrl = "http://140.221.84.195:7049";
+	private String serverUrl = "http://localhost:7049";
 
 	
 	@Test
@@ -41,6 +42,37 @@ public class CmonkeyClientTest {
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);
 		String resultId = "";
+
+		String status = "";
+		Integer waitingTime = 2;
+		while (!status.equalsIgnoreCase("finished")){
+			
+			try {
+			    Thread.sleep(120000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		
+			try {
+				Tuple7<String,String,String,Long,String,Long,Long> t = CmonkeyServerImpl.jobClient(token.toString()).getJobStatus(jobId); 
+				//System.out.println(t.getE1());
+				//System.out.println(t.getE2());
+				status = t.getE3();
+				//System.out.println(t.getE3());//Status
+				//System.out.println(t.getE4());
+				//System.out.println(t.getE5());
+				//System.out.println(t.getE6());
+				//System.out.println(t.getE7());
+				System.out.println("Waiting time: "+ waitingTime.toString() + " minutes");
+				waitingTime += 2;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JsonClientException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 		try {
 			Results res = CmonkeyServerImpl.jobClient(token.toString()).getResults(jobId);			

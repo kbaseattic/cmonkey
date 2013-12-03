@@ -53,7 +53,8 @@ public class CmonkeyServerCaller {
 	        returnVal = jobClient(authPart).createJob();
 
 	        if (deployCluster == false) { 
-	        	CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(wsId, seriesId, params, returnVal, authPart.toString());
+	        	CmonkeyServerThread cmonkeyServerThread = new CmonkeyServerThread(wsId, seriesId, params, returnVal, authPart.toString()); 
+	        	cmonkeyServerThread.start();
 	        } else {
 	        	Map<String, String> jsonArgs = new HashMap<String, String>();
 	        	jsonArgs.put("target", "cloud");

@@ -350,9 +350,9 @@ public class CmonkeySqlite {
 		IDServerAPIClient idClient = new IDServerAPIClient(url);
 		
 		if (entityType.equals("CmonkeyRun")) {
-			returnVal = "kb|cmonkeyrun." + idClient.allocateIdRange("cmonkeyrun", 0L).toString();
+			returnVal = "kb|cmonkeyrun." + idClient.allocateIdRange("cmonkeyrun", 1L).toString();
 		} else if (entityType.equals("CmonkeyNetwork")) {
-			returnVal = "kb|cmonkeynetwork." + idClient.allocateIdRange("cmonkeynetwork", 0L).toString();
+			returnVal = "kb|cmonkeynetwork." + idClient.allocateIdRange("cmonkeynetwork", 1L).toString();
 		} else {
 		}
 		return returnVal;
