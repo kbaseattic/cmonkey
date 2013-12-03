@@ -36,7 +36,7 @@ import us.kbase.workspaceservice.WorkspaceServiceClient;
 
 public class CmonkeyServerImpl {
 	private static Integer tempFileId = 0;
-	private static final String JOB_PATH = "/var/tmp/kbase/";
+	private static final String JOB_PATH = "/var/tmp/cmonkey/";
 //	private static final String CMONKEY_COMMAND = "cmonkey-python";
 	private static final String CMONKEY_COMMAND = "/kb/runtime/cmonkey-python/cmonkey.py";
 	private static final String DATA_PATH = JOB_PATH + "data/KEGG_taxonomy";
@@ -69,6 +69,16 @@ public class CmonkeyServerImpl {
 		}
 		return _jobClient;
 	} 
+
+	protected static void cleanUpOnStart () {
+		try {
+			Runtime.getRuntime().exec("rm "+JOB_PATH+"cmonkey*");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 
 	public static CmonkeyRunResult buildCmonkeyNetwork(ExpressionDataSeries expressionDataSeries, CmonkeyRunParameters params) throws Exception{
 		CmonkeyRunResult cmonkeyRunResult = buildCmonkeyNetwork(expressionDataSeries, params, null, null);
@@ -125,12 +135,10 @@ public class CmonkeyServerImpl {
 		writer.write(resultId + "\n");
 		cmonkeyRunResult.setId(resultId);
 
-		//clean up
-		//Runtime.getRuntime().exec("rm " + jobPath + "input.txt");
-		//Runtime.getRuntime().exec("rm -r " + jobPath + "out");
-		//Runtime.getRuntime().exec("rm -r " + jobPath + "cache");
-		//delete checkpoint files Runtime.getRuntime().exec("rm -r " + "");
 		writer.close();
+		//clean up
+		Runtime.getRuntime().exec("rm -r " + jobPath);
+		Runtime.getRuntime().exec("rm " + JOB_PATH + "cmonkey*");
 
 		return cmonkeyRunResult;
 	}

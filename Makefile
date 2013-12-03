@@ -95,7 +95,7 @@ compile: src lib
 distrib:
 	@echo "Target folder: $(TARGET_DIR)"
 	mkdir -p $(TARGET_DIR)
-	mkdir -p /var/tmp/kbase/data
+	mkdir -p /var/tmp/cmonkey/data
 	cp -f ./dist/service.war $(TARGET_DIR)
 	cp -f ./glassfish_start_service.sh $(TARGET_DIR)
 	cp -f ./glassfish_stop_service.sh $(TARGET_DIR)

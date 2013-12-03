@@ -29,6 +29,7 @@ public class CmonkeyClientTest {
 	public final void testBuildCmonkeyNetworkJobFromWs() throws Exception {
 		String collectionId = "HalobacteriumExpressionSeries";
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		System.out.println(token.toString());
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
 		params.setNoMotifs(1L);
 		params.setNoNetworks(1L);
