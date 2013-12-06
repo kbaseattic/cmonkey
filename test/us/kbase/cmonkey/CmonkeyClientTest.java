@@ -23,13 +23,14 @@ public class CmonkeyClientTest {
 	private static final String workspaceName = "AKtest";
 //	private String serverUrl = "http://140.221.84.195:7049";
 	private String serverUrl = "http://localhost:7049";
+	private String quickTestSeriesId = "QuickTestExpressionDataSeries";
+//	private String testSeriesId = "TestExpressionDataSeries";
 
 	
 	@Test
 	public final void testBuildCmonkeyNetworkJobFromWs() throws Exception {
-		String collectionId = "HalobacteriumExpressionSeries";
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		System.out.println(token.toString());
+//		System.out.println(token.toString());
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
 		params.setNoMotifs(1L);
 		params.setNoNetworks(1L);
@@ -38,7 +39,7 @@ public class CmonkeyClientTest {
 		URL url = new URL(serverUrl);
 		CmonkeyClient client = new CmonkeyClient(url, token);
 		client.setAuthAllowedForHttp(true);
-		String jobId = client.buildCmonkeyNetworkJobFromWs(workspaceName, collectionId, params);
+		String jobId = client.buildCmonkeyNetworkJobFromWs(workspaceName, quickTestSeriesId, params);
 		
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);
@@ -97,13 +98,12 @@ public class CmonkeyClientTest {
 		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
 		
 		
-		assertEquals(Long.valueOf("43"), result.getClustersNumber());
+		assertEquals(Long.valueOf("3"), result.getClustersNumber());
 
 	}
 
 	@Test
 	public final void testBuildCmonkeyNetworkFromWs() throws Exception {
-		String collectionId = "HalobacteriumExpressionSeries";
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
 		params.setNoMotifs(1L);
@@ -113,13 +113,13 @@ public class CmonkeyClientTest {
 		URL url = new URL(serverUrl);
 		CmonkeyClient client = new CmonkeyClient(url, token);
 		client.setAuthAllowedForHttp(true);
-		String resultId = client.buildCmonkeyNetworkFromWs(workspaceName, collectionId, params);
+		String resultId = client.buildCmonkeyNetworkFromWs(workspaceName, quickTestSeriesId, params);
 		
 		GetObjectParams objectParams = new GetObjectParams().withType("CmonkeyRunResult").withId(resultId).withWorkspace(workspaceName).withAuth(token.toString());
 		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(objectParams);
 		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
 		
-		assertEquals(Long.valueOf("43"), result.getClustersNumber());
+		assertEquals(Long.valueOf("3"), result.getClustersNumber());
 
 	}
 

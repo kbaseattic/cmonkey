@@ -30,12 +30,14 @@ public class CmonkeyServerImplTest {
 	private static final String USER_NAME = "aktest";
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
+//	private String quickTestSeriesId = "QuickTestExpressionDataSeries";
+	private String testSeriesId = "TestExpressionDataSeries";
 	private final String TEST_DATABASE_PATH = "test/cmonkey_run_test.db";
 	private ExpressionDataSeries series = new ExpressionDataSeries();
 
 	@Before
 	public void setUp() throws Exception {
-		series.setId("testExpressionSeries");
+		series.setId(testSeriesId);
 		ExpressionDataSample set1 = new ExpressionDataSample();
 		ExpressionDataSample set2 = new ExpressionDataSample();
 		// points for set 1
@@ -315,9 +317,7 @@ public class CmonkeyServerImplTest {
 	@Test
 	public void testWsRead() throws Exception {
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String id = "testExpressionSeries";
-//		WSUtil.saveObject(objectId, object, false);
-		GetObjectParams params = new GetObjectParams().withType("ExpressionDataCollection").withId(id).withWorkspace(workspaceName).withAuth(token.toString());
+		GetObjectParams params = new GetObjectParams().withType("ExpressionDataCollection").withId(testSeriesId).withWorkspace(workspaceName).withAuth(token.toString());
 		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(params);
 		ExpressionDataSeries result = us.kbase.common.service.UObject.transformObjectToObject(output.getData(), ExpressionDataSeries.class);
 		assertEquals(series.getId(),result.getId());
@@ -388,7 +388,7 @@ public class CmonkeyServerImplTest {
 	}
 
 	private static void runCmonkey() throws IOException, InterruptedException {
-		String commandLine = "/media/sf_Shared/cmonkey-python-master/run_cmonkey.sh --organism hal --ratios 0_input.txt --out 0_out";
+		String commandLine = "cmonkey-python --organism hal --ratios 0_input.txt --out 0_out";
 		File cmonkeyDir = new File("/media/sf_Shared/cmonkey-python-master/");
 		try {
 			Process p = Runtime.getRuntime()
@@ -467,8 +467,8 @@ public class CmonkeyServerImplTest {
 	public void testWsWriteRead() throws Exception {
 //		WSRegisterType registerType = new WSRegisterType("MastHit");
 //		WSRegisterType registerType2 = new WSRegisterType("CmonkeyRunResult");
-		String id = "HalobacteriumExpressionSeries";
-		String testFile = "test/halo_ratios5.tsv";
+		String id = "QuickTestExpressionDataSeries";
+		String testFile = "/home/kbase/cmonkey-test/mini-halo_ratios5.tsv";
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 
 		ExpressionDataSeries testCollection = readCollectionFromFile(testFile);
