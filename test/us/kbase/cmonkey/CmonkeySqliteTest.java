@@ -35,7 +35,7 @@ public class CmonkeySqliteTest {
 	}
 
 	@Test
-	public final void testGetClusterList() {
+	public final void testGetClusterList() throws Exception {
 		List<CmonkeyCluster> clusterList = database.getClusterList(iterationNumber);
 		assertEquals("1", clusterList.get(0).getId());
 		assertEquals("43", clusterList.get(42).getId());
@@ -43,7 +43,7 @@ public class CmonkeySqliteTest {
 	}
 
 	@Test
-	public final void testGetClusterMotifs() {
+	public final void testGetClusterMotifs() throws Exception {
 		String clusterNumber = "1";
 		List<CmonkeyMotif> motifList = database.getClusterMotifs(iterationNumber,clusterNumber);
 		assertEquals("1807", motifList.get(0).getId().toString());

@@ -92,10 +92,10 @@ GetOptions("help"       => \$help,
            "version"    => \$version,
            "ws=s"    => \$ws,
            "input=s"    => \$input,
-           "nomotifs:i"    => \$nomotifs,
-           "nooperons:i"    => \$nooperons,
-           "nonetworks:i"    => \$nonetworks,
-           "nostring:i"    => \$nostring,
+           "nomotifs"    => \$nomotifs,
+           "nooperons"    => \$nooperons,
+           "nonetworks"    => \$nonetworks,
+           "nostring"    => \$nostring,
            "user=s"    => \$user,
            "pw=s"    => \$pw,
            "url=s"     => \$url) 
@@ -178,9 +178,10 @@ if ($token->error_message){
 };
 
 my $cmonkey_run_parameters = {
-    "nomotifs"=>$nomotifs,
-    "nooperon"=>$nooperon,
-    "nonetworks"=>$nonetworks
+    "no_motifs"=>$nomotifs,
+    "no_operons"=>$nooperons,
+    "no_networks"=>$nonetworks,
+    "no_string"=>$nostring
 };
 
 my $obj = {

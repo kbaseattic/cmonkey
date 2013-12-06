@@ -55,7 +55,7 @@ public class CmonkeySqlite {
 		}
 	}
 	
-	protected List<CmonkeyCluster> getClusterList (Long iteration){
+	protected List<CmonkeyCluster> getClusterList (Long iteration) throws Exception{
 		List<CmonkeyCluster> clusterList = new ArrayList<CmonkeyCluster>();
 		String sqlQuery = "SELECT * FROM cluster_stats c WHERE c.iteration="+String.valueOf(iteration);
 		ResultSet resultSet = null;
@@ -68,7 +68,7 @@ public class CmonkeySqlite {
         try {
 			while (resultSet.next()){
 				CmonkeyCluster cluster = new CmonkeyCluster();
-				cluster.setId(resultSet.getString("cluster"));
+				cluster.setId(getKbaseId(CmonkeyCluster.class.getSimpleName()));
 				cluster.setResidual(resultSet.getDouble("residual"));
 				clusterList.add(cluster);
 			}
@@ -90,7 +90,7 @@ public class CmonkeySqlite {
 		return clusterList;
 	}
 
-	protected List<CmonkeyMotif> getClusterMotifs (Long iteration, String clusterId){
+	protected List<CmonkeyMotif> getClusterMotifs (Long iteration, String clusterId) throws Exception{
 		List<CmonkeyMotif> motifList = new ArrayList<CmonkeyMotif>();
 		String sqlQuery = "SELECT m.rowid,m.seqtype,m.motif_num,m.evalue FROM motif_infos m WHERE m.iteration="+String.valueOf(iteration)+
 				" AND m.cluster="+Integer.valueOf(clusterId);
@@ -104,7 +104,7 @@ public class CmonkeySqlite {
         try {
 			while (resultSet.next()){
 				CmonkeyMotif motif = new CmonkeyMotif();
-				motif.setId(resultSet.getString("rowid"));
+				motif.setId(getKbaseId(CmonkeyMotif.class.getSimpleName()));
 				motif.setSeqType(resultSet.getString("seqtype"));
 				motif.setEvalue(resultSet.getDouble("evalue"));
 				motifList.add(motif);
@@ -353,6 +353,10 @@ public class CmonkeySqlite {
 			returnVal = "kb|cmonkeyrun." + idClient.allocateIdRange("cmonkeyrun", 1L).toString();
 		} else if (entityType.equals("CmonkeyNetwork")) {
 			returnVal = "kb|cmonkeynetwork." + idClient.allocateIdRange("cmonkeynetwork", 1L).toString();
+		} else if (entityType.equals("CmonkeyCluster")) {
+			returnVal = "kb|cmonkeycluster." + idClient.allocateIdRange("cmonkeycluster", 1L).toString();
+		} else if (entityType.equals("CmonkeyMotif")) {
+			returnVal = "kb|cmonkeymotif." + idClient.allocateIdRange("cmonkeymotif", 1L).toString();
 		} else {
 		}
 		return returnVal;
