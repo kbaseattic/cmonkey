@@ -96,7 +96,8 @@ public class CmonkeyServerImpl {
 
 		String inputTable = getInputTable(expressionDataSeries);
 		FileWriter writer = new FileWriter(jobPath+"serveroutput.txt");
-		//writer.write(inputTable);
+		writer.write(inputTable);
+		writer.flush();
 		
 		//check list of genes
 		String organismName = getOrganismName(expressionDataSeries);
