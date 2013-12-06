@@ -21,14 +21,14 @@ public class CmonkeyClientTest {
 	private static final String USER_NAME = "aktest";
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
-//	private String serverUrl = "http://140.221.84.195:7049";
-	private String serverUrl = "http://localhost:7049";
+	private String serverUrl = "http://140.221.84.195:7049";
+//	private String serverUrl = "http://localhost:7049";
 	private String quickTestSeriesId = "QuickTestExpressionDataSeries";
 //	private String testSeriesId = "TestExpressionDataSeries";
 
 	
 	@Test
-	public final void testBuildCmonkeyNetworkJobFromWs() throws Exception {
+	public final void testQuickBuildCmonkeyNetworkJobFromWs() throws Exception {
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 //		System.out.println(token.toString());
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
@@ -99,6 +99,7 @@ public class CmonkeyClientTest {
 		
 		
 		assertEquals(Long.valueOf("3"), result.getClustersNumber());
+		assertEquals(Long.valueOf("2000"), result.getLastIteration());
 
 	}
 
