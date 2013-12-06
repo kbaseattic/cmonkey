@@ -22,8 +22,8 @@ public class CmonkeyClientTest {
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
 //	private String serverUrl = "http://140.221.84.195:7049";
-//	private String serverUrl = "http://140.221.84.191:7078";
-	private String serverUrl = "http://localhost:7049";
+	private String serverUrl = "http://140.221.84.191:7078";
+//	private String serverUrl = "http://localhost:7049";
 	private String quickTestSeriesId = "QuickTestExpressionDataSeries";
 //	private String testSeriesId = "TestExpressionDataSeries";
 
@@ -100,7 +100,7 @@ public class CmonkeyClientTest {
 		
 		
 		assertEquals(Long.valueOf("3"), result.getClustersNumber());
-		assertEquals(Long.valueOf("2000"), result.getLastIteration());
+		assertEquals(Long.valueOf("2001"), result.getLastIteration());
 
 	}
 

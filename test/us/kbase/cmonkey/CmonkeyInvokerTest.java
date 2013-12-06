@@ -119,7 +119,7 @@ public class CmonkeyInvokerTest {
 		
 		
 		assertEquals(Long.valueOf("43"), result.getClustersNumber());
-		assertEquals(Long.valueOf("2000"), result.getLastIteration());
+		assertEquals(Long.valueOf("2001"), result.getLastIteration());
 	}
 
 }
