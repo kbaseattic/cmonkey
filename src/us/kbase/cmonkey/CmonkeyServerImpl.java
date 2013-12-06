@@ -297,17 +297,26 @@ public class CmonkeyServerImpl {
 			}
 		}
 		geneNames = new ArrayList<String>(new HashSet<String>(geneNames));
-		try {
-			organismName = microbesonline.getGenomeForGene(geneNames.get(0));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println(geneNames.get(0));
-			e.printStackTrace();
+		for (int i = 0; i < geneNames.size(); i++){
+			try {
+				organismName = microbesonline.getGenomeForGene(geneNames.get(i));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				System.out.println(geneNames.get(i));
+				e.printStackTrace();
+			}
+			if (organismName != null) {
+				break;
+			}
 		}
-		System.out.println(organismName);
+
+		if (organismName == null) {
+			throw new Exception("Organism name cannot be identified");
+		}
+
 		for (String geneName:geneNames){
 			if ((microbesonline.getGenomeForGene(geneName) != null) && (!microbesonline.getGenomeForGene(geneName).equals(organismName))){
-				throw new Exception();
+				throw new Exception("Genes in input data series belong to different organisms");
 			}
 		}
 		return organismName;

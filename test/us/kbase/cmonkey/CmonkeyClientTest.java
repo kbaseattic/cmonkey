@@ -21,8 +21,9 @@ public class CmonkeyClientTest {
 	private static final String USER_NAME = "aktest";
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
-	private String serverUrl = "http://140.221.84.195:7049";
-//	private String serverUrl = "http://localhost:7049";
+//	private String serverUrl = "http://140.221.84.195:7049";
+//	private String serverUrl = "http://140.221.84.191:7078";
+	private String serverUrl = "http://localhost:7049";
 	private String quickTestSeriesId = "QuickTestExpressionDataSeries";
 //	private String testSeriesId = "TestExpressionDataSeries";
 
@@ -104,7 +105,7 @@ public class CmonkeyClientTest {
 	}
 
 	@Test
-	public final void testBuildCmonkeyNetworkFromWs() throws Exception {
+	public final void testQuickBuildCmonkeyNetworkFromWs() throws Exception {
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
 		params.setNoMotifs(1L);
