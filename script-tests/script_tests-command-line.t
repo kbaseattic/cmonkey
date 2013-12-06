@@ -23,7 +23,7 @@ my $expression_data_series_id = "QuickTestExpressionDataSeries";
 #1
 my $tes = Test::Cmd->new(prog => "$bin/build_cmonkey_network_job_from_ws.pl", workdir => '', interpreter => '/kb/runtime/bin/perl');
 ok($tes, "creating Test::Cmd object for build_cmonkey_network_job_from_ws");
-$tes->run(args => "--url=$url --ws=$ws --input=$expression_data_series_id --nomotifs=1 --nooperons=1 --nonetworks=1 --nostring=1 --user=$user --pw=$pw");
+$tes->run(args => "--url=$url --ws=$ws --input=$expression_data_series_id --nomotifs --nooperons --nonetworks --nostring --user=$user --pw=$pw");
 ok($? == 0,"Running build_cmonkey_network_job_from_ws");
 my $tem=$tes->stdout;
 print "Job ID:\t",$tem,"\n";

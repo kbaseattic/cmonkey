@@ -82,10 +82,10 @@ public class CmonkeySqlite {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		for(CmonkeyCluster clusterData:clusterList){
-			clusterData.setMotifs(this.getClusterMotifs(iteration, clusterData.getId()));
-			clusterData.setGeneIds(this.getListOfGenes(iteration, clusterData.getId()));
-			clusterData.setDatasetIds(this.getListOfConditions(iteration, clusterData.getId()));
+		for(Integer i = 1; i <= clusterList.size(); i++){
+			clusterList.get(i-1).setMotifs(this.getClusterMotifs(iteration, i.toString()));
+			clusterList.get(i-1).setGeneIds(this.getListOfGenes(iteration, i.toString()));
+			clusterList.get(i-1).setDatasetIds(this.getListOfConditions(iteration, i.toString()));
 		}
 		return clusterList;
 	}
@@ -334,6 +334,9 @@ public class CmonkeySqlite {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        if (cmonkeyRunResult.getLastIteration() < cmonkeyRunResult.getIterationsNumber()) {
+        	throw new Exception("cmonkey-python finished after iteration " + cmonkeyRunResult.getLastIteration()+ " but expected number of iterations is " + cmonkeyRunResult.getIterationsNumber());
+        }
         cmonkeyRunResult.setNetwork(getCmonkeyNetwork(cmonkeyRunResult.getLastIteration()));
 	}
 	

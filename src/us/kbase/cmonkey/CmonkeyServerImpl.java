@@ -163,7 +163,7 @@ public class CmonkeyServerImpl {
 	
 	public static void buildCmonkeyNetworkJobFromWs (String wsId, String seriesId, CmonkeyRunParameters params, String jobId, String token) throws Exception {
 		String desc = "Cmonkey service job. Method: buildCmonkeyNetworkJobFromWs. Input: " + seriesId + ". Workspace: " + wsId + ".";
-		if (jobId != null) startJob (jobId, desc, 25L, token.toString());
+		if (jobId != null) startJob (jobId, desc, 23L, token.toString());
 
 		GetObjectParams objectParams = new GetObjectParams().withType("ExpressionDataSeries").withId(seriesId).withWorkspace(wsId).withAuth(token.toString());
 		GetObjectOutput output = wsClient(token.toString()).getObject(objectParams);

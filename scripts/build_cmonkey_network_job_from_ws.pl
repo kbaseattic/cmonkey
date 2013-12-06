@@ -177,11 +177,12 @@ if ($token->error_message){
 	exit(1);
 };
 
+
 my $cmonkey_run_parameters = {
-    "no_motifs"=>$nomotifs,
     "no_operons"=>$nooperons,
+    "no_string"=>$nostring,
     "no_networks"=>$nonetworks,
-    "no_string"=>$nostring
+    "no_motifs"=>$nomotifs
 };
 
 my $obj = {
