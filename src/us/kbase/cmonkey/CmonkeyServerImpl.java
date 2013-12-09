@@ -38,6 +38,7 @@ public class CmonkeyServerImpl {
 	private static Integer tempFileId = 0;
 	private static final String JOB_PATH = "/var/tmp/cmonkey/";
 //	private static final String CMONKEY_COMMAND = "cmonkey-python";
+	private static final String CMONKEY_DIR = "/kb/runtime/cmonkey-python/";
 	private static final String CMONKEY_COMMAND = "/kb/runtime/cmonkey-python/cmonkey.py";	
 	private static final String DATA_PATH = JOB_PATH + "data/KEGG_taxonomy";
 	private static final String CONFIG_PATH = "/kb/runtime/cmonkey-python/config/default.ini";
@@ -183,7 +184,7 @@ public class CmonkeyServerImpl {
 		String cacheDirectory = jobPath+"cache";
 		String inputFile = jobPath+"input.txt";
 		
-		String commandLine = CMONKEY_COMMAND + " --organism "+ organismCode +" --ratios "+inputFile+" --out "+outputDirectory+" --cachedir "+cacheDirectory + " --config " + CONFIG_PATH;
+		String commandLine = CMONKEY_COMMAND + " --organism "+ organismCode +" --ratios "+inputFile+" --out "+outputDirectory+" --cachedir "+cacheDirectory;// + " --config " + CONFIG_PATH;
 		//Set options
 		if (params.getNoMotifs() == 1L) {
 			commandLine += " --nomotifs";
@@ -412,7 +413,7 @@ public class CmonkeyServerImpl {
 	protected static Integer executeCommand(String commandLine, String jobPath, String jobId, String token) throws InterruptedException {
 		Integer exitVal = null;
 		try {
-			Process p = Runtime.getRuntime().exec(commandLine, null, new File(JOB_PATH));
+			Process p = Runtime.getRuntime().exec(commandLine, null, new File(CMONKEY_DIR));
 			
 			StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), "ERROR", jobId, token, jobPath+"errorlog.txt");            
 	            
