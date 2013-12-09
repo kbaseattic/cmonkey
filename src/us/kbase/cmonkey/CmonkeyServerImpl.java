@@ -37,8 +37,8 @@ import us.kbase.workspaceservice.WorkspaceServiceClient;
 public class CmonkeyServerImpl {
 	private static Integer tempFileId = 0;
 	private static final String JOB_PATH = "/var/tmp/cmonkey/";
-	private static final String CMONKEY_COMMAND = "cmonkey-python";
-//	private static final String CMONKEY_COMMAND = "/kb/runtime/cmonkey-python/cmonkey.py";
+//	private static final String CMONKEY_COMMAND = "cmonkey-python";
+	private static final String CMONKEY_COMMAND = "/kb/runtime/cmonkey-python/cmonkey.py";
 	private static final String DATA_PATH = JOB_PATH + "data/KEGG_taxonomy";
 	private static final String ID_SERVICE_URL = "http://kbase.us/services/idserver";
 	private static final String WS_SERVICE_URL = "http://kbase.us/services/workspace";
