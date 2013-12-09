@@ -38,8 +38,9 @@ public class CmonkeyServerImpl {
 	private static Integer tempFileId = 0;
 	private static final String JOB_PATH = "/var/tmp/cmonkey/";
 //	private static final String CMONKEY_COMMAND = "cmonkey-python";
-	private static final String CMONKEY_COMMAND = "/kb/runtime/cmonkey-python/cmonkey.py";
+	private static final String CMONKEY_COMMAND = "/kb/runtime/cmonkey-python/cmonkey.py";	
 	private static final String DATA_PATH = JOB_PATH + "data/KEGG_taxonomy";
+	private static final String CONFIG_PATH = "/kb/runtime/cmonkey-python/config/default.ini";
 	private static final String ID_SERVICE_URL = "http://kbase.us/services/idserver";
 	private static final String WS_SERVICE_URL = "http://kbase.us/services/workspace";
 	private static final String JOB_SERVICE_URL = "http://140.221.84.180:7083";
@@ -182,7 +183,7 @@ public class CmonkeyServerImpl {
 		String cacheDirectory = jobPath+"cache";
 		String inputFile = jobPath+"input.txt";
 		
-		String commandLine = CMONKEY_COMMAND + " --organism "+ organismCode +" --ratios "+inputFile+" --out "+outputDirectory+" --cachedir "+cacheDirectory;
+		String commandLine = CMONKEY_COMMAND + " --organism "+ organismCode +" --ratios "+inputFile+" --out "+outputDirectory+" --cachedir "+cacheDirectory + " --config " + CONFIG_PATH;
 		//Set options
 		if (params.getNoMotifs() == 1L) {
 			commandLine += " --nomotifs";
