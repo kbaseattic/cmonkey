@@ -507,6 +507,40 @@ public class CmonkeyServerImplTest {
 		
 	}
 	
+	@Test
+	public final void testCmonkeyExport() throws Exception {
+		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		String id = "TestCmonkeyRunResult";
+		GetObjectParams objectParams = new GetObjectParams().withType("CmonkeyRunResult").withId(id).withWorkspace(workspaceName).withAuth(token.toString());
+		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(objectParams);
+		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
+
+		String resultJson = "[";
+		
+		for (CmonkeyCluster cluster: result.getNetwork().getClusters()){
+			resultJson += "{";
+			resultJson += "\"nrows\": "+cluster.getGeneIds().size()+",";
+			resultJson += "\"ncols\": "+cluster.getDatasetIds().size()+",";
+			resultJson += "\"rows\": [";
+			for (String geneId : cluster.getGeneIds()){
+				resultJson += "\""+geneId+"\",";
+			}
+			resultJson += "]'";
+			resultJson += "\"cols\": [";
+			for (String condition : cluster.getDatasetIds()){
+				resultJson += "\""+condition+"\",";
+			}
+			resultJson += "]'";
+			resultJson += "\"k\": "+cluster.getId()+",";
+			resultJson += "\"resid\": "+cluster.getResidual()+"},";
+		}
+		resultJson = resultJson.substring(0, resultJson.length() - 1);
+		resultJson += "]";
+		
+		System.out.println(resultJson);
+		assertNotNull(result);
+		
+	}
 
 }
 

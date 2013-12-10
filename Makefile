@@ -17,34 +17,31 @@ MAIN_CLASS = us.kbase.cmonkey.CmonkeyInvoker
 SERVICE_PSGI = $(SERVICE_NAME).psgi
 TPAGE_ARGS = --define kb_top=$(TARGET) --define kb_runtime=$(DEPLOY_RUNTIME) --define kb_service_name=$(SERVICE_NAME) --define kb_service_dir=$(SERVICE_DIR) --define kb_service_port=$(SERVICE_PORT) --define kb_psgi=$(SERVICE_PSGI)
 SCRIPTS_TESTS = $(wildcard script-tests/*.t)
-DEPLOY_CLUSTER = /kb/deployment/cmonkey
+DEPLOY_JAR = /kb/deployment/cmonkey
 DATA_DIR = /var/tmp/cmonkey/data
 SCRIPTS_TESTS_CLUSTER = $(wildcard script-test-cluster/*.t)
 
 default: compile
 
-deploy: distrib deploy-client
-
-deploy-cluster: compile-cluster deploy-cluster-logic test-cluster
-
-compile-cluster: src lib
-	./make_jar.sh $(MAIN_CLASS)
-
-deploy-cluster-logic:
-	rm -r $(DEPLOY_CLUSTER)
-	mkdir $(DEPLOY_CLUSTER)
-	mkdir $(DEPLOY_CLUSTER)/lib
-	cp ./lib/*.jar $(DEPLOY_CLUSTER)/lib
-	cp ./dist/cmonkey_cluster.jar $(DEPLOY_CLUSTER)
+deploy: distrib deploy-client deploy-jar
 
 deploy-all: distrib deploy-client
 
-deploy-client: deploy-libs deploy-scripts deploy-docs
+deploy-jar: compile-jar deploy-sh-scripts test-jar
+	rm -r $(DEPLOY_JAR)
+	mkdir -p $(DEPLOY_JAR)/lib
+	cp ./lib/*.jar $(DEPLOY_JAR)/lib
+	cp ./dist/cmonkey.jar $(DEPLOY_JAR)
+
+compile-jar: src lib
+	./make_jar.sh $(MAIN_CLASS)
+
+deploy-client: deploy-libs deploy-pl-scripts deploy-docs
 
 deploy-libs: build-libs
 	rsync --exclude '*.bak*' -arv lib/. $(TARGET)/lib/.
 
-deploy-scripts:
+deploy-pl-scripts:
 	export KB_TOP=$(TARGET); \
 	export KB_RUNTIME=$(DEPLOY_RUNTIME); \
 	export KB_PERL_PATH=$(TARGET)/lib bash ; \
@@ -57,8 +54,33 @@ deploy-scripts:
 	done
 
 deploy-docs: build-docs
-	-mkdir -p $(TARGET)/services/$(SERVICE_NAME)/webroot/.
+	mkdir -p $(TARGET)/services/$(SERVICE_NAME)/webroot/.
 	cp docs/*.html $(TARGET)/services/$(SERVICE_NAME)/webroot/.
+
+deploy-sh-scripts:
+	mkdir -p $(TARGET)/shbin; \
+	export KB_TOP=$(TARGET); \
+	export KB_RUNTIME=$(DEPLOY_RUNTIME); \
+	for src in $(SRC_SH) ; do \
+		basefile=`basename $$src`; \
+		base=`basename $$src .sh`; \
+		echo install $$src $$base ; \
+		cp $$src $(TARGET)/shbin ; \
+		$(WRAP_SH_SCRIPT) "$(TARGET)/shbin/$$basefile" $(TARGET)/bin/$$base ; \
+	done 
+
+distrib:
+	@echo "Target folder: $(TARGET_DIR)"
+	mkdir -p $(TARGET_DIR)
+	mkdir -p $(DATA_DIR)
+	cp -f ./dist/service.war $(TARGET_DIR)
+	cp -f ./glassfish_start_service.sh $(TARGET_DIR)
+	cp -f ./glassfish_stop_service.sh $(TARGET_DIR)
+	cp -f ./data/KEGG_taxonomy $(DATA_DIR)
+	echo "./glassfish_start_service.sh $(TARGET_DIR)/service.war $(TARGET_PORT) $(THREADPOOL_SIZE)" > $(TARGET_DIR)/start_service.sh
+	chmod +x $(TARGET_DIR)/start_service.sh
+	echo "./glassfish_stop_service.sh $(TARGET_PORT)" > $(TARGET_DIR)/stop_service.sh
+	chmod +x $(TARGET_DIR)/stop_service.sh
 
 build-docs: compile-docs
 	pod2html --infile=lib/Bio/KBase/$(SERVICE_NAME)/Client.pm --outfile=docs/$(SERVICE_NAME).html
@@ -75,6 +97,9 @@ build-libs:
 		--js javascript/$(SERVICE_NAME)/Client \
 		$(SERVICE_SPEC) lib
 
+compile: src lib
+	./make_war.sh $(SERVLET_CLASS)
+
 test: test-scripts
 	@echo "running script tests"
 
@@ -89,24 +114,7 @@ test-scripts:
 		fi \
 	done
 
-
-compile: src lib
-	./make_war.sh $(SERVLET_CLASS)
-
-distrib:
-	@echo "Target folder: $(TARGET_DIR)"
-	mkdir -p $(TARGET_DIR)
-	mkdir -p $(DATA_DIR)
-	cp -f ./dist/service.war $(TARGET_DIR)
-	cp -f ./glassfish_start_service.sh $(TARGET_DIR)
-	cp -f ./glassfish_stop_service.sh $(TARGET_DIR)
-	cp -f ./data/KEGG_taxonomy $(DATA_DIR)
-	echo "./glassfish_start_service.sh $(TARGET_DIR)/service.war $(TARGET_PORT) $(THREADPOOL_SIZE)" > $(TARGET_DIR)/start_service.sh
-	chmod +x $(TARGET_DIR)/start_service.sh
-	echo "./glassfish_stop_service.sh $(TARGET_PORT)" > $(TARGET_DIR)/stop_service.sh
-	chmod +x $(TARGET_DIR)/stop_service.sh
-
-test-cluster:
+test-jar:
 	@echo "nothing to test"
 
 clean:
