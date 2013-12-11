@@ -58,10 +58,12 @@ deploy-docs: build-docs
 	mkdir -p $(TARGET)/services/$(SERVICE_NAME)/webroot/.
 	cp docs/*.html $(TARGET)/services/$(SERVICE_NAME)/webroot/.
 
+
+SRC_SH = $(wildcard scripts/*.sh)
+WRAP_SH_TOOL = wrap_sh
+WRAP_SH_SCRIPT = bash $(TOOLS_DIR)/$(WRAP_SH_TOOL).sh
+
 deploy-sh-scripts:
-	SRC_SH = $(wildcard scripts/*.sh)
-	WRAP_SH_TOOL = wrap_sh
-	WRAP_SH_SCRIPT = bash $(TOOLS_DIR)/$(WRAP_SH_TOOL).sh
 	mkdir -p $(TARGET)/shbin; \
 	export KB_TOP=$(TARGET); \
 	export KB_RUNTIME=$(DEPLOY_RUNTIME); \
