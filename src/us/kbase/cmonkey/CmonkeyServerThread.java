@@ -18,7 +18,7 @@ public class CmonkeyServerThread extends Thread {
 	
 	public void run (){
 		try {
-			CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(wsId, seriesId, params, jobId, token);
+			CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(wsId, seriesId, params, jobId, token, null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

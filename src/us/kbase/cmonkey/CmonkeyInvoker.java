@@ -116,12 +116,13 @@ public class CmonkeyInvoker {
 			System.err.println( "Required nostring parameter missed");
 			System.exit(1);
 		}
+		String currentDir = System.getProperty("user.dir");
 
 		CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(line.getOptionValue("ws"), 
 							line.getOptionValue("series"), 
 							params,
 							line.getOptionValue("job"),
-							line.getOptionValue("token"));
+							line.getOptionValue("token"), currentDir);
 				
 	}
 

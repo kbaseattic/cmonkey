@@ -44,7 +44,7 @@ public class CmonkeyServerCaller {
 			ExpressionDataSeries series, CmonkeyRunParameters params,
 			String jobId, AuthToken authPart) throws Exception {
 		CmonkeyRunResult returnVal = CmonkeyServerImpl.buildCmonkeyNetwork(
-				series, params, jobId, authPart.toString());
+				series, params, jobId, authPart.toString(), null);
 		return returnVal;
 	}
 

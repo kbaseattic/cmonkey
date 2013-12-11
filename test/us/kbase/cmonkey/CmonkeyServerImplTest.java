@@ -542,5 +542,16 @@ public class CmonkeyServerImplTest {
 		
 	}
 
+	
+	@Test
+	public void testToken() throws Exception {
+		String token = null;
+		AuthToken auth = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		token = auth.toString();
+		System.out.println(token);
+		assertNotNull(token);
+		
+	}
+
 }
 
