@@ -80,55 +80,6 @@ public class CmonkeyClient {
     }
 
     /**
-     * <p>Original spec-file function name: build_cmonkey_network</p>
-     * <pre>
-     * Starts cMonkey server run for a series of expression data and returns run result 
-     * ExpressionDataSeries series - series of expression data samples for cMonkey run
-     * CmonkeyRunParameters params - parameters of cMonkey run
-     * string job_id - identifier of cMonkey job
-     * </pre>
-     * @param   series   instance of type {@link us.kbase.cmonkey.ExpressionDataSeries ExpressionDataSeries}
-     * @param   params   instance of type {@link us.kbase.cmonkey.CmonkeyRunParameters CmonkeyRunParameters}
-     * @return   parameter "cmonkey_run_result" of type {@link us.kbase.cmonkey.CmonkeyRunResult CmonkeyRunResult}
-     * @throws IOException if an IO exception occurs
-     * @throws JsonClientException if a JSON RPC exception occurs
-     */
-    public CmonkeyRunResult buildCmonkeyNetwork(ExpressionDataSeries series, CmonkeyRunParameters params) throws IOException, JsonClientException {
-        List<Object> args = new ArrayList<Object>();
-        args.add(series);
-        args.add(params);
-        TypeReference<List<CmonkeyRunResult>> retType = new TypeReference<List<CmonkeyRunResult>>() {};
-        List<CmonkeyRunResult> res = caller.jsonrpcCall("Cmonkey.build_cmonkey_network", args, retType, true, false);
-        return res.get(0);
-    }
-
-    /**
-     * <p>Original spec-file function name: build_cmonkey_network_from_ws</p>
-     * <pre>
-     * Starts cMonkey server run for a series of expression data stored in workspace and returns ID of the run result object
-     * string ws_id - workspace id
-     * string series_id - kbase id of expression data series for cMonkey run
-     * CmonkeyRunParameters params - parameters of cMonkey run
-     * string job_id - identifier of cMonkey job
-     * </pre>
-     * @param   wsId   instance of String
-     * @param   collectionId   instance of String
-     * @param   params   instance of type {@link us.kbase.cmonkey.CmonkeyRunParameters CmonkeyRunParameters}
-     * @return   parameter "cmonkey_run_result_id" of String
-     * @throws IOException if an IO exception occurs
-     * @throws JsonClientException if a JSON RPC exception occurs
-     */
-    public String buildCmonkeyNetworkFromWs(String wsId, String collectionId, CmonkeyRunParameters params) throws IOException, JsonClientException {
-        List<Object> args = new ArrayList<Object>();
-        args.add(wsId);
-        args.add(collectionId);
-        args.add(params);
-        TypeReference<List<String>> retType = new TypeReference<List<String>>() {};
-        List<String> res = caller.jsonrpcCall("Cmonkey.build_cmonkey_network_from_ws", args, retType, true, true);
-        return res.get(0);
-    }
-
-    /**
      * <p>Original spec-file function name: build_cmonkey_network_job_from_ws</p>
      * <pre>
      * Starts cMonkey server run for a series of expression data stored in workspace and returns job ID of the run

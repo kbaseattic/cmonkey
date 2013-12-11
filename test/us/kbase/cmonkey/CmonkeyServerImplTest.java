@@ -84,7 +84,7 @@ public class CmonkeyServerImplTest {
 	public void tearDown() throws Exception {
 	}
 
-	@Test
+/*	@Test
 	public final void testBuildCmonkeyNetwork() throws Exception {
 		String testFile = "test/halo_ratios5.tsv";
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
@@ -133,7 +133,7 @@ public class CmonkeyServerImplTest {
 		
 		
 		assertEquals(Long.valueOf("3"), result.getClustersNumber());
-	}
+	}*/
 
 	@Test
 	public final void testBuildCmonkeyNetworkJobFromWs() throws Exception {

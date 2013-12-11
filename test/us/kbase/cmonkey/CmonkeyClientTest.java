@@ -22,8 +22,8 @@ public class CmonkeyClientTest {
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
 //	private String serverUrl = "http://140.221.84.195:7049";
-	private String serverUrl = "http://140.221.85.173:7078";
-//	private String serverUrl = "http://localhost:7049";
+//	private String serverUrl = "http://140.221.85.173:7078";
+	private String serverUrl = "http://localhost:7049";
 	private String quickTestSeriesId = "QuickTestExpressionDataSeries";
 	private String testSeriesId = "TestExpressionDataSeries";
 
@@ -177,27 +177,6 @@ public class CmonkeyClientTest {
 		
 		assertEquals(Long.valueOf("43"), result.getClustersNumber());
 		assertEquals(Long.valueOf("2001"), result.getLastIteration());
-
-	}
-
-	@Test
-	public final void testQuickBuildCmonkeyNetworkFromWs() throws Exception {
-		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		CmonkeyRunParameters params = new CmonkeyRunParameters();
-		params.setNoMotifs(1L);
-		params.setNoNetworks(1L);
-		params.setNoOperons(1L);
-		params.setNoString(1L);
-		URL url = new URL(serverUrl);
-		CmonkeyClient client = new CmonkeyClient(url, token);
-		client.setAuthAllowedForHttp(true);
-		String resultId = client.buildCmonkeyNetworkFromWs(workspaceName, quickTestSeriesId, params);
-		
-		GetObjectParams objectParams = new GetObjectParams().withType("CmonkeyRunResult").withId(resultId).withWorkspace(workspaceName).withAuth(token.toString());
-		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(objectParams);
-		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
-		
-		assertEquals(Long.valueOf("3"), result.getClustersNumber());
 
 	}
 

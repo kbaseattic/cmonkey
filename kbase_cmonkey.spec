@@ -186,22 +186,24 @@ module Cmonkey
 		CmonkeyRunParameters parameters;
 		CmonkeyNetwork network;
 	} CmonkeyRunResult;
-		
-	/*	Starts cMonkey server run for a series of expression data and returns run result 
+
+        /*two functions excluded from cMonkey service:		
+		Starts cMonkey server run for a series of expression data and returns run result 
 		ExpressionDataSeries series - series of expression data samples for cMonkey run
 		CmonkeyRunParameters params - parameters of cMonkey run
 		string job_id - identifier of cMonkey job
-	*/
+	
 	funcdef build_cmonkey_network(ExpressionDataSeries series, CmonkeyRunParameters params) returns(CmonkeyRunResult cmonkey_run_result);
 
-	/*	Starts cMonkey server run for a series of expression data stored in workspace and returns ID of the run result object
+		Starts cMonkey server run for a series of expression data stored in workspace and returns ID of the run result object
 		string ws_id - workspace id
 		string series_id - kbase id of expression data series for cMonkey run
 		CmonkeyRunParameters params - parameters of cMonkey run
 		string job_id - identifier of cMonkey job
-	*/
+	
 	funcdef build_cmonkey_network_from_ws(string ws_id, string collection_id, CmonkeyRunParameters params) returns(string cmonkey_run_result_id) authentication required;
-		
+	*/
+	
 	/*	Starts cMonkey server run for a series of expression data stored in workspace and returns job ID of the run
 		string ws_id - workspace id
 		string series_id - kbase id of expression data series for cMonkey run

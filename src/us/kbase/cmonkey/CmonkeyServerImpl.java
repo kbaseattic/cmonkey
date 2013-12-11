@@ -35,13 +35,12 @@ import us.kbase.workspaceservice.WorkspaceServiceClient;
 
 
 public class CmonkeyServerImpl {
-	private static Integer tempFileId = 0;
-	private static final String JOB_PATH = "/var/tmp/cmonkey/";
+//	private static Integer tempFileId = 0;
+	private static final String JOB_PATH = "";//"/var/tmp/cmonkey/";
 //	private static final String CMONKEY_COMMAND = "cmonkey-python";
 	private static final String CMONKEY_DIR = "/kb/runtime/cmonkey-python/";
 	private static final String CMONKEY_COMMAND = "/kb/runtime/cmonkey-python/cmonkey.py";	
-	private static final String DATA_PATH = JOB_PATH + "data/KEGG_taxonomy";
-	private static final String CONFIG_PATH = "/kb/runtime/cmonkey-python/config/default.ini";
+	private static final String DATA_PATH = "/etc/cmonkey-python/KEGG_taxonomy";
 	private static final String ID_SERVICE_URL = "http://kbase.us/services/idserver";
 	private static final String WS_SERVICE_URL = "http://kbase.us/services/workspace";
 	private static final String JOB_SERVICE_URL = "http://140.221.84.180:7083";
@@ -74,7 +73,7 @@ public class CmonkeyServerImpl {
 
 	protected static void cleanUpOnStart () {
 		try {
-			Runtime.getRuntime().exec("rm "+JOB_PATH+"cmonkey*");
+			Runtime.getRuntime().exec("rm -r "+JOB_PATH+"*");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -82,16 +81,11 @@ public class CmonkeyServerImpl {
 
 	}
 
-	public static CmonkeyRunResult buildCmonkeyNetwork(ExpressionDataSeries expressionDataSeries, CmonkeyRunParameters params) throws Exception{
-		CmonkeyRunResult cmonkeyRunResult = buildCmonkeyNetwork(expressionDataSeries, params, null, null);
-		return cmonkeyRunResult;
-	}
-	
 	public static CmonkeyRunResult buildCmonkeyNetwork(ExpressionDataSeries expressionDataSeries, CmonkeyRunParameters params, String jobId, String token) throws Exception{
 		CmonkeyRunResult cmonkeyRunResult = new CmonkeyRunResult();
 		cmonkeyRunResult.setId(getKbaseId("CmonkeyRunResult"));
-		String jobPath = JOB_PATH + tempFileId.toString() + "/";
-		tempFileId++;
+		String jobPath = JOB_PATH + jobId + "/";
+//		tempFileId++;
 		Runtime.getRuntime().exec("mkdir " + jobPath);
 
 		//prepare input
@@ -141,26 +135,9 @@ public class CmonkeyServerImpl {
 		writer.close();
 		//clean up
 		Runtime.getRuntime().exec("rm -r " + jobPath);
-		Runtime.getRuntime().exec("rm " + JOB_PATH + "cmonkey*");
+		Runtime.getRuntime().exec("rm " + JOB_PATH + "cmonkey-checkpoint*");
 
 		return cmonkeyRunResult;
-	}
-	
-	public static String buildCmonkeyNetworkFromWs(String wsId, String seriesId, CmonkeyRunParameters params, AuthToken token) throws Exception {
-
-		//Read data
-		GetObjectParams objectParams = new GetObjectParams().withType("ExpressionDataSeries").withId(seriesId).withWorkspace(wsId).withAuth(token.toString());   
-		GetObjectOutput output = wsClient(token.toString()).getObject(objectParams);
-		ExpressionDataSeries expressionDataCollection = UObject.transformObjectToObject(output.getData(), ExpressionDataSeries.class);
-
-		//Run
-		CmonkeyRunResult runResult = buildCmonkeyNetwork(expressionDataCollection, params);		
-		String returnVal = runResult.getId();
-		
-		//Save result
-		saveObjectToWorkspace (UObject.transformObjectToObject(runResult, UObject.class), runResult.getClass().getSimpleName(), wsId, returnVal, token.toString());
-
-		return returnVal;		
 	}
 	
 	public static void buildCmonkeyNetworkJobFromWs (String wsId, String seriesId, CmonkeyRunParameters params, String jobId, String token) throws Exception {
