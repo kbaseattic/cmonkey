@@ -101,7 +101,7 @@ public class CmonkeyServerCaller {
 		String returnVal = "update={\"info\": {\"pipeline\": \"cmonkey-runner-pipeline\",\"name\": \"cmonkey\",\"project\": \"default\"" +
 				",\"user\": \"default\",\"clientgroups\":\"\",\"sessionId\":\"" + jobId +
 				"\"},\"tasks\": [{\"cmd\": {\"args\": \"";
-		returnVal += jobId + " --ws" + wsId + " --job " + jobId + " --series " + seriesId;
+		returnVal += jobId + " --method build_cmonkey_network_job_from_ws --ws" + wsId + " --job " + jobId + " --series " + seriesId;
 		
 		if (params.getNoMotifs() == 1){
 			returnVal += " --nomotifs 1"; 

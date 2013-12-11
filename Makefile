@@ -27,15 +27,18 @@ deploy: distrib deploy-client deploy-jar
 
 deploy-all: distrib deploy-client
 
-deploy-jar: compile-jar deploy-sh-scripts test-jar
+deploy-jar: compile-jar deploy-sh-scripts distrib-jar test-jar
+
+compile-jar: src lib
+	./make_jar.sh $(MAIN_CLASS)
+
+distrib-jar:
 	export KB_TOP=$(TARGET)
 	rm -rf $(DEPLOY_JAR)
 	mkdir -p $(DEPLOY_JAR)/lib
 	cp ./lib/*.jar $(DEPLOY_JAR)/lib
 	cp ./dist/cmonkey.jar $(DEPLOY_JAR)
 
-compile-jar: src lib
-	./make_jar.sh $(MAIN_CLASS)
 
 deploy-client: deploy-libs deploy-pl-scripts deploy-docs
 
