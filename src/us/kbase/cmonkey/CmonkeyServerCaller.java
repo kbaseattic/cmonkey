@@ -101,7 +101,7 @@ public class CmonkeyServerCaller {
 		String returnVal = "update={\"info\": {\"pipeline\": \"cmonkey-runner-pipeline\",\"name\": \"cmonkey\",\"project\": \"default\"" +
 				",\"user\": \"default\",\"clientgroups\":\"\",\"sessionId\":\"" + jobId +
 				"\"},\"tasks\": [{\"cmd\": {\"args\": \"";
-		returnVal += jobId + " --method build_cmonkey_network_job_from_ws --ws" + wsId + " --job " + jobId + " --series " + seriesId;
+		returnVal +=" --job " + jobId + " --method build_cmonkey_network_job_from_ws --ws" + wsId + " --series " + seriesId;
 		
 		if (params.getNoMotifs() == 1){
 			returnVal += " --nomotifs 1"; 
@@ -132,7 +132,7 @@ public class CmonkeyServerCaller {
 		return returnVal;
 	}
 
-	private static HttpURLConnection setupCall(AuthToken accessToken)
+/*	private static HttpURLConnection setupCall(AuthToken accessToken)
 			throws IOException, JsonClientException {
 		URL clusterServiceUrl = new URL(CLUSTER_SERVICE);
 		HttpURLConnection conn = (HttpURLConnection) clusterServiceUrl
@@ -158,7 +158,7 @@ public class CmonkeyServerCaller {
 		}
 		return conn;
 	}
-
+*/
 	protected static String executePost(String urlParameters) {
 		URL url;
 		HttpURLConnection connection = null;
@@ -214,7 +214,7 @@ public class CmonkeyServerCaller {
 		}
 	}
 
-	protected static String jsonCall(Map<String, String> arg, AuthToken token)
+/*	protected static String jsonCall(Map<String, String> arg, AuthToken token)
 			throws IOException, JsonClientException {
 		HttpURLConnection conn = setupCall(token);
 		OutputStream os = conn.getOutputStream();
@@ -270,8 +270,8 @@ public class CmonkeyServerCaller {
 					"Unknown", null);
 		return res;
 	}
-
-	private static class UnclosableInputStream extends InputStream {
+*/
+/*	private static class UnclosableInputStream extends InputStream {
 		private InputStream inner;
 		private boolean isClosed = false;
 
@@ -336,5 +336,5 @@ public class CmonkeyServerCaller {
 			return inner.skip(n);
 		}
 	}
-
+*/
 }
