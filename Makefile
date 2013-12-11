@@ -28,7 +28,9 @@ deploy: distrib deploy-client deploy-jar
 deploy-all: distrib deploy-client
 
 deploy-jar: compile-jar deploy-sh-scripts test-jar
-	rm -r $(DEPLOY_JAR)
+	if [ -d "$DEPLOY_JAR" ]; then
+		rm -rf $(DEPLOY_JAR)
+	fi
 	mkdir -p $(DEPLOY_JAR)/lib
 	cp ./lib/*.jar $(DEPLOY_JAR)/lib
 	cp ./dist/cmonkey.jar $(DEPLOY_JAR)
