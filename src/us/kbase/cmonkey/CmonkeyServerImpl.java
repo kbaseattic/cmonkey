@@ -36,7 +36,7 @@ import us.kbase.workspaceservice.WorkspaceServiceClient;
 
 public class CmonkeyServerImpl {
 //	private static Integer tempFileId = 0;
-	private static final String JOB_PATH = "";//"/var/tmp/cmonkey/";
+	private static final String JOB_PATH = "/var/tmp/cmonkey/";
 //	private static final String CMONKEY_COMMAND = "cmonkey-python";
 	private static final String CMONKEY_DIR = "/kb/runtime/cmonkey-python/";
 	private static final String CMONKEY_COMMAND = "/kb/runtime/cmonkey-python/cmonkey.py";	
@@ -48,6 +48,7 @@ public class CmonkeyServerImpl {
 	private static UserAndJobStateClient _jobClient = null;
 	private static Date date = new Date();
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+	private static boolean awe = false;
 
 	protected static WorkspaceServiceClient wsClient(String token) throws TokenFormatException, UnauthorizedException, IOException{
 		if(_wsClient == null)
@@ -89,6 +90,7 @@ public class CmonkeyServerImpl {
 			jobPath = JOB_PATH + jobId + "/";
 		} else {
 			jobPath = currentDir + jobId + "/";
+			awe = true;
 		}
 		
 //		tempFileId++;
@@ -140,8 +142,10 @@ public class CmonkeyServerImpl {
 
 		writer.close();
 		//clean up
-		Runtime.getRuntime().exec("rm -r " + jobPath);
-		Runtime.getRuntime().exec("rm " + JOB_PATH + "cmonkey-checkpoint*");
+		if (awe == false) {
+			Runtime.getRuntime().exec("rm -r " + jobPath);
+			Runtime.getRuntime().exec("rm " + JOB_PATH + "cmonkey-checkpoint*");
+		}
 
 		return cmonkeyRunResult;
 	}
