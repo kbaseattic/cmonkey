@@ -28,6 +28,7 @@ deploy: distrib deploy-client deploy-jar
 deploy-all: distrib deploy-client
 
 deploy-jar: compile-jar deploy-sh-scripts test-jar
+	export KB_TOP=$(TARGET)
 	rm -rf $(DEPLOY_JAR)
 	mkdir -p $(DEPLOY_JAR)/lib
 	cp ./lib/*.jar $(DEPLOY_JAR)/lib
@@ -58,6 +59,9 @@ deploy-docs: build-docs
 	cp docs/*.html $(TARGET)/services/$(SERVICE_NAME)/webroot/.
 
 deploy-sh-scripts:
+	SRC_SH = $(wildcard scripts/*.sh)
+	WRAP_SH_TOOL = wrap_sh
+	WRAP_SH_SCRIPT = bash $(TOOLS_DIR)/$(WRAP_SH_TOOL).sh
 	mkdir -p $(TARGET)/shbin; \
 	export KB_TOP=$(TARGET); \
 	export KB_RUNTIME=$(DEPLOY_RUNTIME); \
