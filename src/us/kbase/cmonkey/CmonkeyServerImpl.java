@@ -88,24 +88,12 @@ public class CmonkeyServerImpl {
 		String jobPath = null;
 		if (currentDir == null) {
 			jobPath = JOB_PATH + jobId + "/";
+			new File(jobPath).mkdir();
 		} else {
 			jobPath = currentDir + "/"+ jobId + "/";
 			awe = true;
 		}
 		
-//		tempFileId++;
-		File f = new File(jobPath);
-		try{
-		    if(f.mkdir()) { 
-		        System.out.println("Job Directory Created");
-		    } else {
-		        System.out.println("Job Directory is not created");
-		    }
-		} catch(Exception e){
-		    e.printStackTrace();
-		} 
-
-		//Runtime.getRuntime().exec("mkdir " + jobPath);
 
 		//prepare input
 
