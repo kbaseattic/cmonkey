@@ -1,29 +1,31 @@
 package us.kbase.cmonkey;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
+//import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 //import java.util.HashMap;
-import java.util.Map;
+//import java.util.Map;
 
-import javax.net.ssl.HttpsURLConnection;
+//import javax.net.ssl.HttpsURLConnection;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.core.JsonEncoding;
+//import com.fasterxml.jackson.core.JsonGenerator;
+//import com.fasterxml.jackson.core.type.TypeReference;
+//import com.fasterxml.jackson.databind.JsonNode;
+//import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.kbase.auth.AuthToken;
 import us.kbase.auth.TokenFormatException;
-import us.kbase.common.service.JacksonTupleModule;
-import us.kbase.common.service.JsonClientException;
-import us.kbase.common.service.ServerException;
+//import us.kbase.common.service.JacksonTupleModule;
+//import us.kbase.common.service.JsonClientException;
+//import us.kbase.common.service.ServerException;
 import us.kbase.common.service.UnauthorizedException;
 import us.kbase.userandjobstate.UserAndJobStateClient;
 
@@ -32,12 +34,11 @@ public class CmonkeyServerCaller {
 	private static final String JOB_SERVICE = "http://140.221.84.180:7083";
 	private static UserAndJobStateClient _jobClient = null;
 
-	private static final String CLUSTER_SERVICE = "http://kbase.us/services/cs_test/jobs/";
-	private static final String AWE_SERVICE = "http://140.221.85.171:7080/";
+//	private static final String CLUSTER_SERVICE = "http://kbase.us/services/cs_test/jobs/";
+	private static final String AWE_SERVICE = "http://140.221.85.171:7080/job";
 	private static Integer connectionReadTimeOut = 30 * 60 * 1000;
-	private static boolean isAuthAllowedForHttp = false;
-	private static ObjectMapper mapper = new ObjectMapper()
-			.registerModule(new JacksonTupleModule());
+//	private static boolean isAuthAllowedForHttp = false;
+//	private static ObjectMapper mapper = new ObjectMapper().registerModule(new JacksonTupleModule());
 	private static boolean deployCluster = true;
 
 	public static CmonkeyRunResult buildCmonkeyNetwork(
@@ -83,9 +84,9 @@ public class CmonkeyServerCaller {
 		return returnVal;
 	}
 
-	protected static void setAuthAllowedForHttp(boolean AllowedForHttp) {
+/*	protected static void setAuthAllowedForHttp(boolean AllowedForHttp) {
 		isAuthAllowedForHttp = AllowedForHttp;
-	}
+	}*/
 
 	protected static UserAndJobStateClient jobClient(AuthToken token)
 			throws TokenFormatException, UnauthorizedException, IOException {
@@ -98,10 +99,10 @@ public class CmonkeyServerCaller {
 	}
 	
 	protected static String prepareJson (String wsId, String seriesId, String jobId, CmonkeyRunParameters params, String token){
-		String returnVal = "update={\"info\": {\"pipeline\": \"cmonkey-runner-pipeline\",\"name\": \"cmonkey\",\"project\": \"default\"" +
+		String returnVal = "{\"info\": {\"pipeline\": \"cmonkey-runner-pipeline\",\"name\": \"cmonkey\",\"project\": \"default\"" +
 				",\"user\": \"default\",\"clientgroups\":\"\",\"sessionId\":\"" + jobId +
 				"\"},\"tasks\": [{\"cmd\": {\"args\": \"";
-		returnVal +=" --job " + jobId + " --method build_cmonkey_network_job_from_ws --ws" + wsId + " --series " + seriesId;
+		returnVal +="--job " + jobId + " --method build_cmonkey_network_job_from_ws --ws " + wsId + " --series " + seriesId;
 		
 		if (params.getNoMotifs() == 1){
 			returnVal += " --nomotifs 1"; 
@@ -125,8 +126,8 @@ public class CmonkeyServerCaller {
 		}
 		
 		returnVal += " --token '" + token+"'";
-		returnVal+="\", \"description\": \"running cMonkey service\", \"name\": \"run_cmonkey\"}, \"dependsOn\": [], \"inputs\": {}, \"outputs\": {\""+
-		jobId + ".tar.gz\": {\"host\": \"http://140.221.84.236:8000\"}},\"taskid\": \"0\",\"skip\": 0,\"totalwork\": 1},]}";
+		returnVal+="\", \"description\": \"running cMonkey service\", \"name\": \"run_cmonkey\"}, \"dependsOn\": [], \"outputs\": {\""+
+		jobId + ".tgz\": {\"host\": \"http://140.221.84.236:8000\"}},\"taskid\": \"0\",\"skip\": 0,\"totalwork\": 1}]}";
 		
 		System.out.println(returnVal);
 		return returnVal;
@@ -159,12 +160,14 @@ public class CmonkeyServerCaller {
 		return conn;
 	}
 */
-	protected static String executePost(String urlParameters) {
+	protected static String executePost(String jsonRequest) {
 		URL url;
 		HttpURLConnection connection = null;
+		PrintWriter writer = null;
 		try {
 			// Create connection
 			url = new URL(AWE_SERVICE);
+			String boundary = Long.toHexString(System.currentTimeMillis());
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setConnectTimeout(10000);
 			if (connectionReadTimeOut != null) {
@@ -172,22 +175,22 @@ public class CmonkeyServerCaller {
 			}
 			connection.setRequestMethod("POST");
 			connection.setRequestProperty("Content-Type",
-					"multipart/form-data");
-
-			connection.setRequestProperty("Content-Length",
-					"" + Integer.toString(urlParameters.getBytes().length));
-			connection.setRequestProperty("Content-Language", "en-US");
-
-			connection.setUseCaches(false);
-			connection.setDoInput(true);
+				    "multipart/form-data; boundary=" + boundary);
 			connection.setDoOutput(true);
-
-			// Send request
-			DataOutputStream wr = new DataOutputStream(
-					connection.getOutputStream());
-			wr.writeBytes(urlParameters);
-			wr.flush();
-			wr.close();
+			//connection.setDoInput(true);
+			OutputStream output = connection.getOutputStream();
+		    writer = new PrintWriter(new OutputStreamWriter(output),
+		            true); // true = autoFlush, important!
+		    String CRLF = "\r\n";
+		    writer.append("--" + boundary).append(CRLF);
+		    writer.append("Content-Disposition: form-data; name=\"upload\"; filename=\"cmonkey.awe\"")
+		            .append(CRLF);
+		    writer.append("Content-Type: application/octet-stream").append(CRLF);
+		    writer.append(CRLF).flush();
+		    writer.append(jsonRequest).append(CRLF);
+		    writer.flush();
+		    writer.append("--" + boundary + "--").append(CRLF);
+		    writer.append(CRLF).flush();
 
 			// Get Response
 			InputStream is = connection.getInputStream();
@@ -207,6 +210,7 @@ public class CmonkeyServerCaller {
 			return null;
 
 		} finally {
+			if (writer != null) writer.close();
 
 			if (connection != null) {
 				connection.disconnect();

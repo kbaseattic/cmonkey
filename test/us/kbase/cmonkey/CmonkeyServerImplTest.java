@@ -508,7 +508,7 @@ public class CmonkeyServerImplTest {
 	}
 	
 	@Test
-	public final void testCmonkeyExport() throws Exception {
+	public final void testCmonkeyJsonExport() throws Exception {
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		String id = "TestCmonkeyRunResult";
 		GetObjectParams objectParams = new GetObjectParams().withType("CmonkeyRunResult").withId(id).withWorkspace(workspaceName).withAuth(token.toString());
