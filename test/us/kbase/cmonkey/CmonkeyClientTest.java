@@ -30,6 +30,8 @@ public class CmonkeyClientTest {
 	
 	@Test
 	public final void testQuickBuildCmonkeyNetworkJobFromWs() throws Exception {
+		String currentDir = System.getProperty("user.dir");
+		System.out.println(currentDir);
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 //		System.out.println(token.toString());
 		CmonkeyRunParameters params = new CmonkeyRunParameters();

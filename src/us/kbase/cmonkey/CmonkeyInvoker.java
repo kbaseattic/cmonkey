@@ -117,6 +117,7 @@ public class CmonkeyInvoker {
 			System.exit(1);
 		}
 		String currentDir = System.getProperty("user.dir");
+		System.out.println("Run cmonkey from "+currentDir);
 
 		CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(line.getOptionValue("ws"), 
 							line.getOptionValue("series"), 

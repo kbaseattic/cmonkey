@@ -89,7 +89,7 @@ public class CmonkeyServerImpl {
 		if (currentDir == null) {
 			jobPath = JOB_PATH + jobId + "/";
 		} else {
-			jobPath = currentDir + jobId + "/";
+			jobPath = currentDir + "/"+ jobId + "/";
 			awe = true;
 		}
 		
@@ -144,7 +144,7 @@ public class CmonkeyServerImpl {
 		//clean up
 		if (awe == false) {
 			Runtime.getRuntime().exec("rm -r " + jobPath);
-			//Runtime.getRuntime().exec("rm " + JOB_PATH + "cmonkey-checkpoint*");
+			Runtime.getRuntime().exec("rm " + JOB_PATH + "cmonkey-checkpoint*");
 		}
 
 		return cmonkeyRunResult;
