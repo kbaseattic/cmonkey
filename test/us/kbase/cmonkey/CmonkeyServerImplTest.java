@@ -553,5 +553,14 @@ public class CmonkeyServerImplTest {
 		
 	}
 
+	@Test
+	public void testCleanupArgument() throws Exception {
+		String argument = "'un=aktest|tokenid=378448aa-642b-11e3-884e-12313d2d6e7f|expiry=1418498252|client_id=aktest|token_type=Bearer|SigningSubject=https://nexus.api.globusonline.org/goauth/keys/38973b4e-642b-11e3-884e-12313d2d6e7f|sig=a61bfe37fd8d3a882ea62e6a8f5c35f546cdf7870e797ec3a6588a53409a28ece1775b596411d3d82c907e17dbd10bb467fc06e43633f9c33c6151e1e19a1aabaa4cb58fac78d7e904adb154a3043df4301f747b61d75586b93046ece55c14564afba32290b1fbb405cf9ce1d060336f46285ab5b4225c95bef12fe99086ce8b'";
+		argument = CmonkeyInvoker.cleanUpArgument(argument);
+		System.out.println(argument);
+		assertEquals(argument, "un=aktest|tokenid=378448aa-642b-11e3-884e-12313d2d6e7f|expiry=1418498252|client_id=aktest|token_type=Bearer|SigningSubject=https://nexus.api.globusonline.org/goauth/keys/38973b4e-642b-11e3-884e-12313d2d6e7f|sig=a61bfe37fd8d3a882ea62e6a8f5c35f546cdf7870e797ec3a6588a53409a28ece1775b596411d3d82c907e17dbd10bb467fc06e43633f9c33c6151e1e19a1aabaa4cb58fac78d7e904adb154a3043df4301f747b61d75586b93046ece55c14564afba32290b1fbb405cf9ce1d060336f46285ab5b4225c95bef12fe99086ce8b");
+		
+	}
+
 }
 

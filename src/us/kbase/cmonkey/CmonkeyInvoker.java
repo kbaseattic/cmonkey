@@ -1,5 +1,7 @@
 package us.kbase.cmonkey;
 
+import java.util.regex.Pattern;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -16,6 +18,7 @@ public class CmonkeyInvoker {
 	 */
 	
 	Options options = new Options();
+	final static Pattern p = Pattern.compile("^'(.*)'$");
 
 	@SuppressWarnings("static-access")
 	public CmonkeyInvoker() {
@@ -119,15 +122,14 @@ public class CmonkeyInvoker {
 		String currentDir = System.getProperty("user.dir");
 		System.out.println("Run cmonkey from "+currentDir);
 		
-		String token = line.getOptionValue("token");
-		token = token.substring(1, token.length()-1);
-		System.out.println(token);
+		String wsId = cleanUpArgument(line.getOptionValue("ws"));
+		System.out.println(wsId);		
+		String seriesId = cleanUpArgument(line.getOptionValue("series"));
+		System.out.println(seriesId);		
+		String token = cleanUpArgument(line.getOptionValue("token"));
+		System.out.println(token);		
 
-		CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(line.getOptionValue("ws"), 
-							line.getOptionValue("series"), 
-							params,
-							line.getOptionValue("job"),
-							token, currentDir);
+		CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(wsId, seriesId, params, line.getOptionValue("job"), token, currentDir);
 				
 	}
 
@@ -216,6 +218,12 @@ public class CmonkeyInvoker {
 		return returnVal;
 	}
 
+	protected static String cleanUpArgument (String argument){
+		if (argument.matches(p.pattern())){
+			argument = argument.replaceFirst(p.pattern(), "$1");
+		}
+		return argument;
+	}
 
 	public static void main(String[] args) throws Exception {
 		
