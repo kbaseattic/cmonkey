@@ -118,12 +118,16 @@ public class CmonkeyInvoker {
 		}
 		String currentDir = System.getProperty("user.dir");
 		System.out.println("Run cmonkey from "+currentDir);
+		
+		String token = line.getOptionValue("token");
+		token = token.substring(1, token.length()-1);
+		System.out.println(token);
 
 		CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(line.getOptionValue("ws"), 
 							line.getOptionValue("series"), 
 							params,
 							line.getOptionValue("job"),
-							line.getOptionValue("token"), currentDir);
+							token, currentDir);
 				
 	}
 
