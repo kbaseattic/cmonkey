@@ -13,6 +13,7 @@ import java.net.URL;
 import us.kbase.auth.AuthToken;
 import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.UnauthorizedException;
+import us.kbase.expressionservices.ExpressionSeries;
 import us.kbase.userandjobstate.UserAndJobStateClient;
 
 public class CmonkeyServerCaller {
@@ -22,18 +23,18 @@ public class CmonkeyServerCaller {
 
 	private static final String AWE_SERVICE = "http://140.221.85.171:7080/job";
 	private static Integer connectionReadTimeOut = 30 * 60 * 1000;
-	private static boolean deployCluster = true;
+	private static boolean deployCluster = false;
 
-	public static CmonkeyRunResult buildCmonkeyNetwork(
-			ExpressionDataSeries series, CmonkeyRunParameters params,
+/*	public static CmonkeyRunResult buildCmonkeyNetwork(
+			ExpressionSeries series, CmonkeyRunParameters params,
 			String jobId, AuthToken authPart) throws Exception {
 		CmonkeyRunResult returnVal = CmonkeyServerImpl.buildCmonkeyNetwork(
 				series, params, jobId, authPart.toString(), null);
 		return returnVal;
-	}
+	}*/
 
 	public static String buildCmonkeyNetworkJobFromWs(String wsId,
-			String seriesId, CmonkeyRunParameters params, AuthToken authPart)
+			CmonkeyRunParameters params, AuthToken authPart)
 			throws Exception {
 
 		String returnVal = null;
@@ -42,10 +43,10 @@ public class CmonkeyServerCaller {
 
 		if (deployCluster == false) {
 			CmonkeyServerThread cmonkeyServerThread = new CmonkeyServerThread(
-					wsId, seriesId, params, returnVal, authPart.toString());
+					wsId, params, returnVal, authPart.toString());
 			cmonkeyServerThread.start();
 		} else {
-			String jsonArgs = prepareJson (wsId, seriesId, returnVal, params, authPart.toString());
+			String jsonArgs = prepareJson (wsId, returnVal, params, authPart.toString());
 			String result = executePost(jsonArgs);
 			System.out.println(result);
 		}
@@ -62,31 +63,31 @@ public class CmonkeyServerCaller {
 		return _jobClient;
 	}
 	
-	protected static String prepareJson (String wsId, String seriesId, String jobId, CmonkeyRunParameters params, String token){
+	protected static String prepareJson (String wsId, String jobId, CmonkeyRunParameters params, String token){
 		String returnVal = "{\"info\": {\"pipeline\": \"cmonkey-runner-pipeline\",\"name\": \"cmonkey\",\"project\": \"default\"" +
 				",\"user\": \"default\",\"clientgroups\":\"\",\"sessionId\":\"" + jobId +
 				"\"},\"tasks\": [{\"cmd\": {\"args\": \"";
-		returnVal +=" --job " + jobId + " --method build_cmonkey_network_job_from_ws --ws '" + wsId + "' --series '" + seriesId + "'";
+		returnVal +=" --job " + jobId + " --method build_cmonkey_network_job_from_ws --ws '" + wsId + "' --series '" + params.getSeriesId() + "' --genome '" + params.getGenomeId() + "'";
 		
-		if (params.getNoMotifs() == 1){
+		if (params.getMotifsScoring() == 0L){
 			returnVal += " --nomotifs 1"; 
 		} else {
 			returnVal += " --nomotifs 0";
 		}
-		if (params.getNoNetworks() == 1){
+		if (params.getNetworksScoring() == 0L){
 			returnVal += " --nonetworks 1"; 
 		} else {
 			returnVal += " --nonetworks 0";
 		}
-		if (params.getNoOperons() == 1){
-			returnVal += " --nooperons 1"; 
+		if (params.getOperomeId() != null){
+			returnVal += " --operons '" + params.getOperomeId() + "'"; 
 		} else {
-			returnVal += " --nooperons 0";
+			returnVal += " --operons 'null'";
 		}
-		if (params.getNoString() == 1){
-			returnVal += " --nostring 1"; 
+		if (params.getNetworkId() != null){
+			returnVal += " --string '" + params.getNetworkId() + "'"; 
 		} else {
-			returnVal += " --nostring 0";
+			returnVal += " --string 'null'";
 		}
 		
 		returnVal += " --token '" + token+"'";

@@ -3,14 +3,12 @@ package us.kbase.cmonkey;
 public class CmonkeyServerThread extends Thread {
 	
 	String wsId;
-	String seriesId;
 	CmonkeyRunParameters params;
 	String jobId;
 	String token;
 	
-	CmonkeyServerThread (String wsId, String seriesId, CmonkeyRunParameters params, String jobId, String token ){
+	CmonkeyServerThread (String wsId, CmonkeyRunParameters params, String jobId, String token ){
 		this.wsId = wsId;
-		this.seriesId = seriesId;
 		this.params = params;
 		this.jobId = jobId;
 		this.token = token;
@@ -18,7 +16,7 @@ public class CmonkeyServerThread extends Thread {
 	
 	public void run (){
 		try {
-			CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(wsId, seriesId, params, jobId, token, null);
+			CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(wsId, params, jobId, token, null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

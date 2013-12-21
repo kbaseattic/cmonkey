@@ -13,8 +13,6 @@ import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.Tuple7;
 import us.kbase.common.service.UObject;
 import us.kbase.userandjobstate.Results;
-import us.kbase.workspaceservice.GetObjectOutput;
-import us.kbase.workspaceservice.GetObjectParams;
 
 public class CmonkeyClientTest {
 
@@ -26,6 +24,7 @@ public class CmonkeyClientTest {
 	private String serverUrl = "http://localhost:7049";
 	private String quickTestSeriesId = "QuickTestExpressionDataSeries";
 	private String testSeriesId = "TestExpressionDataSeries";
+	private String genomeId = "kb|genome.test";
 
 	
 	@Test
@@ -33,14 +32,12 @@ public class CmonkeyClientTest {
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 //		System.out.println(token.toString());
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
-		params.setNoMotifs(1L);
-		params.setNoNetworks(1L);
-		params.setNoOperons(1L);
-		params.setNoString(1L);
+		params.setMotifsScoring(1L);
+		params.setNetworksScoring(1L);
 		URL url = new URL(serverUrl);
 		CmonkeyClient client = new CmonkeyClient(url, token);
 		client.setAuthAllowedForHttp(true);
-		String jobId = client.buildCmonkeyNetworkJobFromWs(workspaceName, quickTestSeriesId, params);
+		String jobId = client.buildCmonkeyNetworkJobFromWs(workspaceName, params);
 		
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);
@@ -93,13 +90,10 @@ public class CmonkeyClientTest {
 		
 		String[] resultIdParts = resultId.split("/");
 		resultId = resultIdParts[1];
-
-		GetObjectParams objectParams = new GetObjectParams().withType("CmonkeyRunResult").withId(resultId).withWorkspace(workspaceName).withAuth(token.toString());
-		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(objectParams);
-		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
 		
+		CmonkeyRunResult result = UObject.transformObjectToObject(CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, resultId, token.toString()), CmonkeyRunResult.class);
 		
-		assertEquals(Long.valueOf("3"), result.getClustersNumber());
+		assertEquals(Long.valueOf("3"), result.getNetwork().getClustersNumber());
 		assertEquals(Long.valueOf("2001"), result.getLastIteration());
 
 	}
@@ -109,14 +103,17 @@ public class CmonkeyClientTest {
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 //		System.out.println(token.toString());
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
-		params.setNoMotifs(0L);
-		params.setNoNetworks(0L);
-		params.setNoOperons(0L);
-		params.setNoString(0L);
+		params.setMotifsScoring(1L);
+		params.setNetworksScoring(1L);
+		params.setOperomeId("");
+		params.setNetworkId("");
+		params.setSeriesId(testSeriesId);
+		params.setGenomeId(genomeId);
+
 		URL url = new URL(serverUrl);
 		CmonkeyClient client = new CmonkeyClient(url, token);
 		client.setAuthAllowedForHttp(true);
-		String jobId = client.buildCmonkeyNetworkJobFromWs(workspaceName, testSeriesId, params);
+		String jobId = client.buildCmonkeyNetworkJobFromWs(workspaceName, params);
 		
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);
@@ -170,12 +167,9 @@ public class CmonkeyClientTest {
 		String[] resultIdParts = resultId.split("/");
 		resultId = resultIdParts[1];
 
-		GetObjectParams objectParams = new GetObjectParams().withType("CmonkeyRunResult").withId(resultId).withWorkspace(workspaceName).withAuth(token.toString());
-		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(objectParams);
-		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
-		
-		
-		assertEquals(Long.valueOf("43"), result.getClustersNumber());
+		CmonkeyRunResult result = UObject.transformObjectToObject(CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, resultId, token.toString()), CmonkeyRunResult.class);
+
+		assertEquals(Long.valueOf("43"), result.getNetwork().getClustersNumber());
 		assertEquals(Long.valueOf("2001"), result.getLastIteration());
 
 	}

@@ -1,5 +1,5 @@
 
-package us.kbase.cmonkey;
+package us.kbase.meme;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: SiteMeme</p>
+ * <p>Original spec-file type: MemeSite</p>
  * <pre>
  * Represents a particular site from MEME motif description 
  * string source_sequence_id - ID of sequence where the site was found
@@ -34,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "right_flank",
     "sequence"
 })
-public class SiteMeme {
+public class MemeSite {
 
     @JsonProperty("source_sequence_id")
     private String sourceSequenceId;
@@ -60,7 +60,7 @@ public class SiteMeme {
         this.sourceSequenceId = sourceSequenceId;
     }
 
-    public SiteMeme withSourceSequenceId(String sourceSequenceId) {
+    public MemeSite withSourceSequenceId(String sourceSequenceId) {
         this.sourceSequenceId = sourceSequenceId;
         return this;
     }
@@ -75,7 +75,7 @@ public class SiteMeme {
         this.start = start;
     }
 
-    public SiteMeme withStart(Long start) {
+    public MemeSite withStart(Long start) {
         this.start = start;
         return this;
     }
@@ -90,7 +90,7 @@ public class SiteMeme {
         this.pvalue = pvalue;
     }
 
-    public SiteMeme withPvalue(Double pvalue) {
+    public MemeSite withPvalue(Double pvalue) {
         this.pvalue = pvalue;
         return this;
     }
@@ -105,7 +105,7 @@ public class SiteMeme {
         this.leftFlank = leftFlank;
     }
 
-    public SiteMeme withLeftFlank(String leftFlank) {
+    public MemeSite withLeftFlank(String leftFlank) {
         this.leftFlank = leftFlank;
         return this;
     }
@@ -120,7 +120,7 @@ public class SiteMeme {
         this.rightFlank = rightFlank;
     }
 
-    public SiteMeme withRightFlank(String rightFlank) {
+    public MemeSite withRightFlank(String rightFlank) {
         this.rightFlank = rightFlank;
         return this;
     }
@@ -135,7 +135,7 @@ public class SiteMeme {
         this.sequence = sequence;
     }
 
-    public SiteMeme withSequence(String sequence) {
+    public MemeSite withSequence(String sequence) {
         this.sequence = sequence;
         return this;
     }
@@ -152,7 +152,7 @@ public class SiteMeme {
 
     @Override
     public String toString() {
-        return ((((((((((((((("SiteMeme"+" [sourceSequenceId=")+ sourceSequenceId)+", start=")+ start)+", pvalue=")+ pvalue)+", leftFlank=")+ leftFlank)+", rightFlank=")+ rightFlank)+", sequence=")+ sequence)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((("MemeSite"+" [sourceSequenceId=")+ sourceSequenceId)+", start=")+ start)+", pvalue=")+ pvalue)+", leftFlank=")+ leftFlank)+", rightFlank=")+ rightFlank)+", sequence=")+ sequence)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

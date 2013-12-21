@@ -12,6 +12,7 @@ import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.UObject;
+import us.kbase.expressionservices.ExpressionSeries;
 import us.kbase.userandjobstate.Results;
 import us.kbase.workspaceservice.GetObjectOutput;
 import us.kbase.workspaceservice.GetObjectParams;
@@ -23,17 +24,19 @@ public class CmonkeyInvokerTest {
 	private static final String workspaceName = "AKtest";
 	private String quickTestSeriesId = "QuickTestExpressionDataSeries";
 	private String testSeriesId = "TestExpressionDataSeries";
+	private String genomeId = "kb|genome.test";
 	
 	@Test
 	public final void testCmonkeyInvokerQuick() throws Exception {
 		
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
-		params.setNoMotifs(1L);
-		params.setNoNetworks(1L);
-		params.setNoOperons(1L);
-		params.setNoString(1L);
-		String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, quickTestSeriesId, params, token);
+		params.setMotifsScoring(0L);
+		params.setNetworksScoring(0L);
+		params.setSeriesId(quickTestSeriesId);
+		params.setGenomeId(genomeId);
+
+		String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, params, token);
 		
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);
@@ -65,23 +68,23 @@ public class CmonkeyInvokerTest {
 		String[] resultIdParts = resultId.split("/");
 		resultId = resultIdParts[1];
 
-		GetObjectParams objectParams = new GetObjectParams().withType("CmonkeyRunResult").withId(resultId).withWorkspace(workspaceName).withAuth(token.toString());
-		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(objectParams);
-		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
+		CmonkeyRunResult result = UObject.transformObjectToObject(CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, resultId, token.toString()), CmonkeyRunResult.class);
 		
-		
-		assertEquals(Long.valueOf("3"), result.getClustersNumber());
+		assertEquals(Long.valueOf("3"), result.getNetwork().getClustersNumber());
 	}
 
 	public final void testCmonkeyInvokerLong() throws Exception {
 		
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
-		params.setNoMotifs(0L);
-		params.setNoNetworks(0L);
-		params.setNoOperons(0L);
-		params.setNoString(0L);
-		String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, testSeriesId, params, token);
+		params.setMotifsScoring(1L);
+		params.setNetworksScoring(1L);
+		params.setOperomeId("");
+		params.setNetworkId("");
+		params.setSeriesId(testSeriesId);
+		params.setGenomeId(genomeId);
+
+		String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, params, token);
 		
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);
@@ -113,12 +116,9 @@ public class CmonkeyInvokerTest {
 		String[] resultIdParts = resultId.split("/");
 		resultId = resultIdParts[1];
 
-		GetObjectParams objectParams = new GetObjectParams().withType("CmonkeyRunResult").withId(resultId).withWorkspace(workspaceName).withAuth(token.toString());
-		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(objectParams);
-		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
+		CmonkeyRunResult result = UObject.transformObjectToObject(CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, resultId, token.toString()), CmonkeyRunResult.class);
 		
-		
-		assertEquals(Long.valueOf("43"), result.getClustersNumber());
+		assertEquals(Long.valueOf("43"), result.getNetwork().getClustersNumber());
 		assertEquals(Long.valueOf("2001"), result.getLastIteration());
 	}
 

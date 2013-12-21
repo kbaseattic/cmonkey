@@ -15,90 +15,128 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * <p>Original spec-file type: CmonkeyRunParameters</p>
  * <pre>
  * Contains parameters of a cMonkey run
- * int no_operons = <0|1> - if 1, MicrobesOnline operons data will not be used
- * int no_string = <0|1> - if 1, STRING data will not be used
- * int no_networks = <0|1> - if 1, Network scoring will not be used
- * int no_motifs = <0|1> - if 1, Motif scoring will not be used
+ * int networks_scoring = <0|1> - if 1, Network scoring will be used
+ * int motifs_scoring = <0|1> - if 1, Motif scoring will be used
+ * expression_series_ws_id series_id - workspace id of expression data series;
+ * genome_ws_id genome_id - workspace id of genome;
+ * operome_ws_id operome_id - workspace id of operome;
+ * network_ws_id network_id - workspace id of network;
  * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "no_operons",
-    "no_string",
-    "no_networks",
-    "no_motifs"
+    "series_id",
+    "genome_id",
+    "operome_id",
+    "network_id",
+    "networks_scoring",
+    "motifs_scoring"
 })
 public class CmonkeyRunParameters {
 
-    @JsonProperty("no_operons")
-    private Long noOperons;
-    @JsonProperty("no_string")
-    private Long noString;
-    @JsonProperty("no_networks")
-    private Long noNetworks;
-    @JsonProperty("no_motifs")
-    private Long noMotifs;
+    @JsonProperty("series_id")
+    private String seriesId;
+    @JsonProperty("genome_id")
+    private String genomeId;
+    @JsonProperty("operome_id")
+    private String operomeId;
+    @JsonProperty("network_id")
+    private String networkId;
+    @JsonProperty("networks_scoring")
+    private Long networksScoring;
+    @JsonProperty("motifs_scoring")
+    private Long motifsScoring;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("no_operons")
-    public Long getNoOperons() {
-        return noOperons;
+    @JsonProperty("series_id")
+    public String getSeriesId() {
+        return seriesId;
     }
 
-    @JsonProperty("no_operons")
-    public void setNoOperons(Long noOperons) {
-        this.noOperons = noOperons;
+    @JsonProperty("series_id")
+    public void setSeriesId(String seriesId) {
+        this.seriesId = seriesId;
     }
 
-    public CmonkeyRunParameters withNoOperons(Long noOperons) {
-        this.noOperons = noOperons;
+    public CmonkeyRunParameters withSeriesId(String seriesId) {
+        this.seriesId = seriesId;
         return this;
     }
 
-    @JsonProperty("no_string")
-    public Long getNoString() {
-        return noString;
+    @JsonProperty("genome_id")
+    public String getGenomeId() {
+        return genomeId;
     }
 
-    @JsonProperty("no_string")
-    public void setNoString(Long noString) {
-        this.noString = noString;
+    @JsonProperty("genome_id")
+    public void setGenomeId(String genomeId) {
+        this.genomeId = genomeId;
     }
 
-    public CmonkeyRunParameters withNoString(Long noString) {
-        this.noString = noString;
+    public CmonkeyRunParameters withGenomeId(String genomeId) {
+        this.genomeId = genomeId;
         return this;
     }
 
-    @JsonProperty("no_networks")
-    public Long getNoNetworks() {
-        return noNetworks;
+    @JsonProperty("operome_id")
+    public String getOperomeId() {
+        return operomeId;
     }
 
-    @JsonProperty("no_networks")
-    public void setNoNetworks(Long noNetworks) {
-        this.noNetworks = noNetworks;
+    @JsonProperty("operome_id")
+    public void setOperomeId(String operomeId) {
+        this.operomeId = operomeId;
     }
 
-    public CmonkeyRunParameters withNoNetworks(Long noNetworks) {
-        this.noNetworks = noNetworks;
+    public CmonkeyRunParameters withOperomeId(String operomeId) {
+        this.operomeId = operomeId;
         return this;
     }
 
-    @JsonProperty("no_motifs")
-    public Long getNoMotifs() {
-        return noMotifs;
+    @JsonProperty("network_id")
+    public String getNetworkId() {
+        return networkId;
     }
 
-    @JsonProperty("no_motifs")
-    public void setNoMotifs(Long noMotifs) {
-        this.noMotifs = noMotifs;
+    @JsonProperty("network_id")
+    public void setNetworkId(String networkId) {
+        this.networkId = networkId;
     }
 
-    public CmonkeyRunParameters withNoMotifs(Long noMotifs) {
-        this.noMotifs = noMotifs;
+    public CmonkeyRunParameters withNetworkId(String networkId) {
+        this.networkId = networkId;
+        return this;
+    }
+
+    @JsonProperty("networks_scoring")
+    public Long getNetworksScoring() {
+        return networksScoring;
+    }
+
+    @JsonProperty("networks_scoring")
+    public void setNetworksScoring(Long networksScoring) {
+        this.networksScoring = networksScoring;
+    }
+
+    public CmonkeyRunParameters withNetworksScoring(Long networksScoring) {
+        this.networksScoring = networksScoring;
+        return this;
+    }
+
+    @JsonProperty("motifs_scoring")
+    public Long getMotifsScoring() {
+        return motifsScoring;
+    }
+
+    @JsonProperty("motifs_scoring")
+    public void setMotifsScoring(Long motifsScoring) {
+        this.motifsScoring = motifsScoring;
+    }
+
+    public CmonkeyRunParameters withMotifsScoring(Long motifsScoring) {
+        this.motifsScoring = motifsScoring;
         return this;
     }
 
@@ -114,7 +152,7 @@ public class CmonkeyRunParameters {
 
     @Override
     public String toString() {
-        return ((((((((((("CmonkeyRunParameters"+" [noOperons=")+ noOperons)+", noString=")+ noString)+", noNetworks=")+ noNetworks)+", noMotifs=")+ noMotifs)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((("CmonkeyRunParameters"+" [seriesId=")+ seriesId)+", genomeId=")+ genomeId)+", operomeId=")+ operomeId)+", networkId=")+ networkId)+", networksScoring=")+ networksScoring)+", motifsScoring=")+ motifsScoring)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

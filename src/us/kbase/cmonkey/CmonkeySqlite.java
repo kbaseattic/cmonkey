@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import us.kbase.idserverapi.IDServerAPIClient;
+import us.kbase.meme.MastHit;
+import us.kbase.meme.MemeSite;
 
 public class CmonkeySqlite {
 
@@ -85,7 +87,7 @@ public class CmonkeySqlite {
 		for(Integer i = 1; i <= clusterList.size(); i++){
 			clusterList.get(i-1).setMotifs(this.getClusterMotifs(iteration, i.toString()));
 			clusterList.get(i-1).setGeneIds(this.getListOfGenes(iteration, i.toString()));
-			clusterList.get(i-1).setDatasetIds(this.getListOfConditions(iteration, i.toString()));
+			clusterList.get(i-1).setSampleWsIds(this.getListOfConditions(iteration, i.toString()));
 		}
 		return clusterList;
 	}
@@ -105,6 +107,7 @@ public class CmonkeySqlite {
 			while (resultSet.next()){
 				CmonkeyMotif motif = new CmonkeyMotif();
 				motif.setId(getKbaseId(CmonkeyMotif.class.getSimpleName()));
+				motif.setPssmId(resultSet.getLong("motif_num"));
 				motif.setSeqType(resultSet.getString("seqtype"));
 				motif.setEvalue(resultSet.getDouble("evalue"));
 				motifList.add(motif);
@@ -121,9 +124,9 @@ public class CmonkeySqlite {
 		}
         
         for (CmonkeyMotif motif:motifList){
-			motif.setPssmRows(this.getMotifPssm(motif.getId()));
-			motif.setHits(this.getMotifAnnotation(motif.getId(), motif.getPssmRows().size()));
-			motif.setSites(this.getMotifSites(motif.getId()));
+			motif.setPssmRows(this.getMotifPssm(motif.getPssmId().toString()));
+			motif.setHits(this.getMotifAnnotation(motif.getPssmId().toString(), motif.getPssmRows().size()));
+			motif.setSites(this.getMotifSites(motif.getPssmId().toString()));
         }
 		return motifList;
 	}
@@ -174,12 +177,13 @@ public class CmonkeySqlite {
         try {
 			while (resultSet.next()){
 				MastHit motifHit = new MastHit();
-				motifHit.setPssmId(motifId);
-				motifHit.setSequenceId(resultSet.getString("name"));
+				motifHit.setPspmId(motifId);
+				motifHit.setSeqId(resultSet.getString("name"));
 				motifHit.setHitStart(resultSet.getLong("position"));
 				motifHit.setStrand(convertStrandIntoSequnce(resultSet.getBoolean("reverse")));
 				motifHit.setHitEnd(getHitEnd(motifLength, motifHit.getHitStart(), motifHit.getStrand()));
 				motifHit.setHitPvalue(resultSet.getDouble("pvalue"));
+				motifHit.setScore(0.0D);//added for compatibility
 				result.add(motifHit);
 			}
 		} catch (SQLException e) {
@@ -195,8 +199,8 @@ public class CmonkeySqlite {
 		return result;
 	}
 	
-	protected List<SiteMeme> getMotifSites (String motifId){
-		List<SiteMeme> result = new ArrayList<SiteMeme>();
+	protected List<MemeSite> getMotifSites (String motifId){
+		List<MemeSite> result = new ArrayList<MemeSite>();
         String sqlQuery = "SELECT * FROM meme_motif_sites m WHERE m.motif_info_id="+motifId;
         ResultSet resultSet = null;
 		try {
@@ -207,7 +211,7 @@ public class CmonkeySqlite {
 		}
         try {
 			while (resultSet.next()){
-				SiteMeme site = new SiteMeme();
+				MemeSite site = new MemeSite();
 				site.setSourceSequenceId(resultSet.getString("seq_name"));
 				site.setPvalue(resultSet.getDouble("pvalue"));
 				site.setStart(resultSet.getLong("start"));
@@ -305,6 +309,7 @@ public class CmonkeySqlite {
 	
 	public void buildCmonkeyRunResult (CmonkeyRunResult cmonkeyRunResult) throws Exception{
 		cmonkeyRunResult.setId(getKbaseId(CmonkeyRunResult.class.getSimpleName()));
+		CmonkeyNetwork network = new CmonkeyNetwork();
 		String sqlQuery = "SELECT * FROM run_infos";
 		ResultSet resultSet = null;
 		try {
@@ -317,12 +322,13 @@ public class CmonkeySqlite {
 			while (resultSet.next()){
 				cmonkeyRunResult.setStartTime(resultSet.getString("start_time"));
 				cmonkeyRunResult.setFinishTime(resultSet.getString("finish_time"));
-				cmonkeyRunResult.setOrganism(resultSet.getString("organism"));
 				cmonkeyRunResult.setIterationsNumber(resultSet.getLong("num_iterations"));
 				cmonkeyRunResult.setLastIteration(resultSet.getLong("last_iteration"));
-				cmonkeyRunResult.setRowsNumber(resultSet.getLong("num_rows"));
-				cmonkeyRunResult.setColumnsNumber(resultSet.getLong("num_columns"));
-				cmonkeyRunResult.setClustersNumber(resultSet.getLong("num_clusters"));
+				network.setGenomeName(resultSet.getString("organism"));
+				network.setRowsNumber(resultSet.getLong("num_rows"));
+				network.setColumnsNumber(resultSet.getLong("num_columns"));
+				network.setClustersNumber(resultSet.getLong("num_clusters"));
+				network.setIteration(resultSet.getLong("last_iteration"));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -337,15 +343,12 @@ public class CmonkeySqlite {
         if (cmonkeyRunResult.getLastIteration() < cmonkeyRunResult.getIterationsNumber()) {
         	throw new Exception("cmonkey-python finished after iteration " + cmonkeyRunResult.getLastIteration()+ " but expected number of iterations is " + cmonkeyRunResult.getIterationsNumber());
         }
-        cmonkeyRunResult.setNetwork(getCmonkeyNetwork(cmonkeyRunResult.getLastIteration()));
+		network.setId(getKbaseId(CmonkeyNetwork.class.getSimpleName()));
+		network.setClusters(this.getClusterList(cmonkeyRunResult.getLastIteration()));
+		cmonkeyRunResult.setNetwork(network);
+
 	}
 	
-	protected CmonkeyNetwork getCmonkeyNetwork(Long iteration) throws Exception{
-		CmonkeyNetwork result = new CmonkeyNetwork();
-		result.setId(getKbaseId(CmonkeyNetwork.class.getSimpleName()));
-		result.setClusters(this.getClusterList(iteration));
-		return result;
-	}
 	
 	public static String getKbaseId(String entityType) throws Exception {
 		String returnVal = null;

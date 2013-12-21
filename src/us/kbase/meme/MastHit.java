@@ -1,5 +1,5 @@
 
-package us.kbase.cmonkey;
+package us.kbase.meme;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,23 +14,23 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * <p>Original spec-file type: MastHit</p>
  * <pre>
- * Represents a particular MAST hit
+ * Represents a particluar MAST hit
  * string sequence_id - name of sequence
  * string strand - strand ("+" or "-")
- * string pssm_id - name of motif
+ * string pspm_id - id of MemePSPM
  * int hit_start - start position of hit
  * int hit_end - end position of hit
  * float score - hit score
- * float hit_pvalue - hit p-value
+ * float hitPvalue - hit p-value
  * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "sequence_id",
+    "seq_id",
     "strand",
-    "pssm_id",
+    "pspm_id",
     "hit_start",
     "hit_end",
     "score",
@@ -38,12 +38,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 public class MastHit {
 
-    @JsonProperty("sequence_id")
-    private String sequenceId;
+    @JsonProperty("seq_id")
+    private String seqId;
     @JsonProperty("strand")
     private String strand;
-    @JsonProperty("pssm_id")
-    private String pssmId;
+    @JsonProperty("pspm_id")
+    private String pspmId;
     @JsonProperty("hit_start")
     private Long hitStart;
     @JsonProperty("hit_end")
@@ -54,18 +54,18 @@ public class MastHit {
     private Double hitPvalue;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("sequence_id")
-    public String getSequenceId() {
-        return sequenceId;
+    @JsonProperty("seq_id")
+    public String getSeqId() {
+        return seqId;
     }
 
-    @JsonProperty("sequence_id")
-    public void setSequenceId(String sequenceId) {
-        this.sequenceId = sequenceId;
+    @JsonProperty("seq_id")
+    public void setSeqId(String seqId) {
+        this.seqId = seqId;
     }
 
-    public MastHit withSequenceId(String sequenceId) {
-        this.sequenceId = sequenceId;
+    public MastHit withSeqId(String seqId) {
+        this.seqId = seqId;
         return this;
     }
 
@@ -84,18 +84,18 @@ public class MastHit {
         return this;
     }
 
-    @JsonProperty("pssm_id")
-    public String getPssmId() {
-        return pssmId;
+    @JsonProperty("pspm_id")
+    public String getPspmId() {
+        return pspmId;
     }
 
-    @JsonProperty("pssm_id")
-    public void setPssmId(String pssmId) {
-        this.pssmId = pssmId;
+    @JsonProperty("pspm_id")
+    public void setPspmId(String pspmId) {
+        this.pspmId = pspmId;
     }
 
-    public MastHit withPssmId(String pssmId) {
-        this.pssmId = pssmId;
+    public MastHit withPspmId(String pspmId) {
+        this.pspmId = pspmId;
         return this;
     }
 
@@ -171,7 +171,7 @@ public class MastHit {
 
     @Override
     public String toString() {
-        return ((((((((((((((((("MastHit"+" [sequenceId=")+ sequenceId)+", strand=")+ strand)+", pssmId=")+ pssmId)+", hitStart=")+ hitStart)+", hitEnd=")+ hitEnd)+", score=")+ score)+", hitPvalue=")+ hitPvalue)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((("MastHit"+" [seqId=")+ seqId)+", strand=")+ strand)+", pspmId=")+ pspmId)+", hitStart=")+ hitStart)+", hitEnd=")+ hitEnd)+", score=")+ score)+", hitPvalue=")+ hitPvalue)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

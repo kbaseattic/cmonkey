@@ -52,6 +52,12 @@ public class CmonkeyInvoker {
                 .withArgName("series")
                 .create() );
 
+		options.addOption( OptionBuilder.withLongOpt( "genome" )
+                .withDescription( "genome ID" )
+                .hasArg(true)
+                .withArgName("genome")
+                .create() );
+
 		options.addOption( OptionBuilder.withLongOpt( "nomotifs" )
                 .withDescription( "Motif scoring will not be used: 0|1" )
                 .hasArg(true)
@@ -64,16 +70,16 @@ public class CmonkeyInvoker {
                 .withArgName("nonetworks")
                 .create() );
 
-		options.addOption( OptionBuilder.withLongOpt( "nooperons" )
-                .withDescription( "MicrobesOnline operons data will not be used: 0|1" )
+		options.addOption( OptionBuilder.withLongOpt( "operons" )
+                .withDescription( "Operon data source ID" )
                 .hasArg(true)
-                .withArgName("nooperons")
+                .withArgName("operons")
                 .create() );
 
-		options.addOption( OptionBuilder.withLongOpt( "nostring" )
-                .withDescription( "STRING data will not be used: 0|1" )
+		options.addOption( OptionBuilder.withLongOpt( "string" )
+                .withDescription( "Network data source ID" )
                 .hasArg(true)
-                .withArgName("nostring")
+                .withArgName("string")
                 .create() );
 
 		options.addOption( OptionBuilder.withLongOpt( "token" )
@@ -89,7 +95,7 @@ public class CmonkeyInvoker {
 		CmonkeyRunParameters params = new CmonkeyRunParameters();		    			
 		
 		if ( line.hasOption("nomotifs")){
-			params.setNoMotifs(Long.parseLong(line.getOptionValue("nomotifs")));
+			params.setMotifsScoring(Long.parseLong(line.getOptionValue("nomotifs")));
 		}
 		else {
 			System.err.println( "Required nomotifs parameter missed");
@@ -97,26 +103,30 @@ public class CmonkeyInvoker {
 		}
 		
 		if ( line.hasOption("nonetworks")){
-			params.setNoNetworks(Long.parseLong(line.getOptionValue("nonetworks")));
+			params.setNetworksScoring(Long.parseLong(line.getOptionValue("nonetworks")));
 		}
 		else {
 			System.err.println( "Required nonetworks parameter missed");
 			System.exit(1);
 		}
 
-		if ( line.hasOption("nooperons")){
-			params.setNoOperons(Long.parseLong(line.getOptionValue("nooperons")));
+		if ( line.hasOption("operons")){
+			if (line.getOptionValue("operons") != "'null'") {
+				params.setOperomeId(cleanUpArgument(line.getOptionValue("operons")));
+			}
 		}
 		else {
-			System.err.println( "Required nooperons parameter missed");
+			System.err.println( "Required operons parameter missed");
 			System.exit(1);
 		}
 
-		if ( line.hasOption("nostring")){
-			params.setNoString(Long.parseLong(line.getOptionValue("nostring")));
+		if ( line.hasOption("string")){
+			if (line.getOptionValue("string") != "'null'") {
+				params.setNetworkId(cleanUpArgument(line.getOptionValue("string")));
+			}
 		}
 		else {
-			System.err.println( "Required nostring parameter missed");
+			System.err.println( "Required string parameter missed");
 			System.exit(1);
 		}
 		String currentDir = System.getProperty("user.dir");
@@ -124,12 +134,17 @@ public class CmonkeyInvoker {
 		
 		String wsId = cleanUpArgument(line.getOptionValue("ws"));
 		System.out.println(wsId);		
-		String seriesId = cleanUpArgument(line.getOptionValue("series"));
-		System.out.println(seriesId);		
+
+		params.setSeriesId(line.getOptionValue("series"));
+		System.out.println(params.getSeriesId());		
+
+		params.setGenomeId(line.getOptionValue("genome"));
+		System.out.println(params.getGenomeId());		
+
 		String token = cleanUpArgument(line.getOptionValue("token"));
 		System.out.println(token);		
 
-		CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(wsId, seriesId, params, line.getOptionValue("job"), token, currentDir);
+		CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(wsId, params, line.getOptionValue("job"), token, currentDir);
 				
 	}
 
@@ -189,8 +204,14 @@ public class CmonkeyInvoker {
 					if (line.hasOption("series")){
 
 						if (line.hasOption("job")){
+							
+							if (line.hasOption("genome")){
 
-							returnVal = true;
+								returnVal = true;
+							}
+							else {
+								System.err.println( "Genome ID required");
+							}
 						}
 						else {
 							System.err.println( "Job ID required");

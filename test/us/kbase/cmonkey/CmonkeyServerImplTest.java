@@ -18,64 +18,62 @@ import org.junit.Test;
 
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.UObject;
+import us.kbase.expressionservices.ExpressionSample;
+import us.kbase.expressionservices.ExpressionSeries;
+import us.kbase.meme.MastHit;
+import us.kbase.auth.AuthException;
 import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
 import us.kbase.userandjobstate.Results;
-//import us.kbase.util.WSRegisterType;
-//import us.kbase.util.WSUtil;
-import us.kbase.workspaceservice.GetObjectOutput;
-import us.kbase.workspaceservice.GetObjectParams;
+import us.kbase.workspace.RegisterTypespecParams;
 
 public class CmonkeyServerImplTest {
 	private static final String USER_NAME = "aktest";
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
 //	private String quickTestSeriesId = "QuickTestExpressionDataSeries";
-	private String testSeriesId = "TestExpressionDataSeries";
-	private final String TEST_DATABASE_PATH = "test/cmonkey_run_test.db";
-	private ExpressionDataSeries series = new ExpressionDataSeries();
+	private String testSeriesId = "kb|series.test";
+	//private final String TEST_DATABASE_PATH = "test/cmonkey_run_test.db";
+	private final String TEST_DATABASE_PATH = "/home/kbase/Documents/inferelator-test/out/cmonkey_run.db";
+	private ExpressionSeries series = new ExpressionSeries();
+	private static AuthToken token = null;
 
 	@Before
 	public void setUp() throws Exception {
-		series.setId(testSeriesId);
-		ExpressionDataSample set1 = new ExpressionDataSample();
-		ExpressionDataSample set2 = new ExpressionDataSample();
+		try {
+			token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		} catch (AuthException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		series.setKbId(testSeriesId);
+		ExpressionSample sample1 = new ExpressionSample();
+		ExpressionSample sample2 = new ExpressionSample();
 		// points for set 1
-		List<ExpressionDataPoint> points1 = new ArrayList<ExpressionDataPoint>();
-		ExpressionDataPoint point1 = new ExpressionDataPoint();
-		point1.setGeneId("VNG1951G");
-		point1.setExpressionValue(0.026D);
-		ExpressionDataPoint point2 = new ExpressionDataPoint();
-		point2.setGeneId("VNG1659G");
-		point2.setExpressionValue(-0.082D);
-		ExpressionDataPoint point3 = new ExpressionDataPoint();
-		point3.setGeneId("VNG1282G");
-		point3.setExpressionValue(0.152D);
-		points1.add(point1);
-		points1.add(point2);
-		points1.add(point3);
-		set1.setPoints(points1);
-		set1.setId("condition1");
+		Map<String, Double> dataPoints1 = new HashMap<String, Double>();
+		dataPoints1.put("VNG1951G", 0.026D);
+		dataPoints1.put("VNG1659G", -0.082D);
+		dataPoints1.put("VNG1282G", 0.152D);
+		sample1.setExpressionLevels(dataPoints1);
+		sample1.setKbId("kb|sample.test1");
+
+		Map<String, Double> dataPoints2 = new HashMap<String, Double>();
+		dataPoints2.put("VNG1951G", -0.002D);
+		dataPoints2.put("VNG1659G", -0.059D);
+		dataPoints2.put("VNG1282G", 0.153D);
+		sample1.setExpressionLevels(dataPoints2);
+		sample1.setKbId("kb|sample.test2");
+
 		// points for set2
-		List<ExpressionDataPoint> points2 = new ArrayList<ExpressionDataPoint>();
-		ExpressionDataPoint point4 = new ExpressionDataPoint();
-		point4.setGeneId("VNG1951G");
-		point4.setExpressionValue(-0.002D);
-		ExpressionDataPoint point5 = new ExpressionDataPoint();
-		point5.setGeneId("VNG1659G");
-		point5.setExpressionValue(-0.059D);
-		ExpressionDataPoint point6 = new ExpressionDataPoint();
-		point6.setGeneId("VNG1282G");
-		point6.setExpressionValue(0.153D);
-		points2.add(point4);
-		points2.add(point5);
-		points2.add(point6);
-		set2.setPoints(points2);
-		set2.setId("condition2");
-		List<ExpressionDataSample> sets = new ArrayList<ExpressionDataSample>();
-		sets.add(set1);
-		sets.add(set2);
-		series.setSamples(sets);
+		List<String> sampleIds = new ArrayList<String>();
+		sampleIds.add(sample1.getKbId());
+		sampleIds.add(sample2.getKbId());
+		series.setExpressionSampleIds(sampleIds);
 		// String result = KbasecmonkeyServerImp.getInputTable(collection);
 
 	}
@@ -137,14 +135,19 @@ public class CmonkeyServerImplTest {
 
 	@Test
 	public final void testBuildCmonkeyNetworkJobFromWs() throws Exception {
-		String collectionId = "HalobacteriumExpressionSeries";
-		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		String collectionId = "AKtest/TestExpressionSeries";
+		String genomeId = "kb|g.2723";
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
-		params.setNoMotifs(0L);
-		params.setNoNetworks(0L);
-		params.setNoOperons(0L);
-		params.setNoString(0L);
-		String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, collectionId, params, token);
+		params.setMotifsScoring(0L);
+		params.setNetworksScoring(1L);
+		params.setOperomeId("");
+		params.setNetworkId("");
+		params.setSeriesId(collectionId);
+		params.setGenomeId(genomeId);
+		
+		String jobId = CmonkeyServerImpl.jobClient(token.toString()).createJob();
+		//String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, params, token);
+		CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(workspaceName, params, jobId, token.toString(), null);
 		
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);
@@ -167,24 +170,32 @@ public class CmonkeyServerImplTest {
 		String[] resultIdParts = resultId.split("/");
 		resultId = resultIdParts[1];
 
-		GetObjectParams objectParams = new GetObjectParams().withType("CmonkeyRunResult").withId(resultId).withWorkspace(workspaceName).withAuth(token.toString());
-		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(objectParams);
-		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
+		CmonkeyRunResult result = CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, resultId, token.toString()).getData().asClassInstance(CmonkeyRunResult.class);
 		
 		
-		assertEquals(Long.valueOf("43"), result.getClustersNumber());
+		assertEquals(Long.valueOf("43"), result.getNetwork().getClustersNumber());
 	}
 
 	@Test
+	public final void testEnvironment() throws Exception {
+		System.out.println(CmonkeyServerImpl.executeCommand("which R", "."));
+	}
+	
+
+	
+	@Test
 	public final void testFastBuildCmonkeyNetworkJobFromWs() throws Exception {
-		String collectionId = "HalobacteriumExpressionSeries";
-		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		String seriesRef = "AKtest/QuickTestExpressionSeries";
+		String genomeId = "kb|g.2723";
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
-		params.setNoMotifs(1L);
-		params.setNoNetworks(1L);
-		params.setNoOperons(1L);
-		params.setNoString(1L);
-		String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, collectionId, params, token);
+		params.setMotifsScoring(1L);
+		params.setNetworksScoring(0L);
+		params.setSeriesId(seriesRef);
+		params.setGenomeId(genomeId);
+		
+		String jobId = CmonkeyServerImpl.jobClient(token.toString()).createJob();
+		//String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, params, token);
+		CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(workspaceName, params, jobId, token.toString(), null);
 		
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);
@@ -195,7 +206,7 @@ public class CmonkeyServerImplTest {
 			resultId = res.getWorkspaceids().get(0);
 			System.out.println("Result ID = " + resultId);
 			assertNotNull(resultId);
-			
+		
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -206,29 +217,27 @@ public class CmonkeyServerImplTest {
 		
 		String[] resultIdParts = resultId.split("/");
 		resultId = resultIdParts[1];
-
-		GetObjectParams objectParams = new GetObjectParams().withType("CmonkeyRunResult").withId(resultId).withWorkspace(workspaceName).withAuth(token.toString());
-		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(objectParams);
-		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
+		CmonkeyRunResult result = CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, resultId, token.toString()).getData().asClassInstance(CmonkeyRunResult.class);;
 		
-		
-		assertEquals(Long.valueOf("43"), result.getClustersNumber());
+		assertEquals(Long.valueOf("3"), result.getNetwork().getClustersNumber());
 	}
 
 	@Test
 	public final void testParseCmonkeySql() throws Exception {
 		CmonkeyRunResult cmonkeyRun = new CmonkeyRunResult();
 		CmonkeyServerImpl.parseCmonkeySql(TEST_DATABASE_PATH, cmonkeyRun);
+		//cmonkeyRun.setId(CmonkeyServerImpl.getKbaseId("CmonkeyRunResult"));
 		showCmonkeyRun(cmonkeyRun);
 		assertNotNull(cmonkeyRun);
-		assertEquals(Long.valueOf("43"), cmonkeyRun.getClustersNumber());
+		assertEquals(Long.valueOf("43"), cmonkeyRun.getNetwork().getClustersNumber());
 		assertEquals(2, cmonkeyRun.getNetwork().getClusters().get(0).getMotifs().size());
 
 	}
 
 	@Test
 	public final void testGetInputTable() {
-		String result = CmonkeyServerImpl.getInputTable(series);
+
+		String result = CmonkeyServerImpl.getInputTable("AKtest", series.getExpressionSampleIds(), token.toString());
 		System.out.println(result);
 		assertEquals(
 				"GENE\tcondition1\tcondition2\nVNG1659G\t-0.082\t-0.059\nVNG1282G\t0.152\t0.153\nVNG1951G\t0.026\t-0.002\n",
@@ -238,75 +247,64 @@ public class CmonkeyServerImplTest {
 	@Test
 	public final void testWriteInputFile() {
 		String testFile = "test/halo_ratios5.tsv";
-		ExpressionDataSeries testCollection = readCollectionFromFile(testFile);
-		String result = CmonkeyServerImpl.getInputTable(testCollection);
+
+		List<String> testSeriesIds = readCollectionFromFile(testFile);
+		ExpressionSeries testCollection = UObject.transformObjectToObject(CmonkeyServerImpl.getObjectFromWorkspace("AKtest", testSeriesIds.get(0), token.toString()), ExpressionSeries.class);
+
+		String result = CmonkeyServerImpl.getInputTable("AKtest", testCollection.getExpressionSampleIds(), token.toString());
 		CmonkeyServerImpl.writeInputFile("test/halo_testinput.txt", result);
-		assertEquals(5, testCollection.getSamples().size());
+		assertEquals(5, testCollection.getExpressionSampleIds().size());
 		// TODO: check file content
 	}
 
-	@Test
+/*	@Test
 	public final void testGetOrganismCode() {
-		String result;
+
+		String result = null;
 		try {
-			result = CmonkeyServerImpl.getOrganismName(series);
+			result = CmonkeyServerImpl.getOrganismName("AKtest", series, token.toString());
 			assertEquals("Halobacterium sp. NRC-1", result);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 
-	@Test
+/*	@Test
 	public final void testGetOrganismCodeWrongData() {
-		ExpressionDataSeries testCollection = new ExpressionDataSeries();
-		ExpressionDataSample set1 = new ExpressionDataSample();
-		ExpressionDataSample set2 = new ExpressionDataSample();
+		ExpressionSeries testSeries = new ExpressionSeries();
+		ExpressionSample sample1 = new ExpressionSample();
+		ExpressionSample sample2 = new ExpressionSample();
 		// points for set 1
-		List<ExpressionDataPoint> points1 = new ArrayList<ExpressionDataPoint>();
-		ExpressionDataPoint point1 = new ExpressionDataPoint();
-		point1.setGeneId("VNG1951G");
-		point1.setExpressionValue(0.026D);
-		ExpressionDataPoint point2 = new ExpressionDataPoint();
-		point2.setGeneId("VNG1659G");
-		point2.setExpressionValue(-0.082D);
-		ExpressionDataPoint point3 = new ExpressionDataPoint();
-		point3.setGeneId("VNG1282G");
-		point3.setExpressionValue(0.152D);
-		points1.add(point1);
-		points1.add(point2);
-		points1.add(point3);
-		set1.setPoints(points1);
-		set1.setId("condition1");
+		Map<String, Double> dataPoints1 = new HashMap<String, Double>();
+		dataPoints1.put("VNG1951G", 0.026D);
+		dataPoints1.put("VNG1659G", -0.082D);
+		dataPoints1.put("VNG1282G", 0.152D);
+		sample1.setExpressionLevels(dataPoints1);
+		sample1.setKbId("kb|sample.test1");
+
+		Map<String, Double> dataPoints2 = new HashMap<String, Double>();
+		dataPoints2.put("VNG1951G", -0.002D);
+		dataPoints2.put("VNG1659G", -0.059D);
+		dataPoints2.put("DVU0745", 0.153D);
+		sample1.setExpressionLevels(dataPoints2);
+		sample1.setKbId("kb|sample.test2");
+
 		// points for set2
-		List<ExpressionDataPoint> points2 = new ArrayList<ExpressionDataPoint>();
-		ExpressionDataPoint point4 = new ExpressionDataPoint();
-		point4.setGeneId("VNG1951G");
-		point4.setExpressionValue(-0.002D);
-		ExpressionDataPoint point5 = new ExpressionDataPoint();
-		point5.setGeneId("VNG1659G");
-		point5.setExpressionValue(-0.059D);
-		ExpressionDataPoint point6 = new ExpressionDataPoint();
-		point6.setGeneId("DVU0745");
-		point6.setExpressionValue(0.153D);
-		points2.add(point4);
-		points2.add(point5);
-		points2.add(point6);
-		set2.setPoints(points2);
-		set2.setId("condition2");
-		List<ExpressionDataSample> sets = new ArrayList<ExpressionDataSample>();
-		sets.add(set1);
-		sets.add(set2);
-		testCollection.setSamples(sets);
+		List<String> sampleIds = new ArrayList<String>();
+		sampleIds.add(sample1.getKbId());
+		sampleIds.add(sample2.getKbId());
+		testSeries.setExpressionSampleIds(sampleIds);
+
 		String result = null;
 		try {
-			result = CmonkeyServerImpl.getOrganismName(testCollection);
+			result = CmonkeyServerImpl.getOrganismName(testSeries);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			assertNull(result);
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	@Test
 	public final void testGetKeggCode() {
@@ -318,12 +316,10 @@ public class CmonkeyServerImplTest {
 	@Test
 	public final void testReadCollectionFromFile() {
 		String testFile = "test/halo_ratios5.tsv";
-		ExpressionDataSeries testCollection = readCollectionFromFile(testFile);
-		assertEquals(5, testCollection.getSamples().size());
-		assertEquals(2400, testCollection.getSamples().get(0)
-				.getPoints().size());
-		assertEquals("VNG0245G", testCollection.getSamples().get(0)
-				.getPoints().get(0).getGeneId());
+
+		List<String> testSeriesIds = readCollectionFromFile(testFile);
+		ExpressionSeries testCollection = UObject.transformObjectToObject(CmonkeyServerImpl.getObjectFromWorkspace("AKtest", testSeriesIds.get(0), token.toString()), ExpressionSeries.class);
+		assertEquals(5, testCollection.getExpressionSampleIds().size());
 	}
 
 	@Test
@@ -334,21 +330,34 @@ public class CmonkeyServerImplTest {
 	
 	@Test
 	public void testWsRead() throws Exception {
-		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		GetObjectParams params = new GetObjectParams().withType("ExpressionDataCollection").withId(testSeriesId).withWorkspace(workspaceName).withAuth(token.toString());
-		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(params);
-		ExpressionDataSeries result = us.kbase.common.service.UObject.transformObjectToObject(output.getData(), ExpressionDataSeries.class);
-		assertEquals(series.getId(),result.getId());
+		String name = "";
+
+		ExpressionSeries result = UObject.transformObjectToObject(CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, name, token.toString()), ExpressionSeries.class);
+
+		assertEquals(series.getKbId(),result.getKbId());
 	}
 
 
-	private ExpressionDataSeries readCollectionFromFile(String fileName) {
-		ExpressionDataSeries collection = new ExpressionDataSeries();
-		collection.setId("testcollection");
-		List<ExpressionDataSample> dataSets = new ArrayList<ExpressionDataSample>();
+	private List<String> readCollectionFromFile(String fileName) {
+		List<String> result = new ArrayList<String>();
+		ExpressionSeries series = new ExpressionSeries();
+		try {
+			series.setKbId(CmonkeyServerImpl.getKbaseId("ExpressionSeries"));//("TestExpressionSeries");//
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		series.setSourceId("unknown");
+		series.setExternalSourceDate("unknown");
+		result.add(series.getKbId());
+
+		
+
+		List<String> sampleRefs = new ArrayList<String>();
 		List<String> conditions = new ArrayList<String>();
-		List<HashMap<String, Double>> data = new ArrayList<HashMap<String, Double>>();
-		Integer conditionsNumber = 0;
+		List<HashMap<String, Double>> dataValues = new ArrayList<HashMap<String, Double>>();
+		
+		Integer samplesNumber = 0;
 		try {
 			String line = null;
 			BufferedReader br = new BufferedReader(new FileReader(fileName));
@@ -360,21 +369,21 @@ public class CmonkeyServerImplTest {
 					String[] fields = line.split("\t");
 					for (String field : fields) {
 						conditions.add(field);
-						// System.out.println(field);
-						conditionsNumber++;
+						 //System.out.println(field);
+						samplesNumber++;
 					}
-					for (Integer i = 0; i < conditionsNumber; i++) {
-						HashMap<String, Double> series = new HashMap<String, Double>();
-						data.add(series);
+					for (Integer i = 0; i < samplesNumber; i++) {
+						HashMap<String, Double> dataValue = new HashMap<String, Double>();
+						dataValues.add(dataValue);
 					}
 
 				} else {
 					String[] fields = line.split("\t");
 					Integer j = 0;
-					while (j < conditionsNumber) {
-						data.get(j).put(fields[0],
+					while (j < samplesNumber) {
+						dataValues.get(j).put(fields[0],
 								Double.valueOf(fields[j + 1]));
-						// System.out.println(fields[0]+" "+fields[j+1]);
+						 //System.out.println(fields[0]+" "+fields[j+1]);
 						j++;
 					}
 				}
@@ -384,25 +393,25 @@ public class CmonkeyServerImplTest {
 			System.out.println(e.getLocalizedMessage());
 		}
 
-		// System.out.println(conditionsNumber.toString());
-		for (Integer i = 0; i < conditionsNumber; i++) {
-			ExpressionDataSample dataSet = new ExpressionDataSample();
-			dataSet.setId(conditions.get(i));
-			// System.out.println("DataSetId = "+dataSet.getExpressionDataSetId());
-			List<ExpressionDataPoint> pointsList = new ArrayList<ExpressionDataPoint>();
-			for (Map.Entry<String, Double> entry : data.get(i).entrySet()) {
-				ExpressionDataPoint dataPoint = new ExpressionDataPoint();
-				dataPoint.setGeneId(entry.getKey());
-				dataPoint.setExpressionValue(entry.getValue());
-				// System.out.println("\t\tDataPoint: gene = " + entry.getKey()
-				// + "expression = "+entry.getValue());
-				pointsList.add(dataPoint);
-			}
-			dataSet.setPoints(pointsList);
-			dataSets.add(dataSet);
+		 System.out.println(conditions.toString());
+		for (Integer i = 0; i < samplesNumber; i++) {
+			ExpressionSample sample = new ExpressionSample();
+			//Integer sampleNo = i+1;
+			sample.setKbId(CmonkeyServerImpl.getKbaseId("ExpressionSample"));//("TestExpressionSample"+sampleNo.toString());//
+			sample.setSourceId(conditions.get(i));
+			sample.setType("microarray");
+			sample.setNumericalInterpretation("undefined");
+			sample.setExternalSourceDate("undefined");
+			sample.setGenomeId("kb|genome.1");
+			sample.setExpressionLevels(dataValues.get(i));
+			sampleRefs.add(workspaceName + "/" + sample.getKbId());
+			CmonkeyServerImpl.saveObjectToWorkspace(UObject.transformObjectToObject(sample, UObject.class), "ExpressionServices.ExpressionSample-1.0", workspaceName, sample.getKbId(), token.toString());
+			result.add(sample.getKbId());
+						
 		}
-		collection.setSamples(dataSets);
-		return collection;
+		series.setExpressionSampleIds(sampleRefs);
+		CmonkeyServerImpl.saveObjectToWorkspace(UObject.transformObjectToObject(series, UObject.class), "ExpressionServices.ExpressionSeries-1.0", workspaceName, series.getKbId(), token.toString());
+		return result;
 	}
 
 	private static void runCmonkey() throws IOException, InterruptedException {
@@ -438,12 +447,12 @@ public class CmonkeyServerImplTest {
 		System.out.println("CMONKEY RUN PARAMETERS:");
 		System.out.println("\tstart time = "+runResult.getStartTime());
 		System.out.println("\tfinish time = "+runResult.getFinishTime());
-		System.out.println("\torganism = "+runResult.getOrganism());
+		System.out.println("\torganism = "+runResult.getNetwork().getGenomeName());
 		System.out.println("\titerations = "+runResult.getIterationsNumber());
 		System.out.println("\tlast iteration = "+runResult.getLastIteration());
-		System.out.println("\trows = "+runResult.getRowsNumber());
-		System.out.println("\tcolumns = "+runResult.getColumnsNumber());
-		System.out.println("\tclusters = "+runResult.getClustersNumber()+"\n");
+		System.out.println("\trows = "+runResult.getNetwork().getRowsNumber());
+		System.out.println("\tcolumns = "+runResult.getNetwork().getColumnsNumber());
+		System.out.println("\tclusters = "+runResult.getNetwork().getClustersNumber()+"\n");
 
 		System.out.println("NETWORK\n");
 		System.out.println("\tNetwork ID = "+runResult.getNetwork().getId()+"\n");
@@ -451,14 +460,14 @@ public class CmonkeyServerImplTest {
 			System.out.println("\tCLUSTER:");
 			System.out.println("\t\tCluster ID = "+cluster.getId());
 			System.out.println("\t\tNumber of genes = "+cluster.getGeneIds().size());
-			System.out.println("\t\tNumber of conditions = "+cluster.getDatasetIds().size());
+			System.out.println("\t\tNumber of conditions = "+cluster.getSampleWsIds().size());
 			System.out.println("\t\tResidual = "+cluster.getResidual());
 			System.out.println("\t\tGENES:");
 			for (String gene:cluster.getGeneIds()){
 				System.out.println("\t\t\t"+gene);
 			}
 			System.out.println("\t\tCONDITIONS:");
-			for (String condition:cluster.getDatasetIds()){
+			for (String condition:cluster.getSampleWsIds()){
 				System.out.println("\t\t\t"+condition);
 			}
 			System.out.println("\t\tMOTIFS:");
@@ -474,30 +483,29 @@ public class CmonkeyServerImplTest {
 				}
 				System.out.println("\t\t\t\tMOTIF HITS:");
 				for (MastHit hit:motif.getHits()){
-					System.out.println("\t\t\t\t\t"+hit.getSequenceId()+"\t"+hit.getHitStart()+"\t"+hit.getHitEnd()+"\t"+
+					System.out.println("\t\t\t\t\t"+hit.getSeqId()+"\t"+hit.getHitStart()+"\t"+hit.getHitEnd()+"\t"+
 							hit.getStrand()+"\t"+hit.getHitPvalue());
 				}
 			}
 			System.out.println();
 		}
 	}
-	@Test
+/*	@Test
 	public void testWsWriteRead() throws Exception {
-//		WSRegisterType registerType = new WSRegisterType("MastHit");
-//		WSRegisterType registerType2 = new WSRegisterType("CmonkeyRunResult");
-		String id = "QuickTestExpressionDataSeries";
+		String id = "QuickTestExpressionDataSeries12345";
 		String testFile = "/home/kbase/cmonkey-test/mini-halo_ratios5.tsv";
-		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 
-		ExpressionDataSeries testCollection = readCollectionFromFile(testFile);
-	    testCollection.setId(id);
-	    CmonkeyServerImpl.saveObjectToWorkspace(UObject.transformObjectToObject(testCollection, UObject.class), testCollection.getClass().getSimpleName(), workspaceName, testCollection.getId(), token.toString());
+		List<String> testSeriesIds = readCollectionFromFile(testFile);
+		System.out.println(testSeriesIds.toString());
 		
-		GetObjectParams params = new GetObjectParams().withType("ExpressionDataSeries").withId(id).withWorkspace(workspaceName).withAuth(token.toString());
-		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(params);
-		ExpressionDataSeries result = UObject.transformObjectToObject(output.getData(), ExpressionDataSeries.class);
-		assertEquals(testCollection.getId(),result.getId());		
-	}
+		ExpressionSeries testCollection = CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, testSeriesIds.get(0), token.toString()).getData().asClassInstance(ExpressionSeries.class);
+	    testCollection.setKbId(id);
+	    
+	    CmonkeyServerImpl.saveObjectToWorkspace(UObject.transformObjectToObject(testCollection, UObject.class), "ExpressionServices.ExpressionSeries-1.0", workspaceName, testCollection.getKbId(), token.toString());
+		ExpressionSeries result = CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, id, token.toString()).getData().asClassInstance(ExpressionSeries.class);
+
+		assertEquals(testCollection.getKbId(),result.getKbId());		
+	}*/
 
 	@Test
 	public final void testGetKbaseId() throws Exception {
@@ -507,41 +515,6 @@ public class CmonkeyServerImplTest {
 		
 	}
 	
-	@Test
-	public final void testCmonkeyJsonExport() throws Exception {
-		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String id = "TestCmonkeyRunResult";
-		GetObjectParams objectParams = new GetObjectParams().withType("CmonkeyRunResult").withId(id).withWorkspace(workspaceName).withAuth(token.toString());
-		GetObjectOutput output = CmonkeyServerImpl.wsClient(token.toString()).getObject(objectParams);
-		CmonkeyRunResult result = UObject.transformObjectToObject(output.getData(), CmonkeyRunResult.class);
-
-		String resultJson = "[";
-		
-		for (CmonkeyCluster cluster: result.getNetwork().getClusters()){
-			resultJson += "{";
-			resultJson += "\"nrows\": "+cluster.getGeneIds().size()+",";
-			resultJson += "\"ncols\": "+cluster.getDatasetIds().size()+",";
-			resultJson += "\"rows\": [";
-			for (String geneId : cluster.getGeneIds()){
-				resultJson += "\""+geneId+"\",";
-			}
-			resultJson += "]'";
-			resultJson += "\"cols\": [";
-			for (String condition : cluster.getDatasetIds()){
-				resultJson += "\""+condition+"\",";
-			}
-			resultJson += "]'";
-			resultJson += "\"k\": "+cluster.getId()+",";
-			resultJson += "\"resid\": "+cluster.getResidual()+"},";
-		}
-		resultJson = resultJson.substring(0, resultJson.length() - 1);
-		resultJson += "]";
-		
-		System.out.println(resultJson);
-		assertNotNull(result);
-		
-	}
-
 	
 	@Test
 	public void testToken() throws Exception {
@@ -562,5 +535,43 @@ public class CmonkeyServerImplTest {
 		
 	}
 
+
+	@Test
+	public void testWsRegisterType() throws Exception {
+		//Now CompileTypespec
+		
+		RegisterTypespecParams params = new RegisterTypespecParams();
+		String specFileName = "/home/kbase/dev_container/modules/cmonkey/kbase_cmonkey.spec";
+		String spec = "";
+		BufferedReader br = null;
+		try {
+			String line = null;
+			br = new BufferedReader(new FileReader(specFileName));
+			while ((line = br.readLine()) != null) {
+				spec += line + "\n";
+			}
+		} catch (IOException e) {
+			System.out.println(specFileName + "read error\n" + e.getLocalizedMessage());
+		} finally {
+			if (br != null) {
+				br.close();
+			}
+		}
+		params.setSpec(spec);
+
+//		params.setMod("Cmonkey");
+		List<String> types = new ArrayList<String>();
+		types.add("CmonkeyRunResult");
+//		types.add("CmonkeyNetwork");
+//		types.add("CmonkeyCluster");
+//		types.add("CmonkeyMotif");
+		params.setNewTypes(types);
+		Map<String,String> result = CmonkeyServerImpl.wsClient(token.toString()).registerTypespec(params);
+		System.out.println(result.toString());
+		assertNotNull(result);
+		
+	}
+
+	
 }
 
