@@ -189,10 +189,13 @@ public class CmonkeyServerImplTest {
 	@Test
 	public final void testWriteCmonkeyRunResult() throws Exception {
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
-		params.setMotifsScoring(0L);
-		params.setNetworksScoring(0L);
+		params.setMotifsScoring(1L);
+		params.setNetworksScoring(1L);
 		params.setSeriesRef(testSeriesRef);
 		params.setGenomeRef(testGenomeRef);
+		params.setOperomeRef(testOperonNetworkRef);
+		params.setNetworkRef(testStringNetworkRef);
+		
 
 		CmonkeyRunResult cmonkeyRun = new CmonkeyRunResult();
 		CmonkeyServerImpl.parseCmonkeySql(TEST_DATABASE_PATH, cmonkeyRun);

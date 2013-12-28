@@ -80,11 +80,11 @@ public class GenomeExporter {
 				String featureType = feature.getType();
 				if (featureType.equals("peg")) featureType = "CDS"; 
 				writer.write("\t" + featureType); //type
-				if (feature.getAliases().size() > 1) {
+/*				if (feature.getAliases().size() > 1) {
 					writer.write("\t" + feature.getAliases().get(1)); //id
 				} else {
-					writer.write("\t" + feature.getId()); //or primary name
-				}
+*/					writer.write("\t" + feature.getId()); //or primary name
+//				}
 				writer.write("\t" + feature.getLocation().get(0).getE1()); //contig
 				writer.write("\t" + feature.getLocation().get(0).getE3().toString()); //start position
 				Long endPos = feature.getLocation().get(0).getE3() + feature.getLocation().get(0).getE5() - 1;
@@ -123,7 +123,9 @@ public class GenomeExporter {
 			writer = new BufferedWriter(new FileWriter(workDir + filePrefix + FEATURENAMES));
 			writer.write("-- class       	Genbank::Feature\n-- table       	feature_names\n-- id	names");
 			for (Feature feature: features){
-				writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(1) + "\tprimary");
+//				writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(1) + "\tprimary");
+				writer.write("\n" + feature.getId() + "\t" + feature.getId() + "\tprimary");
+				writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(1) + "\talternate");
 				writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(0) + "\talternate");
 				for (int i = 2; i < feature.getAliases().size(); i++){
 					writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(i) + "\talternate");
