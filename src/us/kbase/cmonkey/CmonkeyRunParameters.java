@@ -17,96 +17,97 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Contains parameters of a cMonkey run
  * int networks_scoring = <0|1> - if 1, Network scoring will be used
  * int motifs_scoring = <0|1> - if 1, Motif scoring will be used
- * expression_series_ws_id series_id - workspace id of expression data series;
- * genome_ws_id genome_id - workspace id of genome;
- * operome_ws_id operome_id - workspace id of operome;
- * network_ws_id network_id - workspace id of network;
+ * expression_series_ws_ref series_id - workspace id of expression data series;
+ * genome_ws_ref genome_id - workspace id of genome;
+ * operons_ws_ref operome_id - workspace id of operome;
+ * network_ws_ref network_id - workspace id of network;
+ * @optional genome_ref operome_ref network_ref
  * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "series_id",
-    "genome_id",
-    "operome_id",
-    "network_id",
+    "series_ref",
+    "genome_ref",
+    "operome_ref",
+    "network_ref",
     "networks_scoring",
     "motifs_scoring"
 })
 public class CmonkeyRunParameters {
 
-    @JsonProperty("series_id")
-    private String seriesId;
-    @JsonProperty("genome_id")
-    private String genomeId;
-    @JsonProperty("operome_id")
-    private String operomeId;
-    @JsonProperty("network_id")
-    private String networkId;
+    @JsonProperty("series_ref")
+    private String seriesRef;
+    @JsonProperty("genome_ref")
+    private String genomeRef;
+    @JsonProperty("operome_ref")
+    private String operomeRef;
+    @JsonProperty("network_ref")
+    private String networkRef;
     @JsonProperty("networks_scoring")
     private Long networksScoring;
     @JsonProperty("motifs_scoring")
     private Long motifsScoring;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("series_id")
-    public String getSeriesId() {
-        return seriesId;
+    @JsonProperty("series_ref")
+    public String getSeriesRef() {
+        return seriesRef;
     }
 
-    @JsonProperty("series_id")
-    public void setSeriesId(String seriesId) {
-        this.seriesId = seriesId;
+    @JsonProperty("series_ref")
+    public void setSeriesRef(String seriesRef) {
+        this.seriesRef = seriesRef;
     }
 
-    public CmonkeyRunParameters withSeriesId(String seriesId) {
-        this.seriesId = seriesId;
+    public CmonkeyRunParameters withSeriesRef(String seriesRef) {
+        this.seriesRef = seriesRef;
         return this;
     }
 
-    @JsonProperty("genome_id")
-    public String getGenomeId() {
-        return genomeId;
+    @JsonProperty("genome_ref")
+    public String getGenomeRef() {
+        return genomeRef;
     }
 
-    @JsonProperty("genome_id")
-    public void setGenomeId(String genomeId) {
-        this.genomeId = genomeId;
+    @JsonProperty("genome_ref")
+    public void setGenomeRef(String genomeRef) {
+        this.genomeRef = genomeRef;
     }
 
-    public CmonkeyRunParameters withGenomeId(String genomeId) {
-        this.genomeId = genomeId;
+    public CmonkeyRunParameters withGenomeRef(String genomeRef) {
+        this.genomeRef = genomeRef;
         return this;
     }
 
-    @JsonProperty("operome_id")
-    public String getOperomeId() {
-        return operomeId;
+    @JsonProperty("operome_ref")
+    public String getOperomeRef() {
+        return operomeRef;
     }
 
-    @JsonProperty("operome_id")
-    public void setOperomeId(String operomeId) {
-        this.operomeId = operomeId;
+    @JsonProperty("operome_ref")
+    public void setOperomeRef(String operomeRef) {
+        this.operomeRef = operomeRef;
     }
 
-    public CmonkeyRunParameters withOperomeId(String operomeId) {
-        this.operomeId = operomeId;
+    public CmonkeyRunParameters withOperomeRef(String operomeRef) {
+        this.operomeRef = operomeRef;
         return this;
     }
 
-    @JsonProperty("network_id")
-    public String getNetworkId() {
-        return networkId;
+    @JsonProperty("network_ref")
+    public String getNetworkRef() {
+        return networkRef;
     }
 
-    @JsonProperty("network_id")
-    public void setNetworkId(String networkId) {
-        this.networkId = networkId;
+    @JsonProperty("network_ref")
+    public void setNetworkRef(String networkRef) {
+        this.networkRef = networkRef;
     }
 
-    public CmonkeyRunParameters withNetworkId(String networkId) {
-        this.networkId = networkId;
+    public CmonkeyRunParameters withNetworkRef(String networkRef) {
+        this.networkRef = networkRef;
         return this;
     }
 
@@ -152,7 +153,7 @@ public class CmonkeyRunParameters {
 
     @Override
     public String toString() {
-        return ((((((((((((((("CmonkeyRunParameters"+" [seriesId=")+ seriesId)+", genomeId=")+ genomeId)+", operomeId=")+ operomeId)+", networkId=")+ networkId)+", networksScoring=")+ networksScoring)+", motifsScoring=")+ motifsScoring)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((("CmonkeyRunParameters"+" [seriesRef=")+ seriesRef)+", genomeRef=")+ genomeRef)+", operomeRef=")+ operomeRef)+", networkRef=")+ networkRef)+", networksScoring=")+ networksScoring)+", motifsScoring=")+ motifsScoring)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

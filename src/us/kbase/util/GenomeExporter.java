@@ -49,72 +49,61 @@ public class GenomeExporter {
 		String contigSetRef = genome.getContigsetRef();
 		ContigSet contigSet = WsDeluxeUtil.getObjectFromWsByRef(contigSetRef, token).getData().asClassInstance(ContigSet.class);
 		for (Contig contig : contigSet.getContigs()){
-			String fileName = workDir + filePrefix + "_" + contig.getName();
-			writeFile (fileName, contig.getSequence());
+			BufferedWriter writer = null;
+			try {
+				writer = new BufferedWriter(new FileWriter(workDir + filePrefix + "_" + contig.getName()));
+				writer.write(contig.getSequence());
+			} catch (IOException e) {
+				System.out.println(e.getLocalizedMessage());
+			} finally {
+				try {
+					if (writer != null)
+						writer.close();
+				} catch (IOException e) {
+					System.out.println(e.getLocalizedMessage());
+				}
+			}
 		}
 	}
 	
 	public void writeFeaturesFile(List<Feature> features){
-		String fileContent = "-- dump date   	20121212_172621\n-- class       	Genbank::Feature\n-- table       	feature\n-- table       	main\n" +
-				"-- field 1	id\n-- field 2	type\n-- field 3	name\n-- field 4	contig\n-- field 5	start_pos\n-- field 6	end_pos\n-- field 7	strand\n-- field 8	description\n" + 
-				"-- field 9	chrom_position\n-- field 10	organism\n-- field 11	GeneID\n-- header\n-- id	type	name	contig	start_pos	end_pos	strand	description	chrom_position	organism	GeneID\n";
-		
-		for (Feature feature: features){
-			
-			fileContent += feature.getId();
-			String featureType = feature.getType();
-			if (featureType.equals("peg")) featureType = "CDS"; 
-			fileContent += "\t" + featureType; //type
-			if (feature.getAliases().size() > 1) {
-				fileContent += "\t" + feature.getAliases().get(1); //id
-			} else {
-				fileContent += "\t" + feature.getId(); //or primary name
-			}
-			fileContent += "\t" + feature.getLocation().get(0).getE1(); //contig
-			fileContent += "\t" + feature.getLocation().get(0).getE3().toString(); //start position
-			Long endPos = feature.getLocation().get(0).getE3() + feature.getLocation().get(0).getE5() - 1;
-			fileContent += "\t" + endPos.toString(); //end pos
-			fileContent += "\t" + feature.getLocation().get(0).getE4();//strand
-			fileContent += "\t" + feature.getFunction(); //description
-			if (feature.getLocation().get(0).getE4().equals("R")){
-				fileContent += "\tcomplement(" + feature.getLocation().get(0).getE3().toString() + ".." + endPos.toString() + ")";
-			} else {
-				fileContent += "\t" + feature.getLocation().get(0).getE3().toString() + ".." + endPos.toString();
-			}
-			fileContent += "\t" + genome.getScientificName();//organism
-			if (feature.getAliases().size() > 2) {
-				fileContent += "\t" + feature.getAliases().get(2); //gene name
-			} else {
-				fileContent += feature.getId();
-			}
-			fileContent += "\n";
-		}
-		String fileName = workDir + filePrefix + FEATURES;
-		System.out.println(fileContent);
-		writeFile (fileName, fileContent);
-	}
-
-	
-	public void writeFeatureNamesFile(List<Feature> features){
-		String fileContent = "-- class       	Genbank::Feature\n-- table       	feature_names\n-- id	names";
-		for (Feature feature: features){
-			fileContent += "\n" + feature.getId() + "\t" + feature.getAliases().get(1) + "\tprimary";
-			fileContent += "\n" + feature.getId() + "\t" + feature.getAliases().get(0) + "\talternate";
-			for (int i = 2; i < feature.getAliases().size(); i++){
-				fileContent += "\n" + feature.getId() + "\t" + feature.getAliases().get(i) + "\talternate";
-			}
-		}
-		fileContent += "\n";
-		String fileName = workDir + filePrefix + FEATURENAMES;
-		System.out.println(fileContent);
-		writeFile (fileName, fileContent);
-	}
-	
-	private void writeFile (String filename, String content){
 		BufferedWriter writer = null;
 		try {
-			writer = new BufferedWriter(new FileWriter(filename));
-			writer.write(content);
+			writer = new BufferedWriter(new FileWriter(workDir + filePrefix + FEATURES));
+			writer.write("-- dump date   	20121212_172621\n-- class       	Genbank::Feature\n-- table       	feature\n-- table       	main\n" +
+					"-- field 1	id\n-- field 2	type\n-- field 3	name\n-- field 4	contig\n-- field 5	start_pos\n-- field 6	end_pos\n-- field 7	strand\n-- field 8	description\n" + 
+					"-- field 9	chrom_position\n-- field 10	organism\n-- field 11	GeneID\n-- header\n-- id	type	name	contig	start_pos	end_pos	strand	description	chrom_position	organism	GeneID\n");
+			
+			for (Feature feature: features){
+				
+				writer.write(feature.getId());
+				String featureType = feature.getType();
+				if (featureType.equals("peg")) featureType = "CDS"; 
+				writer.write("\t" + featureType); //type
+				if (feature.getAliases().size() > 1) {
+					writer.write("\t" + feature.getAliases().get(1)); //id
+				} else {
+					writer.write("\t" + feature.getId()); //or primary name
+				}
+				writer.write("\t" + feature.getLocation().get(0).getE1()); //contig
+				writer.write("\t" + feature.getLocation().get(0).getE3().toString()); //start position
+				Long endPos = feature.getLocation().get(0).getE3() + feature.getLocation().get(0).getE5() - 1;
+				writer.write("\t" + endPos.toString()); //end pos
+				writer.write("\t" + feature.getLocation().get(0).getE4());//strand
+				writer.write("\t" + feature.getFunction()); //description
+				if (feature.getLocation().get(0).getE4().equals("R")){
+					writer.write("\tcomplement(" + feature.getLocation().get(0).getE3().toString() + ".." + endPos.toString() + ")");
+				} else {
+					writer.write("\t" + feature.getLocation().get(0).getE3().toString() + ".." + endPos.toString());
+				}
+				writer.write("\t" + genome.getScientificName());//organism
+				if (feature.getAliases().size() > 2) {
+					writer.write("\t" + feature.getAliases().get(2)); //gene name
+				} else {
+					writer.write(feature.getId());
+				}
+				writer.write("\n");
+			}
 		} catch (IOException e) {
 			System.out.println(e.getLocalizedMessage());
 		} finally {
@@ -126,7 +115,31 @@ public class GenomeExporter {
 			}
 		}
 	}
-	
 
+	
+	public void writeFeatureNamesFile(List<Feature> features){
+		BufferedWriter writer = null;
+		try {
+			writer = new BufferedWriter(new FileWriter(workDir + filePrefix + FEATURENAMES));
+			writer.write("-- class       	Genbank::Feature\n-- table       	feature_names\n-- id	names");
+			for (Feature feature: features){
+				writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(1) + "\tprimary");
+				writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(0) + "\talternate");
+				for (int i = 2; i < feature.getAliases().size(); i++){
+					writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(i) + "\talternate");
+				}
+			}
+			writer.write("\n");
+		} catch (IOException e) {
+			System.out.println(e.getLocalizedMessage());
+		} finally {
+			try {
+				if (writer != null)
+					writer.close();
+			} catch (IOException e) {
+				System.out.println(e.getLocalizedMessage());
+			}
+		}
+	}	
 	
 }

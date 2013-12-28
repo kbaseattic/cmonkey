@@ -14,10 +14,6 @@ import us.kbase.common.service.UObject;
 import us.kbase.meme.MastHit;
 import us.kbase.meme.MemeSite;
 
-//import us.kbase.auth.AuthService;
-//import us.kbase.auth.AuthToken;
-//import us.kbase.common.service.UObject;
-
 public class CmonkeySqliteTest {
 	public final String TEST_DATABASE_PATH = "test/cmonkey_run_test.db";
 	//public final String TEST_DATABASE_PATH = "/home/kbase/Documents/inferelator-test/out/cmonkey_run.db";
@@ -108,10 +104,10 @@ public class CmonkeySqliteTest {
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
 		params.setMotifsScoring(1L);
 		params.setNetworksScoring(1L);
-		params.setOperomeId("undefined");
-		params.setNetworkId("undefined");
-		params.setSeriesId(collectionId);
-		params.setGenomeId(genomeId);
+		params.setOperomeRef("undefined");
+		params.setNetworkRef("undefined");
+		params.setSeriesRef(collectionId);
+		params.setGenomeRef(genomeId);
 
 		result.setParameters(params);
 		CmonkeyServerImplTest.showCmonkeyRun(result);

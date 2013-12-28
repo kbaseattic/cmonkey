@@ -206,10 +206,12 @@ public class GenomeImporter {
 			}
 			
 			feature.setAliases(aliases);
-			if (feature.getId() == null){
+/*			if (feature.getId() == null){
 				feature.setId(feature.getAliases().get(0)); // feature ID would be feature ID if the feature has no primary name 
 			}
-
+*/
+			feature.setId(getKbaseId("Feature")); // no more external IDs for features!
+			
 			Tuple5<String, String, Long, String, Long> region = new Tuple5<String, String, Long, String, Long>();
 			region.setE1(fields[3]);
 			region.setE2(wsId + "/" + contigSet.getId() + "/" + fields[3]);

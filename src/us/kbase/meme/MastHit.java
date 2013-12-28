@@ -15,13 +15,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * <p>Original spec-file type: MastHit</p>
  * <pre>
  * Represents a particluar MAST hit
- * string sequence_id - name of sequence
+ * string seq_id - name of sequence
  * string strand - strand ("+" or "-")
  * string pspm_id - id of MemePSPM
  * int hit_start - start position of hit
  * int hit_end - end position of hit
  * float score - hit score
  * float hitPvalue - hit p-value
+ * @optional strand hit_start hit_end score hit_pvalue
  * </pre>
  * 
  */
@@ -29,8 +30,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "seq_id",
-    "strand",
     "pspm_id",
+    "strand",
     "hit_start",
     "hit_end",
     "score",
@@ -40,10 +41,10 @@ public class MastHit {
 
     @JsonProperty("seq_id")
     private String seqId;
-    @JsonProperty("strand")
-    private String strand;
     @JsonProperty("pspm_id")
     private String pspmId;
+    @JsonProperty("strand")
+    private String strand;
     @JsonProperty("hit_start")
     private Long hitStart;
     @JsonProperty("hit_end")
@@ -69,21 +70,6 @@ public class MastHit {
         return this;
     }
 
-    @JsonProperty("strand")
-    public String getStrand() {
-        return strand;
-    }
-
-    @JsonProperty("strand")
-    public void setStrand(String strand) {
-        this.strand = strand;
-    }
-
-    public MastHit withStrand(String strand) {
-        this.strand = strand;
-        return this;
-    }
-
     @JsonProperty("pspm_id")
     public String getPspmId() {
         return pspmId;
@@ -96,6 +82,21 @@ public class MastHit {
 
     public MastHit withPspmId(String pspmId) {
         this.pspmId = pspmId;
+        return this;
+    }
+
+    @JsonProperty("strand")
+    public String getStrand() {
+        return strand;
+    }
+
+    @JsonProperty("strand")
+    public void setStrand(String strand) {
+        this.strand = strand;
+    }
+
+    public MastHit withStrand(String strand) {
+        this.strand = strand;
         return this;
     }
 
@@ -171,7 +172,7 @@ public class MastHit {
 
     @Override
     public String toString() {
-        return ((((((((((((((((("MastHit"+" [seqId=")+ seqId)+", strand=")+ strand)+", pspmId=")+ pspmId)+", hitStart=")+ hitStart)+", hitEnd=")+ hitEnd)+", score=")+ score)+", hitPvalue=")+ hitPvalue)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((("MastHit"+" [seqId=")+ seqId)+", pspmId=")+ pspmId)+", strand=")+ strand)+", hitStart=")+ hitStart)+", hitEnd=")+ hitEnd)+", score=")+ score)+", hitPvalue=")+ hitPvalue)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

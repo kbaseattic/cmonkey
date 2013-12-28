@@ -112,7 +112,7 @@ public class CmonkeyInvoker {
 
 		if ( line.hasOption("operons")){
 			if (line.getOptionValue("operons") != "'null'") {
-				params.setOperomeId(cleanUpArgument(line.getOptionValue("operons")));
+				params.setOperomeRef(cleanUpArgument(line.getOptionValue("operons")));
 			}
 		}
 		else {
@@ -122,7 +122,7 @@ public class CmonkeyInvoker {
 
 		if ( line.hasOption("string")){
 			if (line.getOptionValue("string") != "'null'") {
-				params.setNetworkId(cleanUpArgument(line.getOptionValue("string")));
+				params.setNetworkRef(cleanUpArgument(line.getOptionValue("string")));
 			}
 		}
 		else {
@@ -135,11 +135,11 @@ public class CmonkeyInvoker {
 		String wsId = cleanUpArgument(line.getOptionValue("ws"));
 		System.out.println(wsId);		
 
-		params.setSeriesId(line.getOptionValue("series"));
-		System.out.println(params.getSeriesId());		
+		params.setSeriesRef(line.getOptionValue("series"));
+		System.out.println(params.getSeriesRef());		
 
-		params.setGenomeId(line.getOptionValue("genome"));
-		System.out.println(params.getGenomeId());		
+		params.setGenomeRef(line.getOptionValue("genome"));
+		System.out.println(params.getGenomeRef());		
 
 		String token = cleanUpArgument(line.getOptionValue("token"));
 		System.out.println(token);		

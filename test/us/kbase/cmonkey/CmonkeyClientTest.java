@@ -13,6 +13,7 @@ import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.Tuple7;
 import us.kbase.common.service.UObject;
 import us.kbase.userandjobstate.Results;
+import us.kbase.util.WsDeluxeUtil;
 
 public class CmonkeyClientTest {
 
@@ -22,9 +23,12 @@ public class CmonkeyClientTest {
 //	private String serverUrl = "http://140.221.84.195:7049";
 //	private String serverUrl = "http://140.221.85.173:7078";
 	private String serverUrl = "http://localhost:7049";
-	private String quickTestSeriesId = "QuickTestExpressionDataSeries";
-	private String testSeriesId = "TestExpressionDataSeries";
-	private String genomeId = "kb|genome.test";
+	private String quickTestSeriesRef = "QuickTestExpressionDataSeries";
+	private String testSeriesRef = "AKtest/kb|series.269";
+	private String genomeRef = "AKtest/kb|genome.8";
+	private String testStringNetworkRef = "AKtest/kb|interactionset.5";
+	private String testOperonNetworkRef = "AKtest/kb|interactionset.6";
+
 
 	
 	@Test
@@ -32,8 +36,10 @@ public class CmonkeyClientTest {
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 //		System.out.println(token.toString());
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
-		params.setMotifsScoring(1L);
-		params.setNetworksScoring(1L);
+		params.setMotifsScoring(0L);
+		params.setNetworksScoring(0L);
+		params.setGenomeRef(genomeRef);
+		params.setSeriesRef(testSeriesRef);
 		URL url = new URL(serverUrl);
 		CmonkeyClient client = new CmonkeyClient(url, token);
 		client.setAuthAllowedForHttp(true);
@@ -91,7 +97,7 @@ public class CmonkeyClientTest {
 		String[] resultIdParts = resultId.split("/");
 		resultId = resultIdParts[1];
 		
-		CmonkeyRunResult result = UObject.transformObjectToObject(CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, resultId, token.toString()), CmonkeyRunResult.class);
+		CmonkeyRunResult result = WsDeluxeUtil.getObjectFromWorkspace(workspaceName, resultId, token.toString()).getData().asClassInstance(CmonkeyRunResult.class);
 		
 		assertEquals(Long.valueOf("3"), result.getNetwork().getClustersNumber());
 		assertEquals(Long.valueOf("2001"), result.getLastIteration());
@@ -105,10 +111,10 @@ public class CmonkeyClientTest {
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
 		params.setMotifsScoring(1L);
 		params.setNetworksScoring(1L);
-		params.setOperomeId("");
-		params.setNetworkId("");
-		params.setSeriesId(testSeriesId);
-		params.setGenomeId(genomeId);
+		params.setOperomeRef(testOperonNetworkRef);
+		params.setNetworkRef(testStringNetworkRef);
+		params.setSeriesRef(testSeriesRef);
+		params.setGenomeRef(genomeRef);
 
 		URL url = new URL(serverUrl);
 		CmonkeyClient client = new CmonkeyClient(url, token);
@@ -167,7 +173,7 @@ public class CmonkeyClientTest {
 		String[] resultIdParts = resultId.split("/");
 		resultId = resultIdParts[1];
 
-		CmonkeyRunResult result = UObject.transformObjectToObject(CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, resultId, token.toString()), CmonkeyRunResult.class);
+		CmonkeyRunResult result = WsDeluxeUtil.getObjectFromWsByRef(workspaceName+"/"+resultId, token.toString()).getData().asClassInstance(CmonkeyRunResult.class);
 
 		assertEquals(Long.valueOf("43"), result.getNetwork().getClustersNumber());
 		assertEquals(Long.valueOf("2001"), result.getLastIteration());

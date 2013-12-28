@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * string left_flank - sequence of left flank
  * string sequence - sequence of site
  * string right_flank - sequence of right flank
+ * @optional start pvalue left_flank right_flank
  * </pre>
  * 
  */

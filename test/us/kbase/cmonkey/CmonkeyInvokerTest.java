@@ -11,11 +11,8 @@ import org.junit.Test;
 import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
 import us.kbase.common.service.JsonClientException;
-import us.kbase.common.service.UObject;
-import us.kbase.expressionservices.ExpressionSeries;
 import us.kbase.userandjobstate.Results;
-import us.kbase.workspaceservice.GetObjectOutput;
-import us.kbase.workspaceservice.GetObjectParams;
+import us.kbase.util.WsDeluxeUtil;
 
 public class CmonkeyInvokerTest {
 
@@ -27,14 +24,23 @@ public class CmonkeyInvokerTest {
 	private String genomeId = "kb|genome.test";
 	
 	@Test
+	public void testCleanupArgument() throws Exception {
+		String argument = "'un=aktest|tokenid=378448aa-642b-11e3-884e-12313d2d6e7f|expiry=1418498252|client_id=aktest|token_type=Bearer|SigningSubject=https://nexus.api.globusonline.org/goauth/keys/38973b4e-642b-11e3-884e-12313d2d6e7f|sig=a61bfe37fd8d3a882ea62e6a8f5c35f546cdf7870e797ec3a6588a53409a28ece1775b596411d3d82c907e17dbd10bb467fc06e43633f9c33c6151e1e19a1aabaa4cb58fac78d7e904adb154a3043df4301f747b61d75586b93046ece55c14564afba32290b1fbb405cf9ce1d060336f46285ab5b4225c95bef12fe99086ce8b'";
+		argument = CmonkeyInvoker.cleanUpArgument(argument);
+		System.out.println(argument);
+		assertEquals(argument, "un=aktest|tokenid=378448aa-642b-11e3-884e-12313d2d6e7f|expiry=1418498252|client_id=aktest|token_type=Bearer|SigningSubject=https://nexus.api.globusonline.org/goauth/keys/38973b4e-642b-11e3-884e-12313d2d6e7f|sig=a61bfe37fd8d3a882ea62e6a8f5c35f546cdf7870e797ec3a6588a53409a28ece1775b596411d3d82c907e17dbd10bb467fc06e43633f9c33c6151e1e19a1aabaa4cb58fac78d7e904adb154a3043df4301f747b61d75586b93046ece55c14564afba32290b1fbb405cf9ce1d060336f46285ab5b4225c95bef12fe99086ce8b");
+		
+	}
+
+	@Test
 	public final void testCmonkeyInvokerQuick() throws Exception {
 		
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
 		params.setMotifsScoring(0L);
 		params.setNetworksScoring(0L);
-		params.setSeriesId(quickTestSeriesId);
-		params.setGenomeId(genomeId);
+		params.setSeriesRef(quickTestSeriesId);
+		params.setGenomeRef(genomeId);
 
 		String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, params, token);
 		
@@ -65,10 +71,7 @@ public class CmonkeyInvokerTest {
 			e.printStackTrace();
 		}
 		
-		String[] resultIdParts = resultId.split("/");
-		resultId = resultIdParts[1];
-
-		CmonkeyRunResult result = UObject.transformObjectToObject(CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, resultId, token.toString()), CmonkeyRunResult.class);
+		CmonkeyRunResult result = WsDeluxeUtil.getObjectFromWsByRef(resultId, token.toString()).getData().asClassInstance(CmonkeyRunResult.class);
 		
 		assertEquals(Long.valueOf("3"), result.getNetwork().getClustersNumber());
 	}
@@ -79,10 +82,10 @@ public class CmonkeyInvokerTest {
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
 		params.setMotifsScoring(1L);
 		params.setNetworksScoring(1L);
-		params.setOperomeId("");
-		params.setNetworkId("");
-		params.setSeriesId(testSeriesId);
-		params.setGenomeId(genomeId);
+		params.setOperomeRef("");
+		params.setNetworkRef("");
+		params.setSeriesRef(testSeriesId);
+		params.setGenomeRef(genomeId);
 
 		String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, params, token);
 		
@@ -113,10 +116,7 @@ public class CmonkeyInvokerTest {
 			e.printStackTrace();
 		}
 		
-		String[] resultIdParts = resultId.split("/");
-		resultId = resultIdParts[1];
-
-		CmonkeyRunResult result = UObject.transformObjectToObject(CmonkeyServerImpl.getObjectFromWorkspace(workspaceName, resultId, token.toString()), CmonkeyRunResult.class);
+		CmonkeyRunResult result = WsDeluxeUtil.getObjectFromWsByRef(resultId, token.toString()).getData().asClassInstance(CmonkeyRunResult.class);
 		
 		assertEquals(Long.valueOf("43"), result.getNetwork().getClustersNumber());
 		assertEquals(Long.valueOf("2001"), result.getLastIteration());

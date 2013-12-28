@@ -17,22 +17,10 @@ public class NetworkExporter {
 	private static final String PREFIX_OPERONS = "gnc";
 	private static final String POSTFIX_OPERONS = ".named";
 
-	private String ncbiId = "1111";
-	private String workDir = "/home/kbase/genome-test/";
-	private InteractionSet set = null;
-
-	public NetworkExporter(String setRef, String ncbiId, String workDir,
-			String token) throws Exception {
-		if (ncbiId != null)
-			this.ncbiId = ncbiId;
-		if (workDir != null)
-			this.workDir = workDir;
-
-		this.set = WsDeluxeUtil.getObjectFromWsByRef(setRef, token).getData()
+	public static void exportOperons(String setRef, String ncbiId, String workDir,
+			String token) {
+		InteractionSet set = WsDeluxeUtil.getObjectFromWsByRef(setRef, token).getData()
 				.asClassInstance(InteractionSet.class);
-	}
-
-	public void exportOperons() {
 		if (set != null) {
 			DecimalFormat df = new DecimalFormat("0.000");
 			BufferedWriter writer = null;
@@ -129,7 +117,10 @@ public class NetworkExporter {
 
 	}
 
-	public void exportString() {
+	public static void exportString(String setRef, String ncbiId, String workDir,
+			String token) {
+		InteractionSet set = WsDeluxeUtil.getObjectFromWsByRef(setRef, token).getData()
+		.asClassInstance(InteractionSet.class);
 		if (set != null) {
 			OutputStreamWriter writer = null;
 			DecimalFormat df = new DecimalFormat("###");
@@ -138,6 +129,7 @@ public class NetworkExporter {
 						new BufferedOutputStream(new FileOutputStream(workDir
 								+ ncbiId + ".gz"))));
 				for (Interaction interaction : set.getInteractions()) {
+					System.out.println(interaction.getEntity1Id() + "\t" + interaction.getEntity2Id() + "\t" + interaction.getScores().get("STRING_SCORE"));
 					writer.write(interaction.getEntity1Id()
 							+ "\t"
 							+ interaction.getEntity2Id()

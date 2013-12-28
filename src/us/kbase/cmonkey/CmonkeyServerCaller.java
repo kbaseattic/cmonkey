@@ -13,17 +13,17 @@ import java.net.URL;
 import us.kbase.auth.AuthToken;
 import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.UnauthorizedException;
-import us.kbase.expressionservices.ExpressionSeries;
+//import us.kbase.expressionservices.ExpressionSeries;
 import us.kbase.userandjobstate.UserAndJobStateClient;
 
 public class CmonkeyServerCaller {
 
-	private static final String JOB_SERVICE = "http://140.221.84.180:7083";
-	private static UserAndJobStateClient _jobClient = null;
+	private static boolean deployCluster = CmonkeyServerConfig.DEPLOY_AWE;
+	private static final String JOB_SERVICE = CmonkeyServerConfig.JOB_SERVICE_URL;
+	private static final String AWE_SERVICE = CmonkeyServerConfig.AWE_SERVICE_URL;
 
-	private static final String AWE_SERVICE = "http://140.221.85.171:7080/job";
+	private static UserAndJobStateClient _jobClient = null;
 	private static Integer connectionReadTimeOut = 30 * 60 * 1000;
-	private static boolean deployCluster = false;
 
 /*	public static CmonkeyRunResult buildCmonkeyNetwork(
 			ExpressionSeries series, CmonkeyRunParameters params,
@@ -67,7 +67,7 @@ public class CmonkeyServerCaller {
 		String returnVal = "{\"info\": {\"pipeline\": \"cmonkey-runner-pipeline\",\"name\": \"cmonkey\",\"project\": \"default\"" +
 				",\"user\": \"default\",\"clientgroups\":\"\",\"sessionId\":\"" + jobId +
 				"\"},\"tasks\": [{\"cmd\": {\"args\": \"";
-		returnVal +=" --job " + jobId + " --method build_cmonkey_network_job_from_ws --ws '" + wsId + "' --series '" + params.getSeriesId() + "' --genome '" + params.getGenomeId() + "'";
+		returnVal +=" --job " + jobId + " --method build_cmonkey_network_job_from_ws --ws '" + wsId + "' --series '" + params.getSeriesRef() + "' --genome '" + params.getGenomeRef() + "'";
 		
 		if (params.getMotifsScoring() == 0L){
 			returnVal += " --nomotifs 1"; 
@@ -79,13 +79,13 @@ public class CmonkeyServerCaller {
 		} else {
 			returnVal += " --nonetworks 0";
 		}
-		if (params.getOperomeId() != null){
-			returnVal += " --operons '" + params.getOperomeId() + "'"; 
+		if (params.getOperomeRef() != null){
+			returnVal += " --operons '" + params.getOperomeRef() + "'"; 
 		} else {
 			returnVal += " --operons 'null'";
 		}
-		if (params.getNetworkId() != null){
-			returnVal += " --string '" + params.getNetworkId() + "'"; 
+		if (params.getNetworkRef() != null){
+			returnVal += " --string '" + params.getNetworkRef() + "'"; 
 		} else {
 			returnVal += " --string 'null'";
 		}

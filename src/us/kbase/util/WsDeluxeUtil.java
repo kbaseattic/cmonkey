@@ -10,6 +10,7 @@ import java.util.Map;
 
 import us.kbase.auth.AuthToken;
 import us.kbase.auth.TokenFormatException;
+import us.kbase.cmonkey.CmonkeyServerConfig;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.Tuple11;
 import us.kbase.common.service.UObject;
@@ -23,12 +24,9 @@ import us.kbase.workspace.WorkspaceClient;
 public class WsDeluxeUtil {
 	private static WorkspaceClient _wsClient = null;
 	
-	public static final String userName = "aktest";
-	public static final String password = "1475rokegi";
-	public static final String workspaceName = "AKtest";
-	private static final String WS_SERVICE_URL = "http://140.221.84.209:7058";
+	private static final String WS_SERVICE_URL = CmonkeyServerConfig.WS_SERVICE_URL;
 
-	protected static WorkspaceClient wsClient(String token) {
+	public static WorkspaceClient wsClient(String token) {
 		if(_wsClient == null)
 		{
 			URL workspaceClientUrl;
@@ -54,7 +52,7 @@ public class WsDeluxeUtil {
 		return _wsClient;
 	} 
 	
-	protected static List<UObject> getObjectsFromWorkspace(String workspaceName,
+	public static List<ObjectData> getObjectsFromWorkspace(String workspaceName,
 			List<String> names, String token) {
 		try {
 			List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
@@ -66,12 +64,7 @@ public class WsDeluxeUtil {
 			List<ObjectData> output = wsClient(token.toString()).getObjects(
 					objectsIdentity);
 
-			List<UObject> returnVal = new ArrayList<UObject>();
-			
-			for (ObjectData data : output) {
-				returnVal.add(data.getData());
-			}
-			return returnVal;
+			return output;
 		} catch (IOException e) {
 			System.err.println("Unable to get objects " + names.toString()
 					+ " from workspace " + workspaceName + ": IO Exception");
@@ -84,24 +77,19 @@ public class WsDeluxeUtil {
 		return null;
 	}
 
-	protected static List<UObject> getObjectsFromWsByRef(
+	public static List<ObjectData> getObjectsFromWsByRef(
 			List<String> refs, String token) {
 		try {
 			List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 			for (String ref : refs){
-				System.out.println(ref);
-			ObjectIdentity objectIdentity = new ObjectIdentity().withRef(ref);
-			objectsIdentity.add(objectIdentity);
+				//System.out.println(ref);
+				ObjectIdentity objectIdentity = new ObjectIdentity().withRef(ref);
+				objectsIdentity.add(objectIdentity);
 			}
 			List<ObjectData> output = wsClient(token.toString()).getObjects(
 					objectsIdentity);
 
-			List<UObject> returnVal = new ArrayList<UObject>();
-			
-			for (ObjectData data : output) {
-				returnVal.add(data.getData());
-			}
-			return returnVal;
+			return output;
 		} catch (IOException e) {
 			System.err.println("Unable to get objects " + refs.toString() + " : IO Exception");
 			e.printStackTrace();
@@ -113,7 +101,7 @@ public class WsDeluxeUtil {
 	}
 
 	
-	protected static ObjectData getObjectFromWorkspace(String workspaceName,
+	public static ObjectData getObjectFromWorkspace(String workspaceName,
 			String name, String token) {
 		try {
 			List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
@@ -136,7 +124,7 @@ public class WsDeluxeUtil {
 		return null;
 	}
 
-	protected static ObjectData getObjectFromWsByRef(String ref, String token) {
+	public static ObjectData getObjectFromWsByRef(String ref, String token) {
 		try {
 			List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 			ObjectIdentity objectIdentity = new ObjectIdentity().withRef(ref);
@@ -155,7 +143,7 @@ public class WsDeluxeUtil {
 		return null;
 	}
 
-	protected static void saveObjectToWorkspace(UObject object, String type,
+	public static void saveObjectToWorkspace(UObject object, String type,
 			String workspaceName, String name, String token) {
 
 		SaveObjectsParams params = new SaveObjectsParams();

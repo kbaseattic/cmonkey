@@ -2,8 +2,8 @@ package us.kbase.common.service;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.codehaus.jackson.annotate.JsonAnyGetter;
-import org.codehaus.jackson.annotate.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 public class Tuple2 <T1, T2> {
     private T1 e1;
@@ -34,6 +34,11 @@ public class Tuple2 <T1, T2> {
     public Tuple2<T1, T2> withE2(T2 e2) {
         this.e2 = e2;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Tuple2 [e1=" + e1 + ", e2=" + e2 + "]";
     }
 
     @JsonAnyGetter

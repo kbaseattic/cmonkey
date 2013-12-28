@@ -3,6 +3,7 @@ package us.kbase.util;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -20,6 +21,7 @@ public class TestKbaseUtils {
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
 	private static AuthToken token = null;
+	private String testGenomeRef = "AKtest/kb|genome.8";
 
 	@Before
 	public void setUp() throws Exception {
@@ -62,8 +64,21 @@ public class TestKbaseUtils {
 	}
 
 	@Test
+	public void testSeriesImport() throws Exception {
+		String fileName = "test/halo_ratios5.tsv";
+		String genomeRef = "AKtest/kb|genome.8";
+		ExpressionSeriesImporter importer = new ExpressionSeriesImporter (genomeRef, fileName, workspaceName, token.toString());
+		List<String> result = importer.importExpressionSeriesFile();
+		
+		
+		System.out.println(result.toString());
+		
+		assertNotNull(result);
+	}
+
+	@Test
 	public void testReadGenome() throws Exception {
-		String genomeRef = "AKtest/kb|genome.7";
+		String genomeRef = "AKtest/kb|genome.8";
 		Genome result = WsDeluxeUtil.getObjectFromWsByRef(genomeRef, token.toString()).getData().asClassInstance(Genome.class);
 		
 		/*System.out.println(result.getId());
@@ -88,7 +103,7 @@ public class TestKbaseUtils {
 
 	@Test
 	public void testGenomeExport() throws Exception {
-		String genomeRef = "AKtest/kb|genome.7";
+		String genomeRef = "AKtest/kb|genome.8";
 		GenomeExporter writer = new GenomeExporter(genomeRef, null, null, token.toString());
 		writer.writeGenome();
 		
@@ -97,8 +112,8 @@ public class TestKbaseUtils {
 
 	@Test
 	public void testStringImport() throws Exception {
-		String ncbiId = "64091";
-		NetworkImporter importer = new NetworkImporter(ncbiId, "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
+		String ncbiId = "64091";		
+		NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
 		InteractionSet result = importer.ImportStringFile();
 		
 		
@@ -114,9 +129,8 @@ public class TestKbaseUtils {
 
 	@Test
 	public void testStringExport() throws Exception {
-		String genomeRef = "AKtest/kb|interactionset.1";
-		NetworkExporter exporter = new NetworkExporter(genomeRef, null, null, token.toString());
-		exporter.exportString();
+		String networkRef = "AKtest/kb|interactionset.6";
+		NetworkExporter.exportString(networkRef, null, null, token.toString());
 		
 		fail("Not yet implemented");
 	}
@@ -125,7 +139,7 @@ public class TestKbaseUtils {
 	@Test
 	public void testOperonsImport() throws Exception {
 		String ncbiId = "64091";
-		NetworkImporter importer = new NetworkImporter(ncbiId, "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
+		NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
 		InteractionSet result = importer.ImportOperonsFile();
 		
 		
@@ -141,9 +155,8 @@ public class TestKbaseUtils {
 
 	@Test
 	public void testOperonsExport() throws Exception {
-		String genomeRef = "AKtest/kb|interactionset.3";
-		NetworkExporter exporter = new NetworkExporter(genomeRef, null, null, token.toString());
-		exporter.exportOperons();
+		String networkRef = "AKtest/kb|interactionset.3";
+		NetworkExporter.exportOperons(networkRef, null, null, token.toString());
 		
 		fail("Not yet implemented");
 	}
