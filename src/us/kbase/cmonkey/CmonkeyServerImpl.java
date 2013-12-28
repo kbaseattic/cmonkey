@@ -123,12 +123,12 @@ public class CmonkeyServerImpl {
 		//get ID for the result
 		cmonkeyRunResult.setId(resultId);
 		//put something to undefined fields in parameters
-		if (params.getOperomeRef() == null) {
+		/*if (params.getOperomeRef() == null) {
 			params.setOperomeRef("undefined");
 		}
 		if (params.getNetworkRef() == null) {
 			params.setNetworkRef("undefined");
-		}
+		}*/
 		cmonkeyRunResult.setParameters(params);
 		//save result
 		WsDeluxeUtil.saveObjectToWorkspace(

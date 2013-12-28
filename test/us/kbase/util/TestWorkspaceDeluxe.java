@@ -122,18 +122,19 @@ public class TestWorkspaceDeluxe {
 		types.add("MemeSite");
 		types.add("MastHit");*/
 //		params.setNewTypes(addTypes);
-		List<String> removeTypes = new ArrayList<String>();
+/*		List<String> removeTypes = new ArrayList<String>();
 		removeTypes.add("CmonkeyNetwork");
 		removeTypes.add("CmonkeyCluster");
-		removeTypes.add("CmonkeyMotif");
+		removeTypes.add("CmonkeyMotif");*/
 //		removeTypes.add("MemeMotif");
 //		removeTypes.add("MemePSPM");
 //		removeTypes.add("MemeSite");
 //		removeTypes.add("MastHit");
-		params.setRemoveTypes(removeTypes);
+//		params.setRemoveTypes(removeTypes);
 		
 		params.setDryrun(1L);
-		Map<String,String> result = WsDeluxeUtil.wsClient(authToken.toString()).registerTypespec(params);
+		//Map<String,String> result = WsDeluxeUtil.wsClient(authToken.toString()).registerTypespec(params);
+		Map<String,String> result = wsClient().registerTypespec(params);
 		System.out.println(result.toString());
 		assertNotNull(result);
 		
@@ -147,10 +148,10 @@ public class TestWorkspaceDeluxe {
 		ModuleInfo moduleInfo = WsDeluxeUtil.wsClient(authToken.toString()).getModuleInfo(params);
 		System.out.println("Description " + moduleInfo.getDescription());
 		System.out.println("Owners " + moduleInfo.getOwners().toString());
-		//System.out.println("Spec " + moduleInfo.getSpec());
+		System.out.println("Spec " + moduleInfo.getSpec());
 		System.out.println("Functions " + moduleInfo.getFunctions().toString());
 		System.out.println("Versions " + moduleInfo.getVer());
-		System.out.println("Types " + moduleInfo.getTypes().toString());
+		//System.out.println("Types " + moduleInfo.getTypes().toString());
 		
 		assertNotNull(moduleInfo);
 	}
@@ -226,7 +227,7 @@ public class TestWorkspaceDeluxe {
 	@Test
 	public void testWsReadObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String name = "kb|interactionset.5";
+		String name = "kb|cmonkeyrunresult.58";
 		//String exampleWs = "networks_typed_objects_examples";
 		
 		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace(workspaceName, name, authToken.toString());

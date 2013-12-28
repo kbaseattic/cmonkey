@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import us.kbase.common.service.JsonClientException;
+import us.kbase.common.service.UObject;
 import us.kbase.meme.MastHit;
 import us.kbase.auth.AuthException;
 import us.kbase.auth.AuthService;
@@ -26,8 +27,8 @@ public class CmonkeyServerImplTest {
 	private String testGenomeRef = "AKtest/kb|genome.8";
 	private String testStringNetworkRef = "AKtest/kb|interactionset.5";
 	private String testOperonNetworkRef = "AKtest/kb|interactionset.6";
-	//private final String TEST_DATABASE_PATH = "test/cmonkey_run_test.db";
-	private final String TEST_DATABASE_PATH = "/home/kbase/Documents/inferelator-test/out/cmonkey_run.db";
+	private final String TEST_DATABASE_PATH = "test/cmonkey_run_test.db";
+	//private final String TEST_DATABASE_PATH = "/home/kbase/Documents/inferelator-test/out/cmonkey_run.db";
 	private static AuthToken token = null;
 
 	@Before
@@ -181,6 +182,31 @@ public class CmonkeyServerImplTest {
 		showCmonkeyRun(cmonkeyRun);
 		assertNotNull(cmonkeyRun);
 		assertEquals(Long.valueOf("43"), cmonkeyRun.getNetwork().getClustersNumber());
+		assertEquals(2, cmonkeyRun.getNetwork().getClusters().get(0).getMotifs().size());
+
+	}
+
+	@Test
+	public final void testWriteCmonkeyRunResult() throws Exception {
+		CmonkeyRunParameters params = new CmonkeyRunParameters();
+		params.setMotifsScoring(0L);
+		params.setNetworksScoring(0L);
+		params.setSeriesRef(testSeriesRef);
+		params.setGenomeRef(testGenomeRef);
+
+		CmonkeyRunResult cmonkeyRun = new CmonkeyRunResult();
+		CmonkeyServerImpl.parseCmonkeySql(TEST_DATABASE_PATH, cmonkeyRun);
+		cmonkeyRun.setId(CmonkeyServerImpl.getKbaseId("CmonkeyRunResult"));
+		cmonkeyRun.setParameters(params);
+		//showCmonkeyRun(cmonkeyRun);
+		WsDeluxeUtil.saveObjectToWorkspace(
+				UObject.transformObjectToObject(cmonkeyRun, UObject.class),
+				"Cmonkey.CmonkeyRunResult", workspaceName, cmonkeyRun.getId(),
+				token.toString());
+
+		
+		assertNotNull(cmonkeyRun);
+		assertEquals(Long.valueOf("39"), cmonkeyRun.getNetwork().getClustersNumber());
 		assertEquals(2, cmonkeyRun.getNetwork().getClusters().get(0).getMotifs().size());
 
 	}

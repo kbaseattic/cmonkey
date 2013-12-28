@@ -21,9 +21,9 @@ public class CmonkeyClientTest {
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
 //	private String serverUrl = "http://140.221.84.195:7049";
-//	private String serverUrl = "http://140.221.85.173:7078";
-	private String serverUrl = "http://localhost:7049";
-	private String quickTestSeriesRef = "QuickTestExpressionDataSeries";
+	private String serverUrl = "http://140.221.85.173:7078";
+//	private String serverUrl = "http://localhost:7049";
+//	private String quickTestSeriesRef = "QuickTestExpressionDataSeries";
 	private String testSeriesRef = "AKtest/kb|series.269";
 	private String genomeRef = "AKtest/kb|genome.8";
 	private String testStringNetworkRef = "AKtest/kb|interactionset.5";
@@ -99,7 +99,7 @@ public class CmonkeyClientTest {
 		
 		CmonkeyRunResult result = WsDeluxeUtil.getObjectFromWorkspace(workspaceName, resultId, token.toString()).getData().asClassInstance(CmonkeyRunResult.class);
 		
-		assertEquals(Long.valueOf("3"), result.getNetwork().getClustersNumber());
+		assertEquals(Long.valueOf("39"), result.getNetwork().getClustersNumber());
 		assertEquals(Long.valueOf("2001"), result.getLastIteration());
 
 	}
