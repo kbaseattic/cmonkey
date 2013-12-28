@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -84,6 +85,7 @@ public class CmonkeyServerImpl {
 		//create working directory
 		String jobPath = createDirs(jobId, currentDir);
 		//start log file
+		System.setErr(new PrintStream(new File(jobPath +"servererror.txt")));
 		FileWriter writer = new FileWriter(jobPath + "serveroutput.txt");
 		writer.write("log file created " + dateFormat.format(date) + "\n");
 		writer.flush();
@@ -147,16 +149,19 @@ public class CmonkeyServerImpl {
 		//get genome, contigset and export
 		GenomeExporter genomeExporter = new GenomeExporter(params.getGenomeRef(), "my_favorite_pet", cachePath, token);
 		genomeExporter.writeGenome();
-		writer.write("Genome files created");
+		writer.write("Genome files created\n");
+		writer.flush();
 		//get operons and export
 		if (!((params.getOperomeRef() == null)||(params.getOperomeRef().equals("")))){
 			NetworkExporter.exportOperons(params.getOperomeRef(), "1", cachePath, token);
-			writer.write("Operons file created");
+			writer.write("Operons file created\n");
+			writer.flush();
 		}
 		//get string and export
 		if (!((params.getNetworkRef() == null)||(params.getNetworkRef().equals("")))){
 			NetworkExporter.exportString(params.getNetworkRef(), "1", cachePath, token);
-			writer.write("String file created");
+			writer.write("String file created\n");
+			writer.flush();
 		}
 }
 
