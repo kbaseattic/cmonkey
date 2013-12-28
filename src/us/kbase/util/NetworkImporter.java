@@ -170,7 +170,7 @@ public class NetworkImporter {
 		
 		DatasetSource source = new DatasetSource().withId(getKbaseId("DatasetSource")).withName(ncbiId).withReference("undefined").withDescription("Imported operons data").withResourceUrl("http://microbesonline.org/operons/gnc"+ncbiId+".html");
 		InteractionSet set = new InteractionSet().withId(getKbaseId("InteractionSet")).withName(ncbiId).withSource(source).withInteractions(interactions).withType("operons");		
-		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet-1.0", wsId, set.getId(), token);		
+		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);		
 		return set;
 	}
 
@@ -231,7 +231,7 @@ public class NetworkImporter {
 		DatasetSource source = new DatasetSource().withId(getKbaseId("DatasetSource")).withName(ncbiId).withReference("undefined").withDescription("Imported STRING data").withResourceUrl("http://networks.systemsbiology.net/string9/"+ncbiId+".gz");
 		InteractionSet set = new InteractionSet().withId(getKbaseId("InteractionSet")).withName(ncbiId).withSource(source).withInteractions(interactions).withType("string");
 		
-		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet-1.0", wsId, set.getId(), token);
+		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);
 		return set;
 	}
 	

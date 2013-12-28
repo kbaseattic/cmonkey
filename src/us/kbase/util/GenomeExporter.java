@@ -22,14 +22,10 @@ public class GenomeExporter {
 	private String token = null;
 	private Genome genome = null;
 	
-	public GenomeExporter (String genomeRef, String prefix, String workDir, String token) throws Exception{
+	public GenomeExporter (String genomeRef, String prefix, String workDir, String token) throws TokenFormatException, IOException, JsonClientException{
 		if (prefix != null) this.filePrefix = prefix;
 		if (workDir != null) this.workDir = workDir;
-		if (token != null){
-			this.token = token;
-		} else {
-			throw new Exception("Token was not set");
-		}
+		this.token = token;
 		this.genome = WsDeluxeUtil.getObjectFromWsByRef(genomeRef, token).getData().asClassInstance(Genome.class);
 	}
 

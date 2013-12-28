@@ -26,7 +26,7 @@ public class NetworkExporter {
 		if (set != null) {
 			DecimalFormat df = new DecimalFormat("0.000");
 			BufferedWriter writer = null;
-			try {
+//			try {
 				writer = new BufferedWriter(new FileWriter(workDir
 						+ PREFIX_OPERONS + ncbiId + POSTFIX_OPERONS));
 				writer.write("Gene1	Gene2	SysName1	SysName2	Name1	Name2	bOp	pOp	Sep	MOGScore	GOScore	COGSim	ExprSim\n");
@@ -105,16 +105,18 @@ public class NetworkExporter {
 					}
 				}
 
-			} catch (IOException e) {
+/*			} catch (IOException e) {
 				System.out.println(e.getLocalizedMessage());
 			} finally {
 				try {
+*/
 					if (writer != null)
 						writer.close();
-				} catch (IOException e) {
+/*				} catch (IOException e) {
 					System.out.println(e.getLocalizedMessage());
 				}
 			}
+*/
 		}
 
 	}
@@ -126,7 +128,7 @@ public class NetworkExporter {
 		if (set != null) {
 			OutputStreamWriter writer = null;
 			DecimalFormat df = new DecimalFormat("###");
-			try {
+//			try {
 				writer = new OutputStreamWriter(new GZIPOutputStream(
 						new BufferedOutputStream(new FileOutputStream(workDir
 								+ ncbiId + ".gz"))));
@@ -140,16 +142,18 @@ public class NetworkExporter {
 									"STRING_SCORE")) + "\n");
 				}
 
-			} catch (IOException e) {
+/*			} catch (IOException e) {
 				System.out.println(e.getLocalizedMessage());
 			} finally {
 				try {
+*/
 					if (writer != null)
 						writer.close();
-				} catch (IOException e) {
+/*				} catch (IOException e) {
 					System.out.println(e.getLocalizedMessage());
 				}
 			}
+*/
 		}
 	}
 }

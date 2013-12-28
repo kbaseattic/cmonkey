@@ -12,6 +12,7 @@ import java.net.URL;
 
 import us.kbase.auth.AuthToken;
 import us.kbase.auth.TokenFormatException;
+import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.UnauthorizedException;
 //import us.kbase.expressionservices.ExpressionSeries;
 import us.kbase.userandjobstate.UserAndJobStateClient;
@@ -34,8 +35,8 @@ public class CmonkeyServerCaller {
 	}*/
 
 	public static String buildCmonkeyNetworkJobFromWs(String wsId,
-			CmonkeyRunParameters params, AuthToken authPart)
-			throws Exception {
+			CmonkeyRunParameters params, AuthToken authPart) throws TokenFormatException, UnauthorizedException, IOException, JsonClientException
+			{
 
 		String returnVal = null;
 
@@ -98,11 +99,11 @@ public class CmonkeyServerCaller {
 		return returnVal;
 	}
 
-	protected static String executePost(String jsonRequest) {
+	protected static String executePost(String jsonRequest) throws IOException {
 		URL url;
 		HttpURLConnection connection = null;
 		PrintWriter writer = null;
-		try {
+//		try {
 			// Create connection
 			url = new URL(AWE_SERVICE);
 			String boundary = Long.toHexString(System.currentTimeMillis());
@@ -140,20 +141,22 @@ public class CmonkeyServerCaller {
 				response.append('\r');
 			}
 			rd.close();
-			return response.toString();
 
-		} catch (Exception e) {
+/*		} catch (Exception e) {
 
 			e.printStackTrace();
 			return null;
 
 		} finally {
+*/
 			if (writer != null) writer.close();
 
 			if (connection != null) {
 				connection.disconnect();
 			}
-		}
+			return response.toString();
+
+//		}
 	}
 
 }

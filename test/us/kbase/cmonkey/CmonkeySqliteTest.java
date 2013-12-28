@@ -2,15 +2,13 @@ package us.kbase.cmonkey;
 
 import static org.junit.Assert.*;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import us.kbase.auth.AuthService;
-import us.kbase.auth.AuthToken;
-import us.kbase.common.service.UObject;
 import us.kbase.meme.MastHit;
 import us.kbase.meme.MemeSite;
 
@@ -57,14 +55,14 @@ public class CmonkeySqliteTest {
 	}
 
 	@Test
-	public final void testGetMotifPssm() {
+	public final void testGetMotifPssm() throws SQLException {
 		String motifInfoId = "1807";
 		List<List<Double>> result = database.getMotifPssm(motifInfoId);
 		assertEquals(Double.valueOf("0.714286"), result.get(0).get(2));
 	}
 
 	@Test
-	public final void testGetMotifAnnotation() {
+	public final void testGetMotifAnnotation() throws SQLException {
 		String motifInfoId = "1807";
 		Integer motifLength = 18;
 		List<MastHit> result = database.getMotifAnnotation(motifInfoId, motifLength);
@@ -72,21 +70,21 @@ public class CmonkeySqliteTest {
 	}
 
 	@Test
-	public final void testGetMotifSites() {
+	public final void testGetMotifSites() throws SQLException {
 		String motifInfoId = "1540";
 		List<MemeSite> result = database.getMotifSites(motifInfoId);
 		assertEquals("TCTCGGACCACCACGCCGACAGCG", result.get(0).getSequence());
 	}
 
 	@Test
-	public final void testGetListOfGenes() {
+	public final void testGetListOfGenes() throws SQLException {
 		String clusterId = "43";
 		List<String> genes = database.getListOfGenes (iterationNumber, clusterId);
 		assertEquals("VNG1085H", genes.get(0));
 	}
 
 	@Test
-	public final void testGetListOfConditions() {
+	public final void testGetListOfConditions() throws SQLException {
 		String clusterId = "43";
 		List<String> conditions = database.getListOfConditions(iterationNumber, clusterId);
 		assertEquals("Cond3", conditions.get(0));

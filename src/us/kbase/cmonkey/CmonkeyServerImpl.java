@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class CmonkeyServerImpl {
 	
 	public static void buildCmonkeyNetworkJobFromWs(String wsName,
 			CmonkeyRunParameters params, String jobId, String token,
-			String currentDir) throws Exception {
+			String currentDir) throws UnauthorizedException, IOException, JsonClientException, AuthException, InterruptedException, ClassNotFoundException, SQLException {
 		//Let's start!
 		String desc = "Cmonkey service job. Method: buildCmonkeyNetworkJobFromWs. Input: "
 				+ params.getSeriesRef() + ". Workspace: " + wsName + ".";
@@ -142,7 +143,7 @@ public class CmonkeyServerImpl {
 			finishJob(jobId, wsName, cmonkeyRunResult.getId(), token.toString());
 	}
 
-	protected static void prepareCacheFiles(String cachePath, CmonkeyRunParameters params, String token, FileWriter writer) throws Exception {
+	protected static void prepareCacheFiles(String cachePath, CmonkeyRunParameters params, String token, FileWriter writer) throws TokenFormatException, IOException, JsonClientException {
 		//get genome, contigset and export
 		GenomeExporter genomeExporter = new GenomeExporter(params.getGenomeRef(), "my_favorite_pet", cachePath, token);
 		genomeExporter.writeGenome();
@@ -417,7 +418,7 @@ public class CmonkeyServerImpl {
 	}
 
 	protected static void parseCmonkeySql(String sqlFile,
-			CmonkeyRunResult cmonkeyRunResult) throws Exception {
+			CmonkeyRunResult cmonkeyRunResult) throws ClassNotFoundException, SQLException, IOException, JsonClientException {
 		CmonkeySqlite database = new CmonkeySqlite(sqlFile);
 		database.buildCmonkeyRunResult(cmonkeyRunResult);
 		database.disconnect();
