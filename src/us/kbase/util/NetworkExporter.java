@@ -9,6 +9,8 @@ import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.util.zip.GZIPOutputStream;
 
+import us.kbase.auth.TokenFormatException;
+import us.kbase.common.service.JsonClientException;
 import us.kbase.networks.Interaction;
 import us.kbase.networks.InteractionSet;
 
@@ -18,7 +20,7 @@ public class NetworkExporter {
 	private static final String POSTFIX_OPERONS = ".named";
 
 	public static void exportOperons(String setRef, String ncbiId, String workDir,
-			String token) {
+			String token) throws TokenFormatException, IOException, JsonClientException {
 		InteractionSet set = WsDeluxeUtil.getObjectFromWsByRef(setRef, token).getData()
 				.asClassInstance(InteractionSet.class);
 		if (set != null) {
@@ -118,7 +120,7 @@ public class NetworkExporter {
 	}
 
 	public static void exportString(String setRef, String ncbiId, String workDir,
-			String token) {
+			String token) throws TokenFormatException, IOException, JsonClientException {
 		InteractionSet set = WsDeluxeUtil.getObjectFromWsByRef(setRef, token).getData()
 		.asClassInstance(InteractionSet.class);
 		if (set != null) {

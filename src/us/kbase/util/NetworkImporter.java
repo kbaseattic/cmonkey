@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
+import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.UObject;
 import us.kbase.common.service.UnauthorizedException;
@@ -88,7 +89,7 @@ public class NetworkImporter {
 		return _idClient;
 	}
 	
-	public InteractionSet ImportOperonsFile (){
+	public InteractionSet ImportOperonsFile () throws TokenFormatException, IOException, JsonClientException{
 		List<Interaction> interactions = new ArrayList<Interaction>();
 		String fileName = workDir + PREFIX_OPERONS + ncbiId + POSTFIX_OPERONS;
 		System.out.println(fileName);
@@ -178,7 +179,7 @@ public class NetworkImporter {
 		return featureId;
 	}
 
-	public InteractionSet ImportStringFile (){
+	public InteractionSet ImportStringFile () throws TokenFormatException, IOException, JsonClientException{
 		List<Interaction> interactions = new ArrayList<Interaction>();
 		String fileName = workDir + ncbiId + ".gz";
 		System.out.println(fileName);

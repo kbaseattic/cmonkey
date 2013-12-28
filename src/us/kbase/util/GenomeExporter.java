@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import us.kbase.auth.TokenFormatException;
+import us.kbase.common.service.JsonClientException;
 import us.kbase.kbasegenomes.Contig;
 import us.kbase.kbasegenomes.ContigSet;
 import us.kbase.kbasegenomes.Feature;
@@ -31,7 +33,7 @@ public class GenomeExporter {
 		this.genome = WsDeluxeUtil.getObjectFromWsByRef(genomeRef, token).getData().asClassInstance(Genome.class);
 	}
 
-	public void writeGenome (){
+	public void writeGenome () throws TokenFormatException, IOException, JsonClientException{
 		if (genome != null) {
 			//Write contigs
 			writeContigFiles();
@@ -45,7 +47,7 @@ public class GenomeExporter {
 		}
 	}
 	
-	public void writeContigFiles() {
+	public void writeContigFiles() throws TokenFormatException, IOException, JsonClientException {
 		String contigSetRef = genome.getContigsetRef();
 		ContigSet contigSet = WsDeluxeUtil.getObjectFromWsByRef(contigSetRef, token).getData().asClassInstance(ContigSet.class);
 		for (Contig contig : contigSet.getContigs()){

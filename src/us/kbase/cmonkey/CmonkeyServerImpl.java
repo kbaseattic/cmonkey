@@ -87,7 +87,7 @@ public class CmonkeyServerImpl {
 		writer.write("log file created " + dateFormat.format(date) + "\n");
 		writer.flush();
 		//prepare cache files
-		prepareCacheFiles(jobPath + "cache/", params, token);		
+		prepareCacheFiles(jobPath + "cache/", params, token, writer);		
 		writer.write("Cache files created in " + jobPath + "cache/\n");
 		writer.flush();
 		// prepare input file
@@ -142,17 +142,20 @@ public class CmonkeyServerImpl {
 			finishJob(jobId, wsName, cmonkeyRunResult.getId(), token.toString());
 	}
 
-	protected static void prepareCacheFiles(String cachePath, CmonkeyRunParameters params, String token) throws Exception {
+	protected static void prepareCacheFiles(String cachePath, CmonkeyRunParameters params, String token, FileWriter writer) throws Exception {
 		//get genome, contigset and export
 		GenomeExporter genomeExporter = new GenomeExporter(params.getGenomeRef(), "my_favorite_pet", cachePath, token);
 		genomeExporter.writeGenome();
+		writer.write("Genome files created");
 		//get operons and export
 		if (!((params.getOperomeRef() == null)||(params.getOperomeRef().equals("")))){
 			NetworkExporter.exportOperons(params.getOperomeRef(), "1", cachePath, token);
+			writer.write("Operons file created");
 		}
 		//get string and export
 		if (!((params.getNetworkRef() == null)||(params.getNetworkRef().equals("")))){
 			NetworkExporter.exportString(params.getNetworkRef(), "1", cachePath, token);
+			writer.write("String file created");
 		}
 }
 
@@ -202,7 +205,7 @@ public class CmonkeyServerImpl {
 	}
 
 	protected static void startJob(String jobId, String desc, Long tasks,
-			String token) {
+			String token) throws UnauthorizedException, IOException, JsonClientException, AuthException {
 
 		String status = "cmonkey service job started. Preparing input...";
 		InitProgress initProgress = new InitProgress();
@@ -210,11 +213,11 @@ public class CmonkeyServerImpl {
 		initProgress.setMax(tasks);
 		date.setTime(date.getTime() + 108000000L);
 
-		try {
+//		try {
 			// System.out.println(dateFormat.format(date));
 			jobClient(token).startJob(jobId, token, status, desc, initProgress,
 					dateFormat.format(date));
-		} catch (JsonClientException e) {
+/*		} catch (JsonClientException e) {
 			System.err.println("Unable to start job "+ jobId + " (" + desc + "): JSON Client Exception");
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -224,15 +227,16 @@ public class CmonkeyServerImpl {
 			System.err.println("Unable to start job "+ jobId + " (" + desc + "): Authentication Exception");
 			e.printStackTrace();
 		}
+*/
 	}
 
 	protected static void updateJobProgress(String jobId, String status,
-			String token) {
-		try {
+			String token) throws UnauthorizedException, IOException, JsonClientException, AuthException {
+//		try {
 			date.setTime(date.getTime() + 1000000L);
 			jobClient(token).updateJobProgress(jobId, token, status, 1L,
 					dateFormat.format(date));
-		} catch (JsonClientException e) {
+/*		} catch (JsonClientException e) {
 			System.err.println("Unable to update job "+ jobId + " (" + status + "): JSON Client Exception");
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -242,11 +246,12 @@ public class CmonkeyServerImpl {
 			System.err.println("Unable to update job "+ jobId + " (" + status + "): Authentication Exception");
 			e.printStackTrace();
 		}
+*/
 	}
 
 	protected static void finishJob(String jobId, String wsId, String objectId,
-			String token) {
-		try {
+			String token) throws UnauthorizedException, IOException, JsonClientException, AuthException {
+//		try {
 			String status = "Finished";
 			String error = null;
 			Results res = new Results();
@@ -254,7 +259,7 @@ public class CmonkeyServerImpl {
 			workspaceIds.add(wsId + "/" + objectId);
 			res.setWorkspaceids(workspaceIds);
 			jobClient(token).completeJob(jobId, token, status, error, res);
-		} catch (JsonClientException e) {
+/*		} catch (JsonClientException e) {
 			System.err.println("Unable to finish job "+ jobId + " (result object: " + objectId + " in workspace " + wsId + "): JSON Client Exception");
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -264,11 +269,12 @@ public class CmonkeyServerImpl {
 			System.err.println("Unable to finish job "+ jobId + " (result object: " + objectId + " in workspace " + wsId + "): Authentication Exception");
 			e.printStackTrace();
 		}
+*/
 	}
 
-	protected static String getKbaseId(String entityType) {
+	protected static String getKbaseId(String entityType) throws TokenFormatException, UnauthorizedException, IOException, JsonClientException {
 		String returnVal = null;
-		try {
+//		try {
 			if (entityType.equals("CmonkeyRunResult")) {
 				returnVal = "kb|cmonkeyrunresult."
 						+ idClient().allocateIdRange("kb|cmonkeyrunresult", 1L)
@@ -301,7 +307,7 @@ public class CmonkeyServerImpl {
 				System.out.println("ID requested for unknown type "
 						+ entityType);
 			}
-		} catch (TokenFormatException e) {
+/*		} catch (TokenFormatException e) {
 			System.err.println("Unable to get KBase ID for " + entityType + " from " + ID_SERVICE_URL + ": Token Format Exception");
 			e.printStackTrace();
 		} catch (UnauthorizedException e) {
@@ -314,10 +320,11 @@ public class CmonkeyServerImpl {
 			System.err.println("Unable to get KBase ID for " + entityType + " from " + ID_SERVICE_URL + ": Json error");
 			e.printStackTrace();
 		}
+*/
 		return returnVal;
 	}
 
-	protected static void createInputTable(String jobPath, List<String> sampleRefs, String token) {
+	protected static void createInputTable(String jobPath, List<String> sampleRefs, String token) throws TokenFormatException, IOException, JsonClientException {
 		
 		List<ObjectData> objects = WsDeluxeUtil.getObjectsFromWsByRef(sampleRefs, token);
 		List<ExpressionSample> samples = new ArrayList<ExpressionSample>();
@@ -327,7 +334,7 @@ public class CmonkeyServerImpl {
 		}
 
 		BufferedWriter writer = null;
-		try {
+//		try {
 			writer = new BufferedWriter(new FileWriter(jobPath + "input.txt"));
 			writer.write("GENE");
 			
@@ -365,22 +372,24 @@ public class CmonkeyServerImpl {
 			}
 			writer.write("\n");
 			
-		} catch (IOException e) {
+/*		} catch (IOException e) {
 			System.out.println(e.getLocalizedMessage());
 		} finally {
 			try {
+*/
 				if (writer != null)
 					writer.close();
-			} catch (IOException e) {
+/*			} catch (IOException e) {
 				System.out.println(e.getLocalizedMessage());
 			}
 		}
+*/
 	}
 
 	protected static Integer executeCommand(String commandLine, String jobPath,
-			String jobId, String token) throws InterruptedException {
+			String jobId, String token) throws InterruptedException, IOException {
 		Integer exitVal = null;
-		try {
+//		try {
 			Process p = Runtime.getRuntime().exec(commandLine, null,
 					new File(CMONKEY_DIR));
 
@@ -398,10 +407,11 @@ public class CmonkeyServerImpl {
 			// any error???
 			exitVal = p.waitFor();
 			System.out.println("ExitValue: " + exitVal);
-		} catch (IOException e) {
+/*		} catch (IOException e) {
 			System.out.println(e.getLocalizedMessage());
 		} finally {
 		}
+*/
 		return exitVal;
 
 	}

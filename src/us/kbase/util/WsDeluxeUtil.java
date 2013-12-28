@@ -1,7 +1,6 @@
 package us.kbase.util;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,16 +25,16 @@ public class WsDeluxeUtil {
 	
 	private static final String WS_SERVICE_URL = CmonkeyServerConfig.WS_SERVICE_URL;
 
-	public static WorkspaceClient wsClient(String token) {
+	public static WorkspaceClient wsClient(String token) throws TokenFormatException, UnauthorizedException, IOException {
 		if(_wsClient == null)
 		{
 			URL workspaceClientUrl;
-			try {
+//			try {
 				workspaceClientUrl = new URL (WS_SERVICE_URL);
 				AuthToken authToken = new AuthToken(token);
 				_wsClient = new WorkspaceClient(workspaceClientUrl, authToken);
 				_wsClient.setAuthAllowedForHttp(true);
-			} catch (MalformedURLException e) {
+/*			} catch (MalformedURLException e) {
 				System.err.println("Bad URL? Unable to communicate with workspace service at" + WS_SERVICE_URL);
 				e.printStackTrace();
 			} catch (TokenFormatException e) {
@@ -48,13 +47,14 @@ public class WsDeluxeUtil {
 				System.err.println("Unable to communicate with workspace service at" + WS_SERVICE_URL);
 				e.printStackTrace();
 			}
+*/
 		}
 		return _wsClient;
 	} 
 	
 	public static List<ObjectData> getObjectsFromWorkspace(String workspaceName,
-			List<String> names, String token) {
-		try {
+			List<String> names, String token) throws IOException, JsonClientException, TokenFormatException  {
+//		try {
 			List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 			for (String name : names){
 				System.out.println(name);
@@ -65,7 +65,7 @@ public class WsDeluxeUtil {
 					objectsIdentity);
 
 			return output;
-		} catch (IOException e) {
+/*		} catch (IOException e) {
 			System.err.println("Unable to get objects " + names.toString()
 					+ " from workspace " + workspaceName + ": IO Exception");
 			e.printStackTrace();
@@ -75,11 +75,12 @@ public class WsDeluxeUtil {
 			e.printStackTrace();
 		}
 		return null;
+*/
 	}
 
 	public static List<ObjectData> getObjectsFromWsByRef(
-			List<String> refs, String token) {
-		try {
+			List<String> refs, String token) throws IOException, JsonClientException, TokenFormatException {
+//		try {
 			List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 			for (String ref : refs){
 				//System.out.println(ref);
@@ -90,7 +91,7 @@ public class WsDeluxeUtil {
 					objectsIdentity);
 
 			return output;
-		} catch (IOException e) {
+/*		} catch (IOException e) {
 			System.err.println("Unable to get objects " + refs.toString() + " : IO Exception");
 			e.printStackTrace();
 		} catch (JsonClientException e) {
@@ -98,12 +99,13 @@ public class WsDeluxeUtil {
 			e.printStackTrace();
 		}
 		return null;
+*/
 	}
 
 	
 	public static ObjectData getObjectFromWorkspace(String workspaceName,
-			String name, String token) {
-		try {
+			String name, String token) throws IOException, JsonClientException, TokenFormatException {
+//		try {
 			List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 			ObjectIdentity objectIdentity = new ObjectIdentity().withName(name)
 					.withWorkspace(workspaceName);
@@ -112,7 +114,7 @@ public class WsDeluxeUtil {
 					objectsIdentity);
 
 			return output.get(0);
-		} catch (IOException e) {
+/*		} catch (IOException e) {
 			System.err.println("Unable to get object " + name
 					+ " from workspace " + workspaceName + ": IO Exception");
 			e.printStackTrace();
@@ -122,10 +124,11 @@ public class WsDeluxeUtil {
 			e.printStackTrace();
 		}
 		return null;
+*/
 	}
 
-	public static ObjectData getObjectFromWsByRef(String ref, String token) {
-		try {
+	public static ObjectData getObjectFromWsByRef(String ref, String token) throws IOException, JsonClientException, TokenFormatException {
+//		try {
 			List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 			ObjectIdentity objectIdentity = new ObjectIdentity().withRef(ref);
 			objectsIdentity.add(objectIdentity);
@@ -133,7 +136,7 @@ public class WsDeluxeUtil {
 					objectsIdentity);
 
 			return output.get(0);
-		} catch (IOException e) {
+/*		} catch (IOException e) {
 			System.err.println("Unable to get object " + ref + ": IO Exeption");
 			e.printStackTrace();
 		} catch (JsonClientException e) {
@@ -141,10 +144,11 @@ public class WsDeluxeUtil {
 			e.printStackTrace();
 		}
 		return null;
+*/
 	}
 
 	public static void saveObjectToWorkspace(UObject object, String type,
-			String workspaceName, String name, String token) {
+			String workspaceName, String name, String token) throws IOException, JsonClientException, TokenFormatException {
 
 		SaveObjectsParams params = new SaveObjectsParams();
 		params.setWorkspace(workspaceName);
@@ -160,16 +164,16 @@ public class WsDeluxeUtil {
 		params.setObjects(objectsData);
 
 		List<Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>>> ret = null;
-		try {
+//		try {
 			ret = wsClient(token).saveObjects(params);
-		} catch (IOException e) {
+/*		} catch (IOException e) {
 			System.err.println("Unable to write object to workspace at " + WS_SERVICE_URL + " : IO Exception");
 			e.printStackTrace();
 		} catch (JsonClientException e) {
 			System.err.println("Unable to write object to workspace at " + WS_SERVICE_URL + " : JSON Client Exception");
 			e.printStackTrace();
 		}
-
+*/
 		System.out.println("Saving object:");
 		System.out.println(ret.get(0).getE1());
 		System.out.println(ret.get(0).getE2());

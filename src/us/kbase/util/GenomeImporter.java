@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.Tuple5;
 import us.kbase.common.service.Tuple7;
@@ -69,7 +70,7 @@ public class GenomeImporter {
 	}
 
 	
-	public Genome readGenome (){
+	public Genome readGenome () throws TokenFormatException, IOException, JsonClientException{
 		Genome genome = new Genome();
 		List<Feature> features = readFeatures(genome);
 		genome.setFeatures(features);
@@ -118,7 +119,7 @@ public class GenomeImporter {
 		return returnVal;
 	}
 	
-	public List<Feature> readFeatures (Genome genome){
+	public List<Feature> readFeatures (Genome genome) throws TokenFormatException, IOException, JsonClientException{
 		
 		List<Feature> returnVal = new ArrayList<Feature>();
 		

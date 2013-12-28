@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.UObject;
 import us.kbase.common.service.UnauthorizedException;
@@ -81,7 +82,7 @@ public class ExpressionSeriesImporter {
 		return _idClient;
 	}
 	
-	public List<String> importExpressionSeriesFile() {
+	public List<String> importExpressionSeriesFile() throws TokenFormatException, IOException, JsonClientException {
 		List<String> result = new ArrayList<String>();
 		ExpressionSeries series = new ExpressionSeries();
 		try {
