@@ -123,15 +123,12 @@ public class NetworkExporter {
 
 	public static void exportString(String setRef, String ncbiId, String workDir,
 			String token) throws TokenFormatException, IOException, JsonClientException {
-		InteractionSet set = WsDeluxeUtil.getObjectFromWsByRef(setRef, token).getData()
-		.asClassInstance(InteractionSet.class);
+		InteractionSet set = WsDeluxeUtil.getObjectFromWsByRef(setRef, token).getData().asClassInstance(InteractionSet.class);
 		if (set != null) {
 			OutputStreamWriter writer = null;
 			DecimalFormat df = new DecimalFormat("###");
 //			try {
-				writer = new OutputStreamWriter(new GZIPOutputStream(
-						new BufferedOutputStream(new FileOutputStream(workDir
-								+ ncbiId + ".gz"))));
+				writer = new OutputStreamWriter(new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(workDir	+ ncbiId + ".gz"))));
 				for (Interaction interaction : set.getInteractions()) {
 					System.out.println(interaction.getEntity1Id() + "\t" + interaction.getEntity2Id() + "\t" + interaction.getScores().get("STRING_SCORE"));
 					writer.write(interaction.getEntity1Id()
@@ -140,6 +137,7 @@ public class NetworkExporter {
 							+ "\t"
 							+ df.format(interaction.getScores().get(
 									"STRING_SCORE")) + "\n");
+					writer.flush();
 				}
 
 /*			} catch (IOException e) {
