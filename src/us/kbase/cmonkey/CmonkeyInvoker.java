@@ -111,7 +111,7 @@ public class CmonkeyInvoker {
 		}
 
 		if ( line.hasOption("operons")){
-			if (!(line.getOptionValue("operons").equals("null"))) {
+			if (!(cleanUpArgument(line.getOptionValue("operons")).equals("null"))) {
 				params.setOperomeRef(cleanUpArgument(line.getOptionValue("operons")));
 			}
 		}
@@ -121,7 +121,7 @@ public class CmonkeyInvoker {
 		}
 
 		if ( line.hasOption("string")){
-			if (!(line.getOptionValue("string").equals("null"))) {
+			if (!(cleanUpArgument(line.getOptionValue("string")).equals("null"))) {
 				params.setNetworkRef(cleanUpArgument(line.getOptionValue("string")));
 			}
 		}
