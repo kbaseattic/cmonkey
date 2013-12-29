@@ -33,6 +33,7 @@ public class WsDeluxeUtil {
 				AuthToken authToken = new AuthToken(token);
 				_wsClient = new WorkspaceClient(workspaceClientUrl, authToken);
 				_wsClient.setAuthAllowedForHttp(true);
+				_wsClient.setConnectionReadTimeOut(1000000);
 		}
 		return _wsClient;
 	} 

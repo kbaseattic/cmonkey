@@ -119,9 +119,10 @@ public class NetworkExporter {
 					new BufferedOutputStream(new FileOutputStream(workDir
 							+ ncbiId + ".gz"))));
 			for (Interaction interaction : set.getInteractions()) {
-				System.out.println(interaction.getEntity1Id() + "\t"
+/*				System.out.println(interaction.getEntity1Id() + "\t"
 						+ interaction.getEntity2Id() + "\t"
 						+ interaction.getScores().get("STRING_SCORE"));
+*/
 				writer.write(interaction.getEntity1Id()
 						+ "\t"
 						+ interaction.getEntity2Id()

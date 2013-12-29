@@ -53,6 +53,7 @@ public class TestWorkspaceDeluxe {
 				
 				_wsClient = new WorkspaceClient(workspaceClientUrl, authToken);
 				_wsClient.setAuthAllowedForHttp(true);
+				_wsClient.setConnectionReadTimeOut(1000000);
 			} catch (MalformedURLException e) {
 				System.err.println("Bad URL? Unable to communicate with workspace service at" + WS_SERVICE_URL);
 				e.printStackTrace();
@@ -223,6 +224,46 @@ public class TestWorkspaceDeluxe {
 		System.out.println(typeInfo.get(0).getE11());*/
 		
 		assertNotNull(typeInfo);
+	}	
+
+	@Test
+	public void testWsGetObjectInfo() throws Exception {
+		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		String name = "kb|interactionset.5";
+		List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
+		ObjectIdentity objectIdentity = new ObjectIdentity().withName(name)
+				.withWorkspace(workspaceName);
+		objectsIdentity.add(objectIdentity);
+
+		List<Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>>> objInfo = WsDeluxeUtil.wsClient(authToken.toString()).getObjectInfo(objectsIdentity, null);
+		for (Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>> object: objInfo){
+			System.out.println(object.getE1());
+			System.out.println(object.getE2());
+			System.out.println(object.getE3());
+			System.out.println(object.getE4());
+			System.out.println(object.getE5());
+			System.out.println(object.getE6());
+			System.out.println(object.getE7());
+			System.out.println(object.getE8());
+			System.out.println(object.getE9());
+			System.out.println(object.getE10());
+			System.out.println(object.getE11());
+			System.out.println("");
+
+		}
+		/*System.out.println(typeInfo.get(0).getE1());
+		System.out.println(typeInfo.get(0).getE2());
+		System.out.println(typeInfo.get(0).getE3());
+		System.out.println(typeInfo.get(0).getE4());
+		System.out.println(typeInfo.get(0).getE5());
+		System.out.println(typeInfo.get(0).getE6());
+		System.out.println(typeInfo.get(0).getE7());
+		System.out.println(typeInfo.get(0).getE8());
+		System.out.println(typeInfo.get(0).getE9());
+		System.out.println(typeInfo.get(0).getE10());
+		System.out.println(typeInfo.get(0).getE11());*/
+		
+		assertNotNull(objInfo);
 	}	
 
 	
