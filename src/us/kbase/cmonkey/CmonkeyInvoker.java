@@ -41,19 +41,19 @@ public class CmonkeyInvoker {
                 .create() );
 
 		options.addOption( OptionBuilder.withLongOpt( "ws" )
-                .withDescription( "workspace ID" )
+                .withDescription( "workspace name where run result will be stored" )
                 .hasArg(true)
                 .withArgName("workspace_id")
                 .create() );
 		
 		options.addOption( OptionBuilder.withLongOpt( "series" )
-                .withDescription( "expression data series ID" )
+                .withDescription( "expression data series WS reference" )
                 .hasArg(true)
                 .withArgName("series")
                 .create() );
 
 		options.addOption( OptionBuilder.withLongOpt( "genome" )
-                .withDescription( "genome ID" )
+                .withDescription( "genome WS reference" )
                 .hasArg(true)
                 .withArgName("genome")
                 .create() );
@@ -71,13 +71,13 @@ public class CmonkeyInvoker {
                 .create() );
 
 		options.addOption( OptionBuilder.withLongOpt( "operons" )
-                .withDescription( "Operon data source ID" )
+                .withDescription( "Operon data source WS reference" )
                 .hasArg(true)
                 .withArgName("operons")
                 .create() );
 
 		options.addOption( OptionBuilder.withLongOpt( "string" )
-                .withDescription( "Network data source ID" )
+                .withDescription( "Network data source WS reference" )
                 .hasArg(true)
                 .withArgName("string")
                 .create() );
@@ -111,7 +111,7 @@ public class CmonkeyInvoker {
 		}
 
 		if ( line.hasOption("operons")){
-			if (line.getOptionValue("operons") != "'null'") {
+			if (!(line.getOptionValue("operons").equals("null"))) {
 				params.setOperomeRef(cleanUpArgument(line.getOptionValue("operons")));
 			}
 		}
@@ -121,7 +121,7 @@ public class CmonkeyInvoker {
 		}
 
 		if ( line.hasOption("string")){
-			if (line.getOptionValue("string") != "'null'") {
+			if (!(line.getOptionValue("string").equals("null"))) {
 				params.setNetworkRef(cleanUpArgument(line.getOptionValue("string")));
 			}
 		}

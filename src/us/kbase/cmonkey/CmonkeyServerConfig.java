@@ -2,7 +2,7 @@ package us.kbase.cmonkey;
 
 public class CmonkeyServerConfig {
 	//Deployment options
-	protected static boolean DEPLOY_AWE = false;
+	protected static boolean DEPLOY_AWE = true;
 
 	//Service URLs
 	public static final String JOB_SERVICE_URL = "http://140.221.84.180:7083";

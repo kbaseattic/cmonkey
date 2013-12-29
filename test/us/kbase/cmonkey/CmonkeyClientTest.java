@@ -173,7 +173,7 @@ public class CmonkeyClientTest {
 
 		CmonkeyRunResult result = WsDeluxeUtil.getObjectFromWsByRef(workspaceName+"/"+resultId, token.toString()).getData().asClassInstance(CmonkeyRunResult.class);
 
-		assertEquals(Long.valueOf("43"), result.getNetwork().getClustersNumber());
+		assertEquals(Long.valueOf("39"), result.getNetwork().getClustersNumber());
 		assertEquals(Long.valueOf("2001"), result.getLastIteration());
 
 	}
