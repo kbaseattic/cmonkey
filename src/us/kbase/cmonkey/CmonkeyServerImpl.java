@@ -143,7 +143,7 @@ public class CmonkeyServerImpl {
 		if (awe == false) {
 			File fileDelete = new File(jobPath);
 			deleteDirectoryRecursively(fileDelete);
-			deleteFilesByPattern(JOB_PATH, "cmonkey-checkpoint.*");
+			deleteFilesByPattern(CMONKEY_DIR, "cmonkey-checkpoint.*");
 			// Runtime.getRuntime().exec("rm -r " + jobPath);
 			// Runtime.getRuntime().exec("rm " + JOB_PATH +
 			// "cmonkey-checkpoint*");
@@ -359,7 +359,7 @@ public class CmonkeyServerImpl {
 			IOException {
 		Integer exitVal = null;
 		Process p = Runtime.getRuntime().exec(commandLine, null,
-				new File(JOB_PATH));
+				new File(CMONKEY_DIR));
 
 		StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(),
 				"ERROR", jobId, token, jobPath + "errorlog.txt");
