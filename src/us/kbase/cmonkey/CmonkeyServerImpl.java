@@ -187,6 +187,7 @@ public class CmonkeyServerImpl {
 			new File(jobPath).mkdir();
 		} else {
 			jobPath = currentDir + "/" + jobId + "/";
+			new File(jobPath).mkdir();
 			awe = true;
 		}
 		new File(jobPath + "out/").mkdir();

@@ -135,14 +135,14 @@ public class CmonkeyInvoker {
 		String wsId = cleanUpArgument(line.getOptionValue("ws"));
 		System.out.println(wsId);		
 
-		params.setSeriesRef(line.getOptionValue("series"));
+		params.setSeriesRef(cleanUpArgument(line.getOptionValue("series")));
 		System.out.println(params.getSeriesRef());		
 
-		params.setGenomeRef(line.getOptionValue("genome"));
+		params.setGenomeRef(cleanUpArgument(line.getOptionValue("genome")));
 		System.out.println(params.getGenomeRef());		
 
 		String token = cleanUpArgument(line.getOptionValue("token"));
-		System.out.println(token);		
+		System.out.println(token);
 
 		CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(wsId, params, line.getOptionValue("job"), token, currentDir);
 				
