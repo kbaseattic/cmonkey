@@ -104,8 +104,7 @@ public class TestKbaseUtils {
 	@Test
 	public void testGenomeExport() throws Exception {
 		String genomeRef = "AKtest/kb|genome.8";
-		GenomeExporter writer = new GenomeExporter(genomeRef, null, null, token.toString());
-		writer.writeGenome();
+		GenomeExporter.writeGenome(genomeRef, null, null, token.toString());
 		
 		fail("Not yet implemented");
 	}

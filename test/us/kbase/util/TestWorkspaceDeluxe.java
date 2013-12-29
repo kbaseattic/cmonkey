@@ -3,7 +3,9 @@ package us.kbase.util;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -227,11 +229,15 @@ public class TestWorkspaceDeluxe {
 	@Test
 	public void testWsReadObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String name = "kb|cmonkeyrunresult.64";
+		String name = "kb|interactionset.5";
 		//String exampleWs = "networks_typed_objects_examples";
 		
 		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace(workspaceName, name, authToken.toString());
-		System.out.println(output.getData().toString());
+		BufferedWriter writer = new BufferedWriter(new FileWriter("string.txt"));
+		writer.write(output.getData().toString());
+		writer.close();
+
+		//System.out.println(output.getData().toString());
 		assertNotNull(output);
 
 	}	

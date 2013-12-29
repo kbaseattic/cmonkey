@@ -17,34 +17,23 @@ public class GenomeExporter {
 	private static final String FEATURES = "_features";
 	private static final String FEATURENAMES = "_feature_names";
 
-	private String filePrefix = "my_favorite_pet";
-	private String workDir = "/home/kbase/genome-test/";
-	private String token = null;
-	private Genome genome = null;
-	
-	public GenomeExporter (String genomeRef, String prefix, String workDir, String token) throws TokenFormatException, IOException, JsonClientException{
-		if (prefix != null) this.filePrefix = prefix;
-		if (workDir != null) this.workDir = workDir;
-		this.token = token;
-		this.genome = WsDeluxeUtil.getObjectFromWsByRef(genomeRef, token).getData().asClassInstance(Genome.class);
-	}
-
-	public void writeGenome () throws TokenFormatException, IOException, JsonClientException{
+	public static void writeGenome (String genomeRef, String filePrefix, String workDir, String token) throws TokenFormatException, IOException, JsonClientException{
+		Genome genome = WsDeluxeUtil.getObjectFromWsByRef(genomeRef, token).getData().asClassInstance(Genome.class);
 		if (genome != null) {
 			//Write contigs
-			writeContigFiles();
+			writeContigFiles(genome.getContigsetRef(), filePrefix, workDir, token);
 			//Write features
 			List<Feature> features = genome.getFeatures();
-			writeFeaturesFile(features);
+			writeFeaturesFile(features, genome, filePrefix, workDir);
 			//Write feature names
-			writeFeatureNamesFile(features);
+			writeFeatureNamesFile(features, filePrefix, workDir);
+			genome = null;
 		} else {
-			System.out.println("Genome object not set");
+			System.out.println("Genome object not found");
 		}
 	}
 	
-	public void writeContigFiles() throws TokenFormatException, IOException, JsonClientException {
-		String contigSetRef = genome.getContigsetRef();
+	public static void writeContigFiles(String contigSetRef, String filePrefix, String workDir, String token) throws TokenFormatException, IOException, JsonClientException {
 		ContigSet contigSet = WsDeluxeUtil.getObjectFromWsByRef(contigSetRef, token).getData().asClassInstance(ContigSet.class);
 		for (Contig contig : contigSet.getContigs()){
 			BufferedWriter writer = null;
@@ -64,7 +53,7 @@ public class GenomeExporter {
 		}
 	}
 	
-	public void writeFeaturesFile(List<Feature> features){
+	public static void writeFeaturesFile(List<Feature> features, Genome genome, String filePrefix, String workDir){
 		BufferedWriter writer = null;
 		try {
 			writer = new BufferedWriter(new FileWriter(workDir + filePrefix + FEATURES));
@@ -115,7 +104,7 @@ public class GenomeExporter {
 	}
 
 	
-	public void writeFeatureNamesFile(List<Feature> features){
+	public static void writeFeatureNamesFile(List<Feature> features, String filePrefix, String workDir){
 		BufferedWriter writer = null;
 		try {
 			writer = new BufferedWriter(new FileWriter(workDir + filePrefix + FEATURENAMES));
