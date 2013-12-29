@@ -2,7 +2,6 @@ package us.kbase.cmonkey;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,18 +33,6 @@ import us.kbase.common.service.UnauthorizedException;
  */
 public class CmonkeyClient {
     private JsonClientCaller caller;
-    private static URL DEFAULT_URL = null;
-    static {
-        try {
-            DEFAULT_URL = new URL("http://kbase.us/services/cmonkey");
-        } catch (MalformedURLException mue) {
-            throw new RuntimeException("Compile error in client - bad url compiled");
-        }
-    }
-
-    public CmonkeyClient() {
-       caller = new JsonClientCaller(DEFAULT_URL);
-    }
 
     public CmonkeyClient(URL url) {
         caller = new JsonClientCaller(url);
@@ -57,14 +44,6 @@ public class CmonkeyClient {
 
     public CmonkeyClient(URL url, String user, String password) throws UnauthorizedException, IOException {
         caller = new JsonClientCaller(url, user, password);
-    }
-
-    public CmonkeyClient(AuthToken token) throws UnauthorizedException, IOException {
-        caller = new JsonClientCaller(DEFAULT_URL, token);
-    }
-
-    public CmonkeyClient(String user, String password) throws UnauthorizedException, IOException {
-        caller = new JsonClientCaller(DEFAULT_URL, user, password);
     }
 
 	public void setConnectionReadTimeOut(Integer milliseconds) {

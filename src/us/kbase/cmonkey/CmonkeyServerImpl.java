@@ -107,7 +107,7 @@ public class CmonkeyServerImpl {
 		String commandLine = generateCmonkeyCommandLine(jobPath, params);
 		writer.write(commandLine + "\n");
 		writer.flush();
-		System.gc();
+		gc();
 		// cross fingers and run cmonkey-python
 		if (jobId != null)
 			updateJobProgress(jobId,
@@ -142,8 +142,8 @@ public class CmonkeyServerImpl {
 		// clean up (if not on AWE)
 		if (awe == false) {
 			File fileDelete = new File(jobPath);
-			fileDelete.delete();
-			deleteFile(JOB_PATH, "cmonkey-checkpoint.*");
+			deleteDirectoryRecursively(fileDelete);
+			deleteFilesByPattern(JOB_PATH, "cmonkey-checkpoint.*");
 			// Runtime.getRuntime().exec("rm -r " + jobPath);
 			// Runtime.getRuntime().exec("rm " + JOB_PATH +
 			// "cmonkey-checkpoint*");
@@ -169,6 +169,7 @@ public class CmonkeyServerImpl {
 			writer.flush();
 		}
 		// get string and export
+		gc();
 		if (!((params.getNetworkRef() == null) || (params.getNetworkRef()
 				.equals("")))) {
 			NetworkExporter.exportString(params.getNetworkRef(), "1",
@@ -357,7 +358,7 @@ public class CmonkeyServerImpl {
 			IOException {
 		Integer exitVal = null;
 		Process p = Runtime.getRuntime().exec(commandLine, null,
-				new File(CMONKEY_DIR));
+				new File(JOB_PATH));
 
 		StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(),
 				"ERROR", jobId, token, jobPath + "errorlog.txt");
@@ -385,7 +386,7 @@ public class CmonkeyServerImpl {
 		database.disconnect();
 	}
 
-	protected static void deleteFile(String folder, final String pattern) {
+	protected static void deleteFilesByPattern(String folder, final String pattern) {
 		File dir = new File(folder);
 		File fileDelete;
 
@@ -450,5 +451,26 @@ public class CmonkeyServerImpl {
 	 * 
 	 * return cmonkeyRunResult; }
 	 */
+	public static void deleteDirectoryRecursively(File startFile) {
+	    if(startFile.isDirectory()){
+	        for(File f : startFile.listFiles()) {
+	            deleteDirectoryRecursively(f);
+	        }
+	        startFile.delete();
+	    } else {
+	    	startFile.delete();
+	    }
+	}
+	
+	public static void gc() {
+		   Object obj = new Object();
+		   @SuppressWarnings("rawtypes")
+		java.lang.ref.WeakReference ref = new java.lang.ref.WeakReference<Object>(obj);
+		   obj = null;
+		   while(ref.get() != null) {
+		      System.out.println("garbage collector");
+		      System.gc();
+		   }
+		}
 
 }

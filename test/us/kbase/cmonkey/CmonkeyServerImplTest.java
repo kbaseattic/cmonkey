@@ -2,6 +2,7 @@ package us.kbase.cmonkey;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.List;
@@ -213,6 +214,25 @@ public class CmonkeyServerImplTest {
 		assertEquals(2, cmonkeyRun.getNetwork().getClusters().get(0).getMotifs().size());
 
 	}
+	
+	@Test
+	public final void testDeleteDirectory() throws Exception {
+		String directoryName = "/var/tmp/cmonkey/52be6cd9e4b0565cd80fb7dd";
+		File directory = new File(directoryName) ;
+		CmonkeyServerImpl.deleteDirectoryRecursively(directory);
+		assertFalse(directory.exists());
+
+	}
+
+	@Test
+	public final void testDeleteFiles() throws Exception {
+		String directoryName = "/var/tmp/cmonkey/";
+		String pattern = "cmonkey-checkpoint.*";
+		CmonkeyServerImpl.deleteFilesByPattern(directoryName, pattern);
+		assertFalse(new File(directoryName+"cmonkey-checkpoint-20131227.100").exists());
+
+	}
+
 
 	public static void showCmonkeyRun (CmonkeyRunResult runResult){
 		DecimalFormat df = new DecimalFormat("0.000");

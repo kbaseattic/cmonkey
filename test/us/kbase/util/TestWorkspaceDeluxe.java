@@ -136,8 +136,8 @@ public class TestWorkspaceDeluxe {
 //		params.setRemoveTypes(removeTypes);
 		
 		params.setDryrun(1L);
-		//Map<String,String> result = WsDeluxeUtil.wsClient(authToken.toString()).registerTypespec(params);
-		Map<String,String> result = wsClient().registerTypespec(params);
+		Map<String,String> result = WsDeluxeUtil.wsClient(authToken.toString()).registerTypespec(params);
+		//Map<String,String> result = wsClient().registerTypespec(params);
 		System.out.println(result.toString());
 		assertNotNull(result);
 		

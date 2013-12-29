@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 import us.kbase.auth.AuthException;
 import us.kbase.common.service.JsonClientException;
-import us.kbase.common.service.UnauthorizedException;
 
 
 class StreamGobbler extends Thread
