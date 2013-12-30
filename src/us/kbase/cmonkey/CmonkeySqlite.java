@@ -191,11 +191,12 @@ public class CmonkeySqlite {
 		return conditions;
 	}
 
-	public void buildCmonkeyRunResult(CmonkeyRunResult cmonkeyRunResult)
+	public void buildCmonkeyRunResult(CmonkeyRunResult cmonkeyRunResult, String genomeName)
 			throws IOException, JsonClientException, SQLException {
 		cmonkeyRunResult.setId(getKbaseId(CmonkeyRunResult.class
 				.getSimpleName()));
 		CmonkeyNetwork network = new CmonkeyNetwork();
+		network.setGenomeName(genomeName);
 		String sqlQuery = "SELECT * FROM run_infos";
 		ResultSet resultSet = statement.executeQuery(sqlQuery);
 		while (resultSet.next()) {

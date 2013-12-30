@@ -178,7 +178,7 @@ public class CmonkeyServerImplTest {
 	@Test
 	public final void testParseCmonkeySql() throws Exception {
 		CmonkeyRunResult cmonkeyRun = new CmonkeyRunResult();
-		CmonkeyServerImpl.parseCmonkeySql(TEST_DATABASE_PATH, cmonkeyRun);
+		CmonkeyServerImpl.parseCmonkeySql(TEST_DATABASE_PATH, cmonkeyRun, null);
 		//cmonkeyRun.setId(CmonkeyServerImpl.getKbaseId("CmonkeyRunResult"));
 		showCmonkeyRun(cmonkeyRun);
 		assertNotNull(cmonkeyRun);
@@ -199,7 +199,7 @@ public class CmonkeyServerImplTest {
 		
 
 		CmonkeyRunResult cmonkeyRun = new CmonkeyRunResult();
-		CmonkeyServerImpl.parseCmonkeySql(TEST_DATABASE_PATH, cmonkeyRun);
+		CmonkeyServerImpl.parseCmonkeySql(TEST_DATABASE_PATH, cmonkeyRun, null);
 		cmonkeyRun.setId(CmonkeyServerImpl.getKbaseId("CmonkeyRunResult"));
 		cmonkeyRun.setParameters(params);
 		//showCmonkeyRun(cmonkeyRun);

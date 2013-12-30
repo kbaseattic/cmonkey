@@ -17,9 +17,11 @@ public class GenomeExporter {
 	private static final String FEATURES = "_features";
 	private static final String FEATURENAMES = "_feature_names";
 
-	public static void writeGenome (String genomeRef, String filePrefix, String workDir, String token) throws TokenFormatException, IOException, JsonClientException{
+	public static String writeGenome (String genomeRef, String filePrefix, String workDir, String token) throws TokenFormatException, IOException, JsonClientException{
 		Genome genome = WsDeluxeUtil.getObjectFromWsByRef(genomeRef, token).getData().asClassInstance(Genome.class);
+		String returnVal = null;
 		if (genome != null) {
+			returnVal = genome.getScientificName();
 			//Write contigs
 			writeContigFiles(genome.getContigsetRef(), filePrefix, workDir, token);
 			//Write features
@@ -31,6 +33,7 @@ public class GenomeExporter {
 		} else {
 			System.out.println("Genome object not found");
 		}
+		return returnVal;
 	}
 	
 	public static void writeContigFiles(String contigSetRef, String filePrefix, String workDir, String token) throws TokenFormatException, IOException, JsonClientException {

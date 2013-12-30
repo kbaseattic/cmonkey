@@ -100,7 +100,7 @@ public class CmonkeyServerImpl {
 		writer.flush();
 		series = null;
 		// prepare cache files
-		prepareCacheFiles(jobPath + "cache/", params, token, writer);
+		String genomeName = prepareCacheFiles(jobPath + "cache/", params, token, writer);
 		writer.write("Cache files created in " + jobPath + "cache/\n");
 		writer.flush();
 		// generate command line
@@ -127,7 +127,7 @@ public class CmonkeyServerImpl {
 		String sqlFile = jobPath + "out/cmonkey_run.db";
 		writer.write(sqlFile + "\n");
 		writer.flush();
-		parseCmonkeySql(sqlFile, cmonkeyRunResult);
+		parseCmonkeySql(sqlFile, cmonkeyRunResult, genomeName);
 		String resultId = getKbaseId("CmonkeyRunResult");
 		writer.write(resultId + "\n");
 		// get ID for the result
@@ -152,11 +152,11 @@ public class CmonkeyServerImpl {
 			finishJob(jobId, wsName, cmonkeyRunResult.getId(), token.toString());
 	}
 
-	protected static void prepareCacheFiles(String cachePath,
+	protected static String prepareCacheFiles(String cachePath,
 			CmonkeyRunParameters params, String token, FileWriter writer)
 			throws TokenFormatException, IOException, JsonClientException {
 		// get genome, contigset and export
-		GenomeExporter.writeGenome(params.getGenomeRef(), "my_favorite_pet",
+		String genomeName = GenomeExporter.writeGenome(params.getGenomeRef(), "my_favorite_pet",
 				cachePath, token);
 		writer.write("Genome files created\n");
 		writer.flush();
@@ -177,6 +177,7 @@ public class CmonkeyServerImpl {
 			writer.write("String file created\n");
 			writer.flush();
 		}
+		return genomeName;
 	}
 
 	protected static String createDirs(String jobId, String currentDir) {
@@ -380,10 +381,10 @@ public class CmonkeyServerImpl {
 	}
 
 	protected static void parseCmonkeySql(String sqlFile,
-			CmonkeyRunResult cmonkeyRunResult) throws ClassNotFoundException,
+			CmonkeyRunResult cmonkeyRunResult, String genomeName) throws ClassNotFoundException,
 			SQLException, IOException, JsonClientException {
 		CmonkeySqlite database = new CmonkeySqlite(sqlFile);
-		database.buildCmonkeyRunResult(cmonkeyRunResult);
+		database.buildCmonkeyRunResult(cmonkeyRunResult, genomeName);
 		database.disconnect();
 	}
 

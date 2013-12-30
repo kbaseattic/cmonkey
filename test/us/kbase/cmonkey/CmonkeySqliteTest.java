@@ -93,7 +93,8 @@ public class CmonkeySqliteTest {
 	@Test
 	public final void testGetCmonkeyRun() throws Exception {
 		CmonkeyRunResult result = new CmonkeyRunResult(); 
-		database.buildCmonkeyRunResult(result);
+		String genomeName = "";
+		database.buildCmonkeyRunResult(result, genomeName);
 		String id = "testCmonkeyResult";
 		result.setId(id);
 		
