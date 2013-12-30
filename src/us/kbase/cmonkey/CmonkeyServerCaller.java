@@ -1,6 +1,7 @@
 package us.kbase.cmonkey;
 
 import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -50,6 +51,15 @@ public class CmonkeyServerCaller {
 			String jsonArgs = prepareJson (wsId, returnVal, params, authPart.toString());
 			String result = executePost(jsonArgs);
 			System.out.println(result);
+			try {
+			    PrintWriter out = new PrintWriter(new FileWriter("/var/tmp/cmonkey/cmonkey-awe.log", true));
+			    out.write(jsonArgs);
+			    out.write(result);
+			    out.write("***");
+			    out.close();
+			} catch (IOException e) {
+			    //oh noes!
+			}
 		}
 		return returnVal;
 	}
@@ -71,14 +81,14 @@ public class CmonkeyServerCaller {
 		returnVal +=" --job " + jobId + " --method build_cmonkey_network_job_from_ws --ws '" + wsId + "' --series '" + params.getSeriesRef() + "' --genome '" + params.getGenomeRef() + "'";
 		
 		if (params.getMotifsScoring() == 0L){
-			returnVal += " --nomotifs 1"; 
+			returnVal += " --motifs 0"; 
 		} else {
-			returnVal += " --nomotifs 0";
+			returnVal += " --motifs 1";
 		}
 		if (params.getNetworksScoring() == 0L){
-			returnVal += " --nonetworks 1"; 
+			returnVal += " --networks 0"; 
 		} else {
-			returnVal += " --nonetworks 0";
+			returnVal += " --networks 1";
 		}
 		if (params.getOperomeRef() != null){
 			returnVal += " --operons '" + params.getOperomeRef() + "'"; 

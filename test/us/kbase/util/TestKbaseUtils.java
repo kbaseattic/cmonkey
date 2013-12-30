@@ -65,10 +65,11 @@ public class TestKbaseUtils {
 
 	@Test
 	public void testSeriesImport() throws Exception {
-		String fileName = "test/halo_ratios5.tsv";
+		String fileName = "test/hal-ratios.tsv";
 		String genomeRef = "AKtest/kb|genome.8";
+		String namePrefix = "Halobacterium_sp_NRC1";
 		ExpressionSeriesImporter importer = new ExpressionSeriesImporter (genomeRef, fileName, workspaceName, token.toString());
-		List<String> result = importer.importExpressionSeriesFile();
+		List<String> result = importer.importExpressionSeriesFile(namePrefix);
 		
 		
 		System.out.println(result.toString());
@@ -111,9 +112,10 @@ public class TestKbaseUtils {
 
 	@Test
 	public void testStringImport() throws Exception {
-		String ncbiId = "64091";		
+		String ncbiId = "64091";
+		String name = null;
 		NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
-		InteractionSet result = importer.ImportStringFile();
+		InteractionSet result = importer.ImportStringFile(name);
 		
 		
 		System.out.println(result.getId());
@@ -138,8 +140,9 @@ public class TestKbaseUtils {
 	@Test
 	public void testOperonsImport() throws Exception {
 		String ncbiId = "64091";
+		String name = null;
 		NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
-		InteractionSet result = importer.ImportOperonsFile();
+		InteractionSet result = importer.ImportOperonsFile(name);
 		
 		
 		System.out.println(result.getId());

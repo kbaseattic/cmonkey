@@ -287,12 +287,27 @@ public class TestWorkspaceDeluxe {
 	@Test
 	public void testWsDeleteObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String name = "kb|sequenceset.6";
-		String ref = workspaceName + "/" + name;
-		
 		List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
-		ObjectIdentity objectIdentity = new ObjectIdentity().withRef(ref);
-		objectsIdentity.add(objectIdentity);
+		
+		String[] names = {
+					"kb|tomtomrunresult.26",
+					"kb|tomtomrunresult.27",
+					"kb|mastrunresult.30",
+					"kb|mastrunresult.31",
+					"kb|cmonkeyrunresult.58",
+					"kb|cmonkeyrunresult.64",
+					"kb|cmonkeyrunresult.68",
+					"kb|cmonkeyrunresult.89",
+					"kb|cmonkeyrunresult.96",
+					"kb|cmonkeyrunresult.97",
+					"kb|cmonkeyrunresult.100"
+					}; 
+
+		for (String name : names){
+			String ref = workspaceName + "/" + name;
+			ObjectIdentity objectIdentity = new ObjectIdentity().withRef(ref);
+			objectsIdentity.add(objectIdentity);
+		}
 		WsDeluxeUtil.wsClient(authToken.toString()).deleteObjects(objectsIdentity);
 
 	}	

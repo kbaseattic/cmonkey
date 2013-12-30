@@ -82,7 +82,7 @@ public class ExpressionSeriesImporter {
 		return _idClient;
 	}
 	
-	public List<String> importExpressionSeriesFile() throws TokenFormatException, IOException, JsonClientException {
+	public List<String> importExpressionSeriesFile(String namePrefix) throws TokenFormatException, IOException, JsonClientException {
 		List<String> result = new ArrayList<String>();
 		ExpressionSeries series = new ExpressionSeries();
 		try {
@@ -153,13 +153,25 @@ public class ExpressionSeriesImporter {
 			sample.setExternalSourceDate("undefined");
 			sample.setGenomeId("kb|genome.1");
 			sample.setExpressionLevels(dataValues.get(i));
-			sampleRefs.add(workspaceName + "/" + sample.getKbId());
-			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(sample, UObject.class), "ExpressionServices.ExpressionSample-1.0", workspaceName, sample.getKbId(), token.toString());
-			result.add(sample.getKbId());
+			String sampleName = null;
+			if (namePrefix == null) {
+				sampleName = sample.getKbId();
+				WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(sample, UObject.class), "ExpressionServices.ExpressionSample-1.0", workspaceName, sampleName, token.toString());
+			} else {
+				sampleName = namePrefix + "_sample_" + i;
+				WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(sample, UObject.class), "ExpressionServices.ExpressionSample-1.0", workspaceName, sampleName, token.toString());
+			}
+			sampleRefs.add(workspaceName + "/" + sampleName);
+			result.add(sampleName);
 						
 		}
 		series.setExpressionSampleIds(sampleRefs);
-		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(series, UObject.class), "ExpressionServices.ExpressionSeries-1.0", workspaceName, series.getKbId(), token.toString());
+		if (namePrefix == null) {
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(series, UObject.class), "ExpressionServices.ExpressionSeries-1.0", workspaceName, series.getKbId(), token.toString());
+		} else {
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(series, UObject.class), "ExpressionServices.ExpressionSeries-1.0", workspaceName, namePrefix + "_series", token.toString());
+		}
+		
 		return result;
 	}
 

@@ -22,8 +22,8 @@ public class CmonkeyClientTest {
 //	private String serverUrl = "http://140.221.84.195:7049";
 //	private String serverUrl = "http://140.221.85.173:7078";
 	private String serverUrl = "http://localhost:7049";
-//	private String quickTestSeriesRef = "QuickTestExpressionDataSeries";
-	private String testSeriesRef = "AKtest/kb|series.269";
+	private String quickTestSeriesRef = "AKtest/kb|series.269";
+	private String testSeriesRef = "AKtest/Halobacterium_sp_NRC1_series";
 	private String genomeRef = "AKtest/kb|genome.8";
 	private String testStringNetworkRef = "AKtest/kb|interactionset.5";
 	private String testOperonNetworkRef = "AKtest/kb|interactionset.6";
@@ -36,7 +36,7 @@ public class CmonkeyClientTest {
 		params.setMotifsScoring(0L);
 		params.setNetworksScoring(0L);
 		params.setGenomeRef(genomeRef);
-		params.setSeriesRef(testSeriesRef);
+		params.setSeriesRef(quickTestSeriesRef);
 		URL url = new URL(serverUrl);
 		CmonkeyClient client = new CmonkeyClient(url, token);
 		client.setAuthAllowedForHttp(true);

@@ -58,16 +58,16 @@ public class CmonkeyInvoker {
                 .withArgName("genome")
                 .create() );
 
-		options.addOption( OptionBuilder.withLongOpt( "nomotifs" )
-                .withDescription( "Motif scoring will not be used: 0|1" )
+		options.addOption( OptionBuilder.withLongOpt( "motifs" )
+                .withDescription( "Motif scoring will be used: 0|1" )
                 .hasArg(true)
-                .withArgName("nomotifs")
+                .withArgName("motifs")
                 .create() );
 
-		options.addOption( OptionBuilder.withLongOpt( "nonetworks" )
-                .withDescription( "Network scoring will not be used: 0|1" )
+		options.addOption( OptionBuilder.withLongOpt( "networks" )
+                .withDescription( "Network scoring will be used: 0|1" )
                 .hasArg(true)
-                .withArgName("nonetworks")
+                .withArgName("networks")
                 .create() );
 
 		options.addOption( OptionBuilder.withLongOpt( "operons" )
@@ -94,19 +94,19 @@ public class CmonkeyInvoker {
 
 		CmonkeyRunParameters params = new CmonkeyRunParameters();		    			
 		
-		if ( line.hasOption("nomotifs")){
-			params.setMotifsScoring(Long.parseLong(line.getOptionValue("nomotifs")));
+		if ( line.hasOption("motifs")){
+			params.setMotifsScoring(Long.parseLong(line.getOptionValue("motifs")));
 		}
 		else {
-			System.err.println( "Required nomotifs parameter missed");
+			System.err.println( "Required motifs parameter missed");
 			System.exit(1);
 		}
 		
-		if ( line.hasOption("nonetworks")){
-			params.setNetworksScoring(Long.parseLong(line.getOptionValue("nonetworks")));
+		if ( line.hasOption("networks")){
+			params.setNetworksScoring(Long.parseLong(line.getOptionValue("networks")));
 		}
 		else {
-			System.err.println( "Required nonetworks parameter missed");
+			System.err.println( "Required networks parameter missed");
 			System.exit(1);
 		}
 

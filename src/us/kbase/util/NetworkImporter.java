@@ -89,7 +89,7 @@ public class NetworkImporter {
 		return _idClient;
 	}
 	
-	public InteractionSet ImportOperonsFile () throws TokenFormatException, IOException, JsonClientException{
+	public InteractionSet ImportOperonsFile (String name) throws TokenFormatException, IOException, JsonClientException{
 		List<Interaction> interactions = new ArrayList<Interaction>();
 		String fileName = workDir + PREFIX_OPERONS + ncbiId + POSTFIX_OPERONS;
 		System.out.println(fileName);
@@ -169,8 +169,13 @@ public class NetworkImporter {
 		}
 		
 		DatasetSource source = new DatasetSource().withId(getKbaseId("DatasetSource")).withName(ncbiId).withReference("undefined").withDescription("Imported operons data").withResourceUrl("http://microbesonline.org/operons/gnc"+ncbiId+".html");
-		InteractionSet set = new InteractionSet().withId(getKbaseId("InteractionSet")).withName(ncbiId).withSource(source).withInteractions(interactions).withType("operons");		
-		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);		
+		InteractionSet set = new InteractionSet().withId(getKbaseId("InteractionSet")).withName(ncbiId).withSource(source).withInteractions(interactions).withType("operons");
+		if (name == null) {
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);
+		} else {
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, name, token);
+		}
+				
 		return set;
 	}
 
@@ -179,7 +184,7 @@ public class NetworkImporter {
 		return featureId;
 	}
 
-	public InteractionSet ImportStringFile () throws TokenFormatException, IOException, JsonClientException{
+	public InteractionSet ImportStringFile (String name) throws TokenFormatException, IOException, JsonClientException{
 		List<Interaction> interactions = new ArrayList<Interaction>();
 		String fileName = workDir + ncbiId + ".gz";
 		System.out.println(fileName);
@@ -230,8 +235,11 @@ public class NetworkImporter {
 		
 		DatasetSource source = new DatasetSource().withId(getKbaseId("DatasetSource")).withName(ncbiId).withReference("undefined").withDescription("Imported STRING data").withResourceUrl("http://networks.systemsbiology.net/string9/"+ncbiId+".gz");
 		InteractionSet set = new InteractionSet().withId(getKbaseId("InteractionSet")).withName(ncbiId).withSource(source).withInteractions(interactions).withType("string");
-		
-		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);
+		if (name == null) {
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);
+		} else {
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, name, token);
+		}
 		return set;
 	}
 	
