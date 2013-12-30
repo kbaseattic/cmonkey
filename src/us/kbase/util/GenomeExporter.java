@@ -42,7 +42,9 @@ public class GenomeExporter {
 			BufferedWriter writer = null;
 			try {
 				writer = new BufferedWriter(new FileWriter(workDir + filePrefix + "_" + contig.getName()));
-				writer.write(contig.getSequence());
+				if (contig.getSequence() != null){
+					writer.write(contig.getSequence());
+				}
 			} catch (IOException e) {
 				System.out.println(e.getLocalizedMessage());
 			} finally {
