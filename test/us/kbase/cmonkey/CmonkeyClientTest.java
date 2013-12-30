@@ -11,7 +11,6 @@ import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.Tuple7;
-import us.kbase.common.service.UObject;
 import us.kbase.userandjobstate.Results;
 import us.kbase.util.WsDeluxeUtil;
 

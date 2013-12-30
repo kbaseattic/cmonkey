@@ -127,29 +127,34 @@ public class CmonkeyServerImpl {
 		String sqlFile = jobPath + "out/cmonkey_run.db";
 		writer.write(sqlFile + "\n");
 		writer.flush();
-		parseCmonkeySql(sqlFile, cmonkeyRunResult, genomeName);
-		String resultId = getKbaseId("CmonkeyRunResult");
-		writer.write(resultId + "\n");
-		// get ID for the result
-		cmonkeyRunResult.setId(resultId);
-		cmonkeyRunResult.setParameters(params);
-		// save result
-		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(
+		String status = parseCmonkeySql(sqlFile, cmonkeyRunResult, genomeName);
+		if (status != null){
+			writer.write("Error: " + status);
+			if (jobId != null)
+				finishJob(jobId, wsName, null, "Error: " + status, token.toString());
+			// close log file
+			writer.close();
+		} else {
+			String resultId = getKbaseId("CmonkeyRunResult");
+			writer.write(resultId + "\n");
+			// get ID for the result
+			cmonkeyRunResult.setId(resultId);
+			cmonkeyRunResult.setParameters(params);
+			// save result
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(
 				cmonkeyRunResult, UObject.class), "Cmonkey.CmonkeyRunResult",
 				wsName, cmonkeyRunResult.getId(), token.toString());
-		// close log file
-		writer.close();
-		// clean up (if not on AWE)
-		if (awe == false) {
-			File fileDelete = new File(jobPath);
-			deleteDirectoryRecursively(fileDelete);
-			deleteFilesByPattern(CMONKEY_DIR, "cmonkey-checkpoint.*");
-			// Runtime.getRuntime().exec("rm -r " + jobPath);
-			// Runtime.getRuntime().exec("rm " + JOB_PATH +
-			// "cmonkey-checkpoint*");
+			// close log file
+			writer.close();
+			// clean up (if not on AWE)
+			if (awe == false) {
+				File fileDelete = new File(jobPath);
+				deleteDirectoryRecursively(fileDelete);
+				deleteFilesByPattern(CMONKEY_DIR, "cmonkey-checkpoint.*");
+			}
+			if (jobId != null)
+				finishJob(jobId, wsName, cmonkeyRunResult.getId(), "Finished", token.toString());
 		}
-		if (jobId != null)
-			finishJob(jobId, wsName, cmonkeyRunResult.getId(), token.toString());
 	}
 
 	protected static String prepareCacheFiles(String cachePath,
@@ -161,6 +166,7 @@ public class CmonkeyServerImpl {
 		writer.write("Genome files created\n");
 		writer.flush();
 		// get operons and export
+		gc();
 		if (!((params.getOperomeRef() == null) || (params.getOperomeRef()
 				.equals("")))) {
 			NetworkExporter.exportOperons(params.getOperomeRef(), "1",
@@ -254,10 +260,9 @@ public class CmonkeyServerImpl {
 				dateFormat.format(date));
 	}
 
-	protected static void finishJob(String jobId, String wsId, String objectId,
+	protected static void finishJob(String jobId, String wsId, String objectId, String status,
 			String token) throws UnauthorizedException, IOException,
 			JsonClientException, AuthException {
-		String status = "Finished";
 		String error = null;
 		Results res = new Results();
 		List<String> workspaceIds = new ArrayList<String>();
@@ -380,12 +385,13 @@ public class CmonkeyServerImpl {
 
 	}
 
-	protected static void parseCmonkeySql(String sqlFile,
+	protected static String parseCmonkeySql(String sqlFile,
 			CmonkeyRunResult cmonkeyRunResult, String genomeName) throws ClassNotFoundException,
 			SQLException, IOException, JsonClientException {
 		CmonkeySqlite database = new CmonkeySqlite(sqlFile);
-		database.buildCmonkeyRunResult(cmonkeyRunResult, genomeName);
+		String status = database.buildCmonkeyRunResult(cmonkeyRunResult, genomeName);
 		database.disconnect();
+		return status;
 	}
 
 	protected static void deleteFilesByPattern(String folder, final String pattern) {

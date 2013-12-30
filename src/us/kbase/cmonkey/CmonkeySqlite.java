@@ -191,7 +191,7 @@ public class CmonkeySqlite {
 		return conditions;
 	}
 
-	public void buildCmonkeyRunResult(CmonkeyRunResult cmonkeyRunResult, String genomeName)
+	public String buildCmonkeyRunResult(CmonkeyRunResult cmonkeyRunResult, String genomeName)
 			throws IOException, JsonClientException, SQLException {
 		cmonkeyRunResult.setId(getKbaseId(CmonkeyRunResult.class
 				.getSimpleName()));
@@ -215,16 +215,16 @@ public class CmonkeySqlite {
 		resultSet.close();
 		if (cmonkeyRunResult.getLastIteration() < cmonkeyRunResult
 				.getIterationsNumber()) {
-			throw new RuntimeException(
-					"cmonkey-python finished after iteration "
+			return 	"cmonkey-python finished after iteration "
 							+ cmonkeyRunResult.getLastIteration()
 							+ " but expected number of iterations is "
-							+ cmonkeyRunResult.getIterationsNumber());
-		}
+							+ cmonkeyRunResult.getIterationsNumber();
+		} 
 		network.setId(getKbaseId(CmonkeyNetwork.class.getSimpleName()));
 		network.setClusters(this.getClusterList(cmonkeyRunResult
 				.getLastIteration()));
 		cmonkeyRunResult.setNetwork(network);
+		return null;
 
 	}
 
