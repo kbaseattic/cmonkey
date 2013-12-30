@@ -272,7 +272,7 @@ public class GenomeImporter {
 		for (String accession : contigNames.keySet()){
 			String fileName = this.workDir + this.filePrefix + "_" + accession;
 			File file = new File(fileName);
-			String sequence = null;
+			String sequence = "";
 			if (file.exists()) {
 				BufferedReader br = null;
 				try {
