@@ -6,24 +6,25 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1;
+use Test::More tests => 3;
 use Test::Cmd;
 use JSON;
 
 
-my $url = "http://140.221.84.191:7078/";
+my $url = "\"http://140.221.85.173:7078/\"";
 my $bin  = "scripts";
 
-my $ws = "AKtest";
+my $ws = "\"AKtest\"";
 my $user = "aktest";
 my $pw = "1475rokegi";
-my $expression_data_series_id = "QuickTestExpressionDataSeries";
+my $series_ref = "\"AKtest/test_Halobacterium__series\"";
+my $genome_ref = "\"AKtest/kb|genome.9\"";
 
 
 #1
 my $tes = Test::Cmd->new(prog => "$bin/build_cmonkey_network_job_from_ws.pl", workdir => '', interpreter => '/kb/runtime/bin/perl');
 ok($tes, "creating Test::Cmd object for build_cmonkey_network_job_from_ws");
-$tes->run(args => "--url=$url --ws=$ws --input=$expression_data_series_id --nomotifs --nooperons --nonetworks --nostring --user=$user --pw=$pw");
+$tes->run(args => "--url=$url --ws=$ws --input=$series_ref --genome=$genome_ref --user=$user --pw=$pw");
 ok($? == 0,"Running build_cmonkey_network_job_from_ws");
 my $tem=$tes->stdout;
 print "Job ID:\t",$tem,"\n";

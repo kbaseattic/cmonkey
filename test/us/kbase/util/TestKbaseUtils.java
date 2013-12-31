@@ -65,9 +65,9 @@ public class TestKbaseUtils {
 
 	@Test
 	public void testSeriesImport() throws Exception {
-		String fileName = "test/hal-ratios.tsv";
+		String fileName = "test/halo_ratios5.tsv";
 		String genomeRef = "AKtest/kb|genome.9";
-		String namePrefix = "Halobacterium_sp_NRC1";
+		String namePrefix = "test_Halobacterium_";
 		ExpressionSeriesImporter importer = new ExpressionSeriesImporter (genomeRef, fileName, workspaceName, token.toString());
 		List<String> result = importer.importExpressionSeriesFile(namePrefix);
 		

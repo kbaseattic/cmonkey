@@ -80,13 +80,13 @@ use Bio::KBase::AuthUser;
 my $usage = "Usage: build_cmonkey_network_job_from_ws [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]\n";
 
 my $url        = "http://140.221.85.173:7078/";
-my $ws		   = "";
+my $ws         = "";
 my $input      = "";
 my $genome     = "";
-my $motifs   = 0;
-my $operons  = 0;
-my $networks = "";
-my $string   = "";
+my $motifs     = 0;
+my $networks   = 0;
+my $operons    = "null";
+my $string     = "null";
 my $user       = "";
 my $pw         = "";
 my $help       = 0;
@@ -99,8 +99,8 @@ GetOptions("help"       => \$help,
            "genome=s"    => \$genome,
            "motifs"    => \$motifs,
            "networks"    => \$networks,
-           "operons=s"    => \$operons,
-           "string=s"    => \$string,
+           "operons:s"    => \$operons,
+           "string:s"    => \$string,
            "user=s"    => \$user,
            "pw=s"    => \$pw,
            "url=s"     => \$url) 

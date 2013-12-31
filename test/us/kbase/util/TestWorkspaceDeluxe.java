@@ -270,7 +270,7 @@ public class TestWorkspaceDeluxe {
 	@Test
 	public void testWsReadObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String name = "kb|contigset.52";
+		String name = "test_Halobacterium__series";
 		//String exampleWs = "networks_typed_objects_examples";
 		
 		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace(workspaceName, name, authToken.toString());
@@ -290,17 +290,12 @@ public class TestWorkspaceDeluxe {
 		List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 		
 		String[] names = {
-					"kb|tomtomrunresult.26",
-					"kb|tomtomrunresult.27",
-					"kb|mastrunresult.30",
-					"kb|mastrunresult.31",
-					"kb|cmonkeyrunresult.58",
-					"kb|cmonkeyrunresult.64",
-					"kb|cmonkeyrunresult.68",
-					"kb|cmonkeyrunresult.89",
-					"kb|cmonkeyrunresult.96",
-					"kb|cmonkeyrunresult.97",
-					"kb|cmonkeyrunresult.100"
+					"kb|cmonkeyrunresult.112",
+					"kb|cmonkeyrunresult.107",
+					"kb|cmonkeyrunresult.106",
+					"kb|cmonkeyrunresult.105",
+					"kb|interactionset.6",
+					"kb|interactionset.5"
 					}; 
 
 		for (String name : names){
