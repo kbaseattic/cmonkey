@@ -8,7 +8,7 @@ use Carp;
 
 =head1 SYNOPSIS
 
-    build_cmonkey_network_job_from_ws [--url=http://140.221.84.191:7078/ --ws=<workspace ID> --input=<expression data series ID> --nomotifs --nooperons --nonetworks --nostring --user=<username> --pw=<password>]
+    build_cmonkey_network_job_from_ws [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]
 
 =head1 DESCRIPTION
 
@@ -16,14 +16,14 @@ use Carp;
 
 =head2 Documentation for underlying call
 
-    Returns Job object ID that keeps ID of CmonkeyRunResult object stored in workspace.
+    Returns Job object ID that will keep workspace reference to CmonkeyRunResult object stored in workspace when the run will be finished.
 
 =head1 OPTIONS
 
 =over 6
 
-=item B<--url>=I<http://140.221.84.191:7078/>
-    the service url
+=item B<--url>=I<http://140.221.85.173:7078/>
+    the service url 
 
 =item B<-h> B<--help>
     print help information
@@ -32,22 +32,25 @@ use Carp;
     print version information
 
 =item B<--ws>
-    workspace ID
+    workspace name where run result will be stored
 
 =item B<--input>
-    KBase ID of the expression data series
+    Workspace reference of the expression data series
 
-=item B<--nomotifs>
-    Motif scoring will not be used
+=item B<--genome>
+    Workspace reference of genome
 
-=item B<--nooperons>
-    MicrobesOnline operons data will not be used
+=item B<--motifs>
+    Motif scoring will be used
 
-=item B<--nonetworks>
-    Network scoring will not be used
+=item B<--networks>
+    Network scoring will be used
 
-=item B<--nostring>
-    STRING data will not be used
+=item B<--operons>
+    Workspace reference of operons data set
+
+=item B<--string>
+    Workspace reference of STRING data set
 
 =item B<--user>
     User name for access to workspace
@@ -59,7 +62,7 @@ use Carp;
 
 =head1 EXAMPLE
 
-    build_cmonkey_network_job_from_ws --url=http://140.221.84.191:7078/ --ws=AKtest --input=QuickTestExpressionDataSeries --nomotifs --nooperons --nonetworks --nostring --user=<username> --pw=<password>
+    build_cmonkey_network_job_from_ws --url=http://140.221.85.173:7078/ --ws=AKtest --input="AKtest/Halobacterium_sp_NRC1_series" --genome="AKtest/kb|genome.9" --motifs --networks --operons="AKtest/kb|interactionset.8" --string="AKtest/kb|interactionset.7" --user=<username> --pw=<password>
     build_cmonkey_network_job_from_ws --help
     build_cmonkey_network_job_from_ws --version
 
@@ -74,15 +77,16 @@ use Bio::KBase::cmonkey::Client;
 use Bio::KBase::AuthToken;
 use Bio::KBase::AuthUser;
 
-my $usage = "Usage: build_cmonkey_network_job_from_ws [--url=http://140.221.84.191:7078/ --ws=<workspace ID> --input=<sequence set ID> --nomotifs --nooperons --nonetworks --nostring --user=<username> --pw=<password>]\n";
+my $usage = "Usage: build_cmonkey_network_job_from_ws [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]\n";
 
-my $url        = "http://140.221.84.191:7078/";
-my $input      = "";
+my $url        = "http://140.221.85.173:7078/";
 my $ws		   = "";
-my $nomotifs   = 0;
-my $nooperons  = 0;
-my $nonetworks = 0;
-my $nostring   = 0;
+my $input      = "";
+my $genome     = "";
+my $motifs   = 0;
+my $operons  = 0;
+my $networks = "";
+my $string   = "";
 my $user       = "";
 my $pw         = "";
 my $help       = 0;
@@ -92,10 +96,11 @@ GetOptions("help"       => \$help,
            "version"    => \$version,
            "ws=s"    => \$ws,
            "input=s"    => \$input,
-           "nomotifs"    => \$nomotifs,
-           "nooperons"    => \$nooperons,
-           "nonetworks"    => \$nonetworks,
-           "nostring"    => \$nostring,
+           "genome=s"    => \$genome,
+           "motifs"    => \$motifs,
+           "networks"    => \$networks,
+           "operons=s"    => \$operons,
+           "string=s"    => \$string,
            "user=s"    => \$user,
            "pw=s"    => \$pw,
            "url=s"     => \$url) 
@@ -110,27 +115,29 @@ print "VERSION\n";
 print "1.0\n";
 print "\n";
 print "SYNOPSIS\n";
-print "build_cmonkey_network_job_from_ws [--url=http://140.221.84.191:7078/ --ws=<workspace ID> --input=<sequence set ID> --nomotifs --nooperons --nonetworks --nostring --user=<username> --pw=<password>]\n";
+print "build_cmonkey_network_job_from_ws [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]\n";
 print "\n";
 print "DESCRIPTION\n";
-print "INPUT:            This command requires the URL of the service, workspace name, ID of expression data series and run parameters.\n";
+print "INPUT:            This command requires the URL of the service, workspace name, and run parameters.\n";
 print "\n";
 print "OUTPUT:           This command returns Job object ID.\n";
 print "\n";
 print "PARAMETERS:\n";
-print "--url             The URL of the service, --url=http://140.221.84.191:7078/, required.\n";
+print "--url             The URL of the service, --url=http://140.221.85.173:7078/, required.\n";
 print "\n";
-print "--ws              Workspace ID, required.\n";
+print "--ws              Workspace name where cMonkey run result will be stored, required.\n";
 print "\n";
-print "--input           KBase ID of the expression dara series, required.\n";
+print "--input           Workspace reference of expression data series, required.\n";
 print "\n";
-print "--nomotifs        Motif scoring will not be used.\n";
+print "--genome          Workspace reference of genome, required.\n";
 print "\n";
-print "--nonetworks      Network scoring will not be used.\n";
+print "--motifs          Motif scoring will be used.\n";
 print "\n";
-print "--nooperons       MicrobesOnline operons data will not be used.\n";
+print "--networks        Network scoring will be used.\n";
 print "\n";
-print "--nostring        STRING data will not be used.\n";
+print "--operons         Workspace reference of operons data set.\n";
+print "\n";
+print "--string          Workspace reference of STRING data set.\n";
 print "\n";
 print "--user            User name for access to workspace.\n";
 print "\n";
@@ -142,7 +149,7 @@ print "--version         Print version information. \n";
 print "\n";
 print " \n";
 print "EXAMPLES \n";
-print "build_cmonkey_network_job_from_ws --url=http://140.221.84.191:7078/ --ws=AKtest --input=QuickTestExpressionDataSeries --nomotifs --nooperons --nonetworks --nostring --user=<username> --pw=<password> \n";
+print "build_cmonkey_network_job_from_ws --url=http://140.221.85.173:7078/ --ws=AKtest --input=\"AKtest/Halobacterium_sp_NRC1_series\" --genome=\"AKtest/kb|genome.9\" --motifs --networks --operons=\"AKtest/kb|interactionset.8\" --string=\"AKtest/kb|interactionset.7\" --user=<username> --pw=<password>\n";
 print "\n";
 print "This command will return a Job object ID.\n";
 print "\n";
@@ -179,15 +186,18 @@ if ($token->error_message){
 
 
 my $cmonkey_run_parameters = {
-    "no_operons"=>$nooperons,
-    "no_string"=>$nostring,
-    "no_networks"=>$nonetworks,
-    "no_motifs"=>$nomotifs
+
+    "series_ref"=>$input,
+    "genome_ref"=>$genome,
+    "operome_ref"=>$operons,
+    "network_ref"=>$string,
+    "networks_scoring"=>$networks,
+    "motifs_scoring"=>$motifs
 };
 
 my $obj = {
 	method => "Cmonkey.build_cmonkey_network_job_from_ws",
-	params => [$ws, $input, $cmonkey_run_parameters],
+	params => [$ws, $cmonkey_run_parameters],
 };
 
 my $client = Bio::KBase::cmonkey::Client::RpcClient->new;

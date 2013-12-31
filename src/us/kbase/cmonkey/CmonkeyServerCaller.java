@@ -49,16 +49,35 @@ public class CmonkeyServerCaller {
 			cmonkeyServerThread.start();
 		} else {
 			String jsonArgs = prepareJson (wsId, returnVal, params, authPart.toString());
+			if (CmonkeyServerConfig.LOG_AWE_CALLS) {
+				System.out.println(jsonArgs);
+				PrintWriter out = null;
+				try {
+					out = new PrintWriter(new FileWriter("/var/tmp/cmonkey/cmonkey-awe.log", true));
+					out.write("Job " + returnVal + " : call to AWE\n" + jsonArgs + "\n***\n");
+					out.write("***");
+				} catch (IOException e) {
+					//oh noes!
+				} finally {
+					if (out != null) {
+						out.close();
+					}
+				}
+			}
 			String result = executePost(jsonArgs);
-			System.out.println(result);
-			try {
-			    PrintWriter out = new PrintWriter(new FileWriter("/var/tmp/cmonkey/cmonkey-awe.log", true));
-			    out.write(jsonArgs);
-			    out.write(result);
-			    out.write("***");
-			    out.close();
-			} catch (IOException e) {
-			    //oh noes!
+			if (CmonkeyServerConfig.LOG_AWE_CALLS) {
+				System.out.println(result);
+				PrintWriter out = null;
+				try {
+					out = new PrintWriter(new FileWriter("/var/tmp/cmonkey/cmonkey-awe.log", true));
+					out.write("Job " + returnVal + " : AWE response\n" + result + "\n***\n");
+				} catch (IOException e) {
+					//oh noes!
+				} finally {
+					if (out != null) {
+						out.close();
+					}
+				}
 			}
 		}
 		return returnVal;
@@ -105,7 +124,6 @@ public class CmonkeyServerCaller {
 		returnVal+="\", \"description\": \"running cMonkey service\", \"name\": \"run_cmonkey\"}, \"dependsOn\": [], \"outputs\": {\""+
 		jobId + ".tgz\": {\"host\": \"http://140.221.84.236:8000\"}},\"taskid\": \"0\",\"skip\": 0,\"totalwork\": 1}]}";
 		
-		System.out.println(returnVal);
 		return returnVal;
 	}
 

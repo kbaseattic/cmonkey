@@ -21,7 +21,7 @@ public class TestKbaseUtils {
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
 	private static AuthToken token = null;
-	private String testGenomeRef = "AKtest/kb|genome.8";
+	private String testGenomeRef = "AKtest/kb|genome.9";
 
 	@Before
 	public void setUp() throws Exception {
@@ -66,7 +66,7 @@ public class TestKbaseUtils {
 	@Test
 	public void testSeriesImport() throws Exception {
 		String fileName = "test/hal-ratios.tsv";
-		String genomeRef = "AKtest/kb|genome.8";
+		String genomeRef = "AKtest/kb|genome.9";
 		String namePrefix = "Halobacterium_sp_NRC1";
 		ExpressionSeriesImporter importer = new ExpressionSeriesImporter (genomeRef, fileName, workspaceName, token.toString());
 		List<String> result = importer.importExpressionSeriesFile(namePrefix);
@@ -79,7 +79,7 @@ public class TestKbaseUtils {
 
 	@Test
 	public void testReadGenome() throws Exception {
-		String genomeRef = "AKtest/kb|genome.8";
+		String genomeRef = "AKtest/kb|genome.9";
 		Genome result = WsDeluxeUtil.getObjectFromWsByRef(genomeRef, token.toString()).getData().asClassInstance(Genome.class);
 		
 		/*System.out.println(result.getId());
@@ -104,7 +104,7 @@ public class TestKbaseUtils {
 
 	@Test
 	public void testGenomeExport() throws Exception {
-		String genomeRef = "AKtest/kb|genome.8";
+		String genomeRef = "AKtest/kb|genome.9";
 		GenomeExporter.writeGenome(genomeRef, null, null, token.toString());
 		
 		fail("Not yet implemented");

@@ -3,7 +3,7 @@ package us.kbase.cmonkey;
 public class CmonkeyServerConfig {
 	//Deployment options
 	protected static boolean DEPLOY_AWE = true;
-
+	
 	//Service URLs
 	public static final String JOB_SERVICE_URL = "http://140.221.84.180:7083";
 	public static final String AWE_SERVICE_URL = "http://140.221.85.171:7080/job";
@@ -16,5 +16,11 @@ public class CmonkeyServerConfig {
 	protected static final String DATA_PATH = "/etc/cmonkey-python/KEGG_taxonomy";
 	protected static final String CMONKEY_RUN_PATH = "/kb/runtime/cmonkey-python/cmonkey.py";
 
-
+	//Logging options
+	
+	//Writes all JSON calls to AWE client and all AWE responses to /var/tmp/cmonkey/cmonkey-awe.log
+	//This is a serious security threat because log will contain all auth tokens
+	//SET IT TO FALSE ON PRODUCTION  
+	public static final boolean LOG_AWE_CALLS = true;
+	
 }
