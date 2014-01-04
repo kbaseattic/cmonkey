@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.UObject;
+import us.kbase.expressionservices.ExpressionSeries;
 import us.kbase.meme.MastHit;
 import us.kbase.auth.AuthException;
 import us.kbase.auth.AuthService;
@@ -24,10 +25,10 @@ public class CmonkeyServerImplTest {
 	private static final String USER_NAME = "aktest";
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
-	private String testSeriesRef = "AKtest/kb|series.269";
-	private String testGenomeRef = "AKtest/kb|genome.8";
-	private String testStringNetworkRef = "AKtest/kb|interactionset.5";
-	private String testOperonNetworkRef = "AKtest/kb|interactionset.6";
+	private String testSeriesRef = "AKtest/Halobacterium_sp_NRC1_series";
+	private String testGenomeRef = "AKtest/kb|genome.9";
+	private String testStringNetworkRef = "AKtest/kb|interactionset.7";
+	private String testOperonNetworkRef = "AKtest/kb|interactionset.8";
 	private final String TEST_DATABASE_PATH = "test/cmonkey_run_test.db";
 	//private final String TEST_DATABASE_PATH = "/home/kbase/Documents/inferelator-test/out/cmonkey_run.db";
 	private static AuthToken token = null;
@@ -233,6 +234,16 @@ public class CmonkeyServerImplTest {
 
 	}
 
+	@Test
+	public final void testCreateSeriesFile() throws Exception {
+		String dirName = "/home/kbase/dev_container/modules/cmonkey/test/";
+		
+		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		ExpressionSeries input = WsDeluxeUtil.getObjectFromWsByRef(testSeriesRef, token.toString()).getData().asClassInstance(ExpressionSeries.class);
+		CmonkeyServerImpl.createInputTable(dirName, input.getExpressionSampleIds(), token.toString());
+		assertTrue(new File(dirName + "input.txt").exists());
+
+	}
 
 	public static void showCmonkeyRun (CmonkeyRunResult runResult){
 		DecimalFormat df = new DecimalFormat("0.000");

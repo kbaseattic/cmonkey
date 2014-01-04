@@ -3,6 +3,7 @@ package us.kbase.cmonkey;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.junit.Test;
@@ -16,17 +17,18 @@ import us.kbase.util.WsDeluxeUtil;
 
 public class CmonkeyClientTest {
 
-	private static final String USER_NAME = "aktest";
-	private static final String PASSWORD = "1475rokegi";
-	private static final String workspaceName = "AKtest";
+	private static final String USER_NAME = "kazakov";
+	private static final String PASSWORD = "1475.kafa";
+	private static final String workspaceName = "ENIGMA_KBASE";
 //	private String serverUrl = "http://140.221.84.195:7049";
-	private String serverUrl = "http://140.221.85.173:7078";
-//	private String serverUrl = "http://localhost:7049";
+//	private String serverUrl = "http://140.221.85.173:7078";
+	private String serverUrl = "http://localhost:7049";
 	private String quickTestSeriesRef = "AKtest/test_Halobacterium__series";
-	private String testSeriesRef = "AKtest/Halobacterium_sp_NRC1_series";
-	private String genomeRef = "AKtest/kb|genome.9";
-	private String testStringNetworkRef = "AKtest/kb|interactionset.7";
-	private String testOperonNetworkRef = "AKtest/kb|interactionset.8";
+	private String testSeriesRef = "ENIGMA_KBASE/Halobacterium_sp_NRC-1_series_250_series";
+	private String genomeRef = "ENIGMA_KBASE/Halobacterium_sp_NRC-1";
+	//private String genomeRef = "AKtest/kb|genome.9";
+	private String testStringNetworkRef = "ENIGMA_KBASE/Halobacterium_sp_NRC-1_string";
+	private String testOperonNetworkRef = "ENIGMA_KBASE/Halobacterium_sp_NRC-1_operons";
 	
 	@Test
 	public final void testQuickBuildCmonkeyNetworkJobFromWs() throws Exception {
@@ -104,7 +106,7 @@ public class CmonkeyClientTest {
 	@Test
 	public final void testBuildCmonkeyNetworkJobFromWs() throws Exception {
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-//		System.out.println(token.toString());
+		System.out.println(token.toString());
 		CmonkeyRunParameters params = new CmonkeyRunParameters();
 		params.setMotifsScoring(1L);
 		params.setNetworksScoring(1L);
@@ -177,4 +179,21 @@ public class CmonkeyClientTest {
 
 	}
 
+	@Test
+	public void testURL() throws Exception {
+
+	    try {
+	        URL url = new URL(serverUrl);
+	        HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+	        urlConn.connect();
+	        System.out.println(urlConn.getResponseMessage());
+	        System.out.println(urlConn.getContent().toString());
+
+	        assertEquals(HttpURLConnection.HTTP_OK, urlConn.getResponseCode());
+	    } catch (IOException e) {
+	        System.err.println("Error creating HTTP connection");
+	        e.printStackTrace();
+	        throw e;
+	    }
+	}
 }

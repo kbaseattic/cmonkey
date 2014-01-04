@@ -86,7 +86,7 @@ public class ExpressionSeriesImporter {
 		List<String> result = new ArrayList<String>();
 		ExpressionSeries series = new ExpressionSeries();
 		try {
-			series.setKbId(getKbaseId("ExpressionSeries"));//("TestExpressionSeries");//
+			series.setKbId(namePrefix);//(getKbaseId("ExpressionSeries"));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -139,14 +139,15 @@ public class ExpressionSeriesImporter {
 		} catch (IOException e) {
 			System.out.println(e.getLocalizedMessage());
 		}
+		
+		Long startSamplesId = 0L;
 
-		 System.out.println(conditions.toString());
-		Long startSamplesId = getKbaseIds("ExpressionSample", samplesNumber);
+		System.out.println(conditions.toString());
+		if  (namePrefix == null) {
+			 startSamplesId = getKbaseIds("ExpressionSample", samplesNumber);
+		}
 		for (Integer i = 0; i < samplesNumber; i++) {
 			ExpressionSample sample = new ExpressionSample();
-			//Integer sampleNo = i+1;
-			sample.setKbId("kb|sample." + startSamplesId.toString());//("TestExpressionSample"+sampleNo.toString());//
-			startSamplesId++;
 			sample.setSourceId(conditions.get(i));
 			sample.setType("microarray");
 			sample.setNumericalInterpretation("undefined");
@@ -155,10 +156,13 @@ public class ExpressionSeriesImporter {
 			sample.setExpressionLevels(dataValues.get(i));
 			String sampleName = null;
 			if (namePrefix == null) {
-				sampleName = sample.getKbId();
+				sampleName = "kb|sample." + startSamplesId.toString();
+				sample.setKbId(sampleName);
 				WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(sample, UObject.class), "ExpressionServices.ExpressionSample-1.0", workspaceName, sampleName, token.toString());
+				startSamplesId++;
 			} else {
 				sampleName = namePrefix + "_sample_" + i;
+				sample.setKbId(sampleName);
 				WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(sample, UObject.class), "ExpressionServices.ExpressionSample-1.0", workspaceName, sampleName, token.toString());
 			}
 			sampleRefs.add(workspaceName + "/" + sampleName);

@@ -20,6 +20,7 @@ import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
 import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.Tuple11;
+import us.kbase.common.service.Tuple8;
 import us.kbase.common.service.UnauthorizedException;
 import us.kbase.workspace.GetModuleInfoParams;
 import us.kbase.workspace.ListObjectsParams;
@@ -30,16 +31,15 @@ import us.kbase.workspace.RegisterTypespecParams;
 import us.kbase.workspace.SetGlobalPermissionsParams;
 import us.kbase.workspace.TypeInfo;
 import us.kbase.workspace.WorkspaceClient;
+import us.kbase.workspace.WorkspaceIdentity;
 
 public class TestWorkspaceDeluxe {
 
-	private static final String ADMIN_USER_NAME = "kazakov";
-	private static final String ADMIN_PASSWORD = "1475.kafa";
 
 	private static WorkspaceClient _wsClient = null;
-	private static final String USER_NAME = "aktest";
-	private static final String PASSWORD = "1475rokegi";
-	private static final String workspaceName = "AKtest";
+	private static final String USER_NAME = "kazakov";//"aktest";
+	private static final String PASSWORD = "";//"1475rokegi";
+	private static final String workspaceName = "ENIGMA_KBASE";
 	private static final String WS_SERVICE_URL = "http://140.221.84.209:7058";
 
 	protected static WorkspaceClient wsClient() {
@@ -47,8 +47,7 @@ public class TestWorkspaceDeluxe {
 		{
 			URL workspaceClientUrl;
 			try {
-				AuthToken authToken = AuthService.login(ADMIN_USER_NAME, new String(ADMIN_PASSWORD)).getToken();
-				//AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+				AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 				workspaceClientUrl = new URL (WS_SERVICE_URL);
 				
 				_wsClient = new WorkspaceClient(workspaceClientUrl, authToken);
@@ -189,13 +188,28 @@ public class TestWorkspaceDeluxe {
 
 
 	@Test
-	public void testWsInfo() throws Exception {
+	public void testSetWsPermission() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		//String module = "MEME"; 
 		SetGlobalPermissionsParams params = new SetGlobalPermissionsParams().withWorkspace("AKtest").withNewPermission("r");
 		WsDeluxeUtil.wsClient(authToken.toString()).setGlobalPermission(params);
 	}
 
+	@Test
+	public void testWsInfo() throws Exception {
+		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		WorkspaceIdentity wsI = new WorkspaceIdentity().withWorkspace("ENIGMA_KBASE");
+		Tuple8<Long, String, String, String, Long, String, String, String> res = WsDeluxeUtil.wsClient(authToken.toString()).getWorkspaceInfo(wsI);
+		System.out.println(res.getE1());
+		System.out.println(res.getE2());
+		System.out.println(res.getE3());
+		System.out.println(res.getE4());
+		System.out.println(res.getE5());
+		System.out.println(res.getE6());
+		System.out.println(res.getE7());
+		System.out.println(res.getE8());
+		assertNotNull(res);
+	}
 	
 	@Test
 	public void testWsListObjects() throws Exception {
@@ -203,7 +217,7 @@ public class TestWorkspaceDeluxe {
 		ListObjectsParams params = new ListObjectsParams();
 		//String type = "ExpressionServices.ExpressionSeries-1.0";
 		List<String> workspaces = new ArrayList<String>();
-		workspaces.add("AKtest");
+		workspaces.add("ENIGMA_KBASE");
 		//workspaces.add("networks_typed_objects_examples");
 		//params.setType(type);
 		params.setWorkspaces(workspaces);
@@ -229,7 +243,7 @@ public class TestWorkspaceDeluxe {
 	@Test
 	public void testWsGetObjectInfo() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String name = "kb|interactionset.5";
+		String name = "kb|sequenceset.9";
 		List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 		ObjectIdentity objectIdentity = new ObjectIdentity().withName(name)
 				.withWorkspace(workspaceName);
@@ -270,15 +284,17 @@ public class TestWorkspaceDeluxe {
 	@Test
 	public void testWsReadObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String name = "test_Halobacterium__series";
+		String name = "kb|mastrunresult.41";
 		//String exampleWs = "networks_typed_objects_examples";
 		
 		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace(workspaceName, name, authToken.toString());
+		/*
 		BufferedWriter writer = new BufferedWriter(new FileWriter("string.txt"));
 		writer.write(output.getData().toString());
 		writer.close();
+		*/
 
-		//System.out.println(output.getData().toString());
+		System.out.println(output.getData().toString());
 		assertNotNull(output);
 
 	}	
@@ -290,12 +306,10 @@ public class TestWorkspaceDeluxe {
 		List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 		
 		String[] names = {
-					"kb|cmonkeyrunresult.112",
-					"kb|cmonkeyrunresult.107",
-					"kb|cmonkeyrunresult.106",
-					"kb|cmonkeyrunresult.105",
-					"kb|interactionset.6",
-					"kb|interactionset.5"
+					"kb|tomtomrunresult.40",
+					"kb|tomtomrunresult.39",
+					"kb|tomtomrunresult.41",
+					"kb|memerunresult.121"
 					}; 
 
 		for (String name : names){

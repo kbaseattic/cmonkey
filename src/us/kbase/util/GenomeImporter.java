@@ -37,10 +37,16 @@ public class GenomeImporter {
 	private String workDir = "/home/kbase/cmonkey20131126/cache/";
 	private String token = null;
 	private String wsId = null;
+	private String idPattern = null;
 
 	
-	public GenomeImporter (String prefix, String workDir, String wsId, String token) throws Exception{
-		if (prefix != null) this.filePrefix = prefix;
+	public GenomeImporter (String filePrefix, String idPrefix, String workDir, String wsId, String token) throws Exception{
+		if (filePrefix != null) this.filePrefix = filePrefix;
+		if (idPrefix == null) {
+			throw new Exception("ID prefix not assigned");
+		} else {
+			this.idPattern = "^" + idPrefix + ".*";
+		}
 		if (workDir != null) this.workDir = workDir;
 		if (token == null) {
 			throw new Exception("Token not assigned");
@@ -70,14 +76,14 @@ public class GenomeImporter {
 	}
 
 	
-	public Genome readGenome () throws TokenFormatException, IOException, JsonClientException{
+	public Genome readGenomeWithKbIds () throws TokenFormatException, IOException, JsonClientException{
 		Genome genome = new Genome();
-		List<Feature> features = readFeatures(genome);
+		List<Feature> features = readFeaturesKb(genome);
 		genome.setFeatures(features);
-		genome.setDomain("Archaea");
-		genome.setGeneticCode(0L);
+		genome.setDomain("Archaea");//change to String variable
+		genome.setGeneticCode(0L);//not sure
 		genome.setSource("undefined");
-		genome.setSourceId("undefined");
+		genome.setSourceId("undefined");//NCBI tax id? 
 		List<Tuple7<Long, String, String, String, String, String, String>> publications = new ArrayList<Tuple7<Long,String,String,String,String,String,String>>();
 		genome.setPublications(publications);
 		genome.setId(getKbaseId("Genome"));
@@ -85,7 +91,179 @@ public class GenomeImporter {
 		
 		return genome;
 	}
+
+	public Genome readGenomeWithExternalIds (String id) throws TokenFormatException, IOException, JsonClientException{
+		Genome genome = new Genome();
+		genome.setId(id);
+		List<Feature> features = readFeaturesExt(genome);
+		genome.setFeatures(features);
+		genome.setDomain("Archaea");//change to String variable
+		genome.setGeneticCode(0L);//not sure
+		genome.setSource("undefined");
+		genome.setSourceId("undefined");//NCBI tax id? 
+		List<Tuple7<Long, String, String, String, String, String, String>> publications = new ArrayList<Tuple7<Long,String,String,String,String,String,String>>();
+		genome.setPublications(publications);
+		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(genome, UObject.class), "KBaseGenomes.Genome-1.0", wsId, genome.getId(), token);
+		
+		return genome;
+	}
+
 	
+	public List<Feature> readFeaturesExt(Genome genome) throws TokenFormatException, IOException, JsonClientException {
+		
+		List<Feature> returnVal = new ArrayList<Feature>();
+		String fileName = workDir + filePrefix + FEATURES;
+		
+		List<String[]> featureNames = readFeatureNames();
+		HashMap<String, String> contigNames = new HashMap<String, String>();
+		
+		List<String> featureStrings = new ArrayList<String>();
+		
+		try {
+			String line = null;
+			BufferedReader br = new BufferedReader(new FileReader(fileName));
+			while ((line = br.readLine()) != null) {
+				if (line.equals("")) {
+					// do nothing
+				} else if (line.matches("-- .*")) {
+					// do nothing
+				} else {
+					//System.out.println(line);
+					featureStrings.add(line);
+					String[] fields = line.split("\t");
+					contigNames.put(fields[3], "contig");
+				}
+			}
+			br.close();
+		} catch (IOException e) {
+			System.out.println(e.getLocalizedMessage());
+		}
+		
+		ContigSet contigSet = readContigs(contigNames);
+		contigSet.setSourceId(this.filePrefix);
+
+		byte[] bytesOfMessage = null;
+		try {
+			bytesOfMessage = contigSet.toString().getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		byte[] thedigest = md.digest(bytesOfMessage);
+		System.out.println("MD5 = " + thedigest);
+		contigSet.setMd5(thedigest.toString());
+				
+		
+		
+		HashMap<String, String> contigIds = new HashMap<String, String>();
+		for (Contig contig : contigSet.getContigs()){
+			contigIds.put(contig.getName(), contig.getId());
+		}
+		List<String> contigIdsList = new ArrayList<String>(contigIds.values());
+		genome.setContigIds(contigIdsList);
+		String organismName = null;
+
+		
+		for (String line: featureStrings){
+
+			String[] fields = line.split("\t");
+			Feature feature = new Feature();
+			String featureId = null;
+			if (fields[0].matches(idPattern)) { //first of all, look for id in the first column
+				featureId = fields[0];
+			} else if (fields[2].matches(idPattern)) { //second, look for id in the 3rd column
+				featureId = fields[2];
+			} else { //finally, look for id in aliases
+				for (String[] featureName : featureNames){
+					if (featureName[0].equalsIgnoreCase(fields[0])){
+						if (featureName[1].matches(idPattern)){
+							featureId = featureName[1];
+							break;
+						}
+					}
+				}
+			}
+			System.out.println(featureId);
+			if (featureId == null) {
+				feature.setId(fields[0]); //if we failed to find id by pattern matching, use RSAT primary id
+			} else {
+				feature.setId(featureId);
+			}
+			
+			feature.setType(fields[1]);
+			List<String> aliases = new ArrayList<String>();
+			aliases.add(0, fields[0]); //RSAT feature id must be the first element in aliases list  
+			aliases.add(1, fields[2]); //primary feature name must be the second element in aliases list  
+			aliases.add(2, fields[10]);//gene id must be the third element in aliases list 
+
+			for (String[] featureName : featureNames){
+				if (featureName[0].equalsIgnoreCase(fields[0])){
+					if (featureName[2].equalsIgnoreCase("primary")){
+						if (aliases.get(1) == null){
+							aliases.add(1, featureName[1]); //if there is no primary name, put it now. Otherwise, do nothing
+						}
+					} else {
+						aliases.add(3, featureName[1]); //put all other aliases into aliases list 
+					}
+				}
+			}
+			
+			feature.setAliases(aliases);
+/*			if (feature.getId() == null){
+				feature.setId(feature.getAliases().get(0)); // feature ID would be feature ID if the feature has no primary name 
+			}
+*/
+			
+			Tuple5<String, String, Long, String, Long> region = new Tuple5<String, String, Long, String, Long>();
+			region.setE1(fields[3]);
+			region.setE2(wsId + "/" + contigSet.getId() + "/" + fields[3]);
+			region.setE3(Long.parseLong(fields[4]));
+			region.setE4(fields[6]);
+			region.setE5(Long.parseLong(fields[5]) - Long.parseLong(fields[4]) + 1L);
+			List<Tuple5<String, String, Long, String, Long>> location = new ArrayList<Tuple5<String,String,Long,String,Long>>();
+			location.add(region);
+			feature.setLocation(location);
+			feature.setFunction(fields[7]);
+			organismName = fields[9];
+			
+			try {
+				bytesOfMessage = feature.toString().getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				md = MessageDigest.getInstance("MD5");
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			thedigest = md.digest(bytesOfMessage);
+			System.out.println("MD5 = " + thedigest);
+			feature.setMd5(thedigest.toString());
+
+			returnVal.add(feature);
+			
+		}
+		
+		contigSet.setSource(organismName);
+		contigSet.setId(genome.getId()+"_contigset");
+		genome.setContigsetRef(wsId + "/" + contigSet.getId());
+		genome.setScientificName(organismName);
+
+		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(contigSet, UObject.class), "KBaseGenomes.ContigSet-1.0", wsId, contigSet.getId(), token);
+		
+		return returnVal;
+
+	}
+
 	public List<String[]> readFeatureNames (){
 		List<String[]> returnVal = new ArrayList<String[]>();
 		String fileName = workDir + filePrefix + FEATURENAMES;
@@ -119,7 +297,7 @@ public class GenomeImporter {
 		return returnVal;
 	}
 	
-	public List<Feature> readFeatures (Genome genome) throws TokenFormatException, IOException, JsonClientException{
+	public List<Feature> readFeaturesKb (Genome genome) throws TokenFormatException, IOException, JsonClientException{
 		
 		List<Feature> returnVal = new ArrayList<Feature>();
 		
@@ -322,7 +500,6 @@ public class GenomeImporter {
 
 		contigSet.setContigs(contigs);
 		contigSet.setType("Organism");
-		contigSet.setId(getKbaseId("ContigSet"));
 		return contigSet;
 	}
 

@@ -169,10 +169,12 @@ public class NetworkImporter {
 		}
 		
 		DatasetSource source = new DatasetSource().withId(getKbaseId("DatasetSource")).withName(ncbiId).withReference("undefined").withDescription("Imported operons data").withResourceUrl("http://microbesonline.org/operons/gnc"+ncbiId+".html");
-		InteractionSet set = new InteractionSet().withId(getKbaseId("InteractionSet")).withName(ncbiId).withSource(source).withInteractions(interactions).withType("operons");
+		InteractionSet set = new InteractionSet().withName(ncbiId).withSource(source).withInteractions(interactions).withType("operons");
 		if (name == null) {
+			set.setId(getKbaseId("InteractionSet"));
 			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);
 		} else {
+			set.setId(name);
 			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, name, token);
 		}
 				
@@ -234,10 +236,12 @@ public class NetworkImporter {
 		}
 		
 		DatasetSource source = new DatasetSource().withId(getKbaseId("DatasetSource")).withName(ncbiId).withReference("undefined").withDescription("Imported STRING data").withResourceUrl("http://networks.systemsbiology.net/string9/"+ncbiId+".gz");
-		InteractionSet set = new InteractionSet().withId(getKbaseId("InteractionSet")).withName(ncbiId).withSource(source).withInteractions(interactions).withType("string");
+		InteractionSet set = new InteractionSet().withName(ncbiId).withSource(source).withInteractions(interactions).withType("string");
 		if (name == null) {
+			set.setId(getKbaseId("InteractionSet"));
 			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);
 		} else {
+			set.setId(name);
 			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, name, token);
 		}
 		return set;

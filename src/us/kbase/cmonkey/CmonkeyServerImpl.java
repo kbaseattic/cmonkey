@@ -199,6 +199,7 @@ public class CmonkeyServerImpl {
 		}
 		new File(jobPath + "out/").mkdir();
 		new File(jobPath + "cache/").mkdir();
+		new File(jobPath + "tmp/").mkdir();
 
 		return jobPath;
 	}

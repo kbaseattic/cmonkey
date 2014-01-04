@@ -24,7 +24,7 @@ public class CmonkeyServerCaller {
 	private static final String JOB_SERVICE = CmonkeyServerConfig.JOB_SERVICE_URL;
 	private static final String AWE_SERVICE = CmonkeyServerConfig.AWE_SERVICE_URL;
 
-	private static UserAndJobStateClient _jobClient = null;
+//	private static UserAndJobStateClient _jobClient = null;
 	private static Integer connectionReadTimeOut = 30 * 60 * 1000;
 
 /*	public static CmonkeyRunResult buildCmonkeyNetwork(
@@ -40,8 +40,10 @@ public class CmonkeyServerCaller {
 			{
 
 		String returnVal = null;
-
-		returnVal = jobClient(authPart).createJob();
+		URL jobServiceUrl = new URL(JOB_SERVICE);
+		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, authPart);
+		jobClient.setAuthAllowedForHttp(true);
+		returnVal = jobClient.createJob();
 
 		if (deployCluster == false) {
 			CmonkeyServerThread cmonkeyServerThread = new CmonkeyServerThread(
@@ -83,7 +85,7 @@ public class CmonkeyServerCaller {
 		return returnVal;
 	}
 
-	protected static UserAndJobStateClient jobClient(AuthToken token)
+/*	protected static UserAndJobStateClient jobClient(AuthToken token)
 			throws TokenFormatException, UnauthorizedException, IOException {
 		if (_jobClient == null) {
 			URL jobServiceUrl = new URL(JOB_SERVICE);
@@ -92,6 +94,7 @@ public class CmonkeyServerCaller {
 		}
 		return _jobClient;
 	}
+*/
 	
 	protected static String prepareJson (String wsId, String jobId, CmonkeyRunParameters params, String token){
 		String returnVal = "{\"info\": {\"pipeline\": \"cmonkey-runner-pipeline\",\"name\": \"cmonkey\",\"project\": \"default\"" +

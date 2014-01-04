@@ -17,11 +17,11 @@ import us.kbase.networks.InteractionSet;
 
 public class TestKbaseUtils {
 
-	private static final String USER_NAME = "aktest";
-	private static final String PASSWORD = "1475rokegi";
-	private static final String workspaceName = "AKtest";
+	private static final String USER_NAME = "kazakov";
+	private static final String PASSWORD = "";
+	private static final String workspaceName = "ENIGMA_KBASE";//"AKtest";
 	private static AuthToken token = null;
-	private String testGenomeRef = "AKtest/kb|genome.9";
+	private String testGenomeRef = "ENIGMA_KBASE/Halobacterium_sp_NRC-1";//"AKtest/kb|genome.9";
 
 	@Before
 	public void setUp() throws Exception {
@@ -43,8 +43,31 @@ public class TestKbaseUtils {
 	
 	@Test
 	public void testGenomeImport() throws Exception {
-		GenomeImporter reader = new GenomeImporter("Halobacterium_sp", "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
-		Genome result = reader.readGenome();
+		GenomeImporter reader = new GenomeImporter("Halobacterium_sp", null, "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
+		Genome result = reader.readGenomeWithKbIds();
+		
+		
+		System.out.println(result.getId());
+		System.out.println(result.getScientificName());
+		System.out.println(result.getSource());
+		System.out.println(result.getContigsetRef());
+		System.out.println(result.getDomain());
+		System.out.println(result.getContigIds().toString());
+		System.out.println(result.getFeatures().get(0).getAliases().toString());
+		System.out.println(result.getFeatures().get(0).getId());
+		System.out.println(result.getFeatures().get(0).getLocation().get(0).toString());
+		System.out.println(result.getFeatures().get(100).getAliases().toString());
+		
+		assertNotNull(result);
+		assertEquals(result.getContigIds().size(), 2);
+		assertEquals(result.getScientificName(), "Halobacterium sp. NRC-1");
+	}
+
+	@Test
+	public void testGenomeImportExtId() throws Exception {
+		GenomeImporter reader = new GenomeImporter("Halobacterium_sp", "VNG", "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
+		String id = "Halobacterium_sp_NRC-1";
+		Genome result = reader.readGenomeWithExternalIds(id);
 		
 		
 		System.out.println(result.getId());
@@ -65,9 +88,10 @@ public class TestKbaseUtils {
 
 	@Test
 	public void testSeriesImport() throws Exception {
-		String fileName = "test/halo_ratios5.tsv";
-		String genomeRef = "AKtest/kb|genome.9";
-		String namePrefix = "test_Halobacterium_";
+		//To use KBase IDs for samples and series, set namePrefix to null 
+		String fileName = "test/hal-ratios.tsv";
+		String genomeRef = workspaceName + "/Halobacterium_sp_NRC-1";
+		String namePrefix = "Halobacterium_sp_NRC-1_series_250";
 		ExpressionSeriesImporter importer = new ExpressionSeriesImporter (genomeRef, fileName, workspaceName, token.toString());
 		List<String> result = importer.importExpressionSeriesFile(namePrefix);
 		
@@ -113,7 +137,7 @@ public class TestKbaseUtils {
 	@Test
 	public void testStringImport() throws Exception {
 		String ncbiId = "64091";
-		String name = null;
+		String name = "Halobacterium_sp_NRC-1_string";
 		NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
 		InteractionSet result = importer.ImportStringFile(name);
 		
@@ -140,7 +164,7 @@ public class TestKbaseUtils {
 	@Test
 	public void testOperonsImport() throws Exception {
 		String ncbiId = "64091";
-		String name = null;
+		String name = "Halobacterium_sp_NRC-1_operons";
 		NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
 		InteractionSet result = importer.ImportOperonsFile(name);
 		

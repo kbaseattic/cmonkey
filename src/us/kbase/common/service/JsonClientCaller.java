@@ -152,6 +152,8 @@ public class JsonClientCaller {
 		}
 		if (retError != null) {
 			String data = retError.get("data") == null ? retError.get("error") : retError.get("data");
+			System.out.println(retError.get("error"));
+			System.out.println(retError.get("data"));
 			throw new ServerException(retError.get("message"),
 					new Integer(retError.get("code")), retError.get("name"),
 					data);
