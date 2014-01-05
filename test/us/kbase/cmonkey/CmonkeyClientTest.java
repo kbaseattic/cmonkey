@@ -18,11 +18,11 @@ import us.kbase.util.WsDeluxeUtil;
 public class CmonkeyClientTest {
 
 	private static final String USER_NAME = "kazakov";
-	private static final String PASSWORD = "1475.kafa";
+	private static final String PASSWORD = "";
 	private static final String workspaceName = "ENIGMA_KBASE";
 //	private String serverUrl = "http://140.221.84.195:7049";
-//	private String serverUrl = "http://140.221.85.173:7078";
-	private String serverUrl = "http://localhost:7049";
+	private String serverUrl = "http://140.221.85.173:7078";
+//	private String serverUrl = "http://localhost:7049";
 	private String quickTestSeriesRef = "AKtest/test_Halobacterium__series";
 	private String testSeriesRef = "ENIGMA_KBASE/Halobacterium_sp_NRC-1_series_250_series";
 	private String genomeRef = "ENIGMA_KBASE/Halobacterium_sp_NRC-1";
