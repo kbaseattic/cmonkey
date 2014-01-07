@@ -9,6 +9,7 @@ public class CmonkeyServerConfig {
 	public static final String AWE_SERVICE_URL = "http://140.221.85.171:7080/job";
 	public static final String ID_SERVICE_URL = "http://kbase.us/services/idserver";
 	public static final String WS_SERVICE_URL = "http://140.221.84.209:7058";//"http://kbase.us/services/workspace/";
+	public static final String SHOCK_URL = "http://140.221.84.236:8000";
 	
 	//Paths
 	protected static final String JOB_DIRECTORY = "/var/tmp/cmonkey/";

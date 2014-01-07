@@ -23,6 +23,7 @@ public class CmonkeyServerCaller {
 	private static boolean deployCluster = CmonkeyServerConfig.DEPLOY_AWE;
 	private static final String JOB_SERVICE = CmonkeyServerConfig.JOB_SERVICE_URL;
 	private static final String AWE_SERVICE = CmonkeyServerConfig.AWE_SERVICE_URL;
+	private static final String SHOCK_URL = CmonkeyServerConfig.SHOCK_URL;
 
 	private static Integer connectionReadTimeOut = 30 * 60 * 1000;
 
@@ -114,7 +115,7 @@ public class CmonkeyServerCaller {
 		returnVal += " --token '" + token + "'";
 		returnVal += "\", \"description\": \"running cMonkey service\", \"name\": \"run_cmonkey\"}, \"dependsOn\": [], \"outputs\": {\""
 				+ jobId
-				+ ".tgz\": {\"host\": \"http://140.221.84.236:8000\"}},\"taskid\": \"0\",\"skip\": 0,\"totalwork\": 1}]}";
+				+ ".tgz\": {\"host\": \"" + SHOCK_URL + "\"}},\"taskid\": \"0\",\"skip\": 0,\"totalwork\": 1}]}";
 
 		return returnVal;
 	}

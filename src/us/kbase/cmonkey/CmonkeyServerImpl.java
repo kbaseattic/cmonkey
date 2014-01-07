@@ -340,10 +340,7 @@ public class CmonkeyServerImpl {
 		// make list of genes
 		List<String> geneNames = new ArrayList<String>();
 		for (ExpressionSample sample : samples) {
-			Map<String, Double> values = sample.getExpressionLevels();
-			for (String gene : values.keySet()) {
-				geneNames.add(gene);
-			}
+			geneNames.addAll(sample.getExpressionLevels().keySet());
 		}
 		List<String> uniqueGeneNames = new ArrayList<String>(
 				new HashSet<String>(geneNames));

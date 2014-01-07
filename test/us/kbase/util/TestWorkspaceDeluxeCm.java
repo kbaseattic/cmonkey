@@ -29,14 +29,14 @@ import us.kbase.workspace.WorkspaceIdentity;
 
 public class TestWorkspaceDeluxeCm {
 
-	private static final String USER_NAME = "aktest";
-	private static final String PASSWORD = "1475rokegi";
+	private static final String USER_NAME = "kazakov";
+	private static final String PASSWORD = "1475.kafa";
 	private static final String workspaceName = "AKtest";
 
 	@Test
 	public void testRegisterModule() throws Exception {
-		//AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		//WsDeluxeUtil.wsClient(authToken.toString()).requestModuleOwnership("MEME");
+		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		WsDeluxeUtil.wsClient(authToken.toString()).requestModuleOwnership("MEME");
 		fail("Nothing to test");
 	}
 
@@ -45,8 +45,8 @@ public class TestWorkspaceDeluxeCm {
 		
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		RegisterTypespecParams params = new RegisterTypespecParams();
-		//String specFileName = "/home/kbase/dev_container/modules/inferelator/kbase_inferelator.spec";
-		String specFileName = "/home/kbase/dev_container/modules/cmonkey/kbase_cmonkey.spec";
+		String specFileName = "/home/kbase/dev_container/modules/inferelator/kbase_inferelator.spec";
+		//String specFileName = "/home/kbase/dev_container/modules/cmonkey/kbase_cmonkey.spec";
 		//String specFileName = "/home/kbase/dev_container/modules/meme/kbase_meme.spec";
 		String spec = "";
 		BufferedReader br = null;
@@ -66,13 +66,14 @@ public class TestWorkspaceDeluxeCm {
 		params.setSpec(spec);
 
 //		params.setMod("Inferelator");
-//		List<String> addTypes = new ArrayList<String>();
+		List<String> addTypes = new ArrayList<String>();
 //		types.add("ExpressionDataSeries");
 //		types.add("CmonkeyRunResult");
 //		types.add("CmonkeyNetwork");
 //		types.add("CmonkeyCluster");
 //		types.add("CmonkeyMotif");
-//		types.add("InferelatorRunResult");
+		addTypes.add("GeneList");
+		addTypes.add("InferelatorRunResult");
 
 /*		types.add("MemeMotif");
 		types.add("MemeRunResult");
@@ -82,7 +83,7 @@ public class TestWorkspaceDeluxeCm {
 		types.add("MemePSPMCollection");
 		types.add("MemeSite");
 		types.add("MastHit");*/
-//		params.setNewTypes(addTypes);
+		params.setNewTypes(addTypes);
 /*		List<String> removeTypes = new ArrayList<String>();
 		removeTypes.add("CmonkeyNetwork");
 		removeTypes.add("CmonkeyCluster");
@@ -93,7 +94,7 @@ public class TestWorkspaceDeluxeCm {
 //		removeTypes.add("MastHit");
 //		params.setRemoveTypes(removeTypes);
 		
-		params.setDryrun(1L);
+		params.setDryrun(0L);
 		Map<String,String> result = WsDeluxeUtil.wsClient(authToken.toString()).registerTypespec(params);
 		//Map<String,String> result = wsClient().registerTypespec(params);
 		System.out.println(result.toString());
@@ -105,7 +106,7 @@ public class TestWorkspaceDeluxeCm {
 	public void testWsModuleInfo() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		GetModuleInfoParams params = new GetModuleInfoParams(); 
-		params.setMod("Cmonkey");
+		params.setMod("Inferelator");
 		ModuleInfo moduleInfo = WsDeluxeUtil.wsClient(authToken.toString()).getModuleInfo(params);
 		System.out.println("Description " + moduleInfo.getDescription());
 		System.out.println("Owners " + moduleInfo.getOwners().toString());
@@ -138,7 +139,7 @@ public class TestWorkspaceDeluxeCm {
 	public void testWsReleaseModule() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		//String module = "MEME"; 
-		String module = "Cmonkey";
+		String module = "Inferelator";
 		List<String> result = WsDeluxeUtil.wsClient(authToken.toString()).releaseModule(module);
 		System.out.println(result.toString());
 		
@@ -181,9 +182,19 @@ public class TestWorkspaceDeluxeCm {
 		//params.setType(type);
 		params.setWorkspaces(workspaces);
 		List<Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>>> typeInfo = WsDeluxeUtil.wsClient(authToken.toString()).listObjects(params);
-		for (Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>> object: typeInfo){
+
+/*		for (Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>> object: typeInfo){
 			System.out.println(object.getE3() + " : " + object.getE2());
 		}
+*/
+		BufferedWriter writer = new BufferedWriter(new FileWriter("list.txt"));
+		for (Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>> object: typeInfo){
+			writer.write(object.getE3() + " : " + object.getE2() + "\n");
+			System.out.println(object.getE3() + " : " + object.getE2());
+		}
+		writer.close();
+
+		
 		/*System.out.println(typeInfo.get(0).getE1());
 		System.out.println(typeInfo.get(0).getE2());
 		System.out.println(typeInfo.get(0).getE3());
