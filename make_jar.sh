@@ -39,7 +39,7 @@ javac -sourcepath $SRC_DIR $CLASSPATH -d $JAR_DIR -g $SRC_DIR/$JAVA_FILE.java
 
 cat > $JAR_DIR/Manifest.txt <<EOF
 Main-Class: $MAIN_CLASS
-Class-Path: lib/ini4j-0.5.2.jar lib/jetty-all-7.0.0.jar lib/kbase-auth.jar lib/servlet-api-2.5.jar lib/commons-cli-1.2.jar lib/jackson-all-1.9.11.jar lib/jackson-core-2.2.3.jar lib/jackson-annotations-2.2.3.jar lib/jackson-databind-2.2.3.jar lib/syslog4j-0.9.46.jar lib/jna-3.4.0.jar lib/mysql-connector-java-5.1.26-bin.jar lib/sqlite-jdbc-3.7.2.jar 
+Class-Path: lib/ini4j-0.5.2.jar lib/jetty-all-7.0.0.jar lib/kbase-auth.jar lib/servlet-api-2.5.jar lib/commons-cli-1.2.jar lib/jackson-core-2.2.3.jar lib/jackson-annotations-2.2.3.jar lib/jackson-databind-2.2.3.jar lib/syslog4j-0.9.46.jar lib/jna-3.4.0.jar lib/mysql-connector-java-5.1.26-bin.jar lib/sqlite-jdbc-3.7.2.jar 
 EOF
 
 

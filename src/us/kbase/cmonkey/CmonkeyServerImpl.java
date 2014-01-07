@@ -43,7 +43,12 @@ public class CmonkeyServerImpl {
 	private static final String ID_SERVICE_URL = CmonkeyServerConfig.ID_SERVICE_URL;
 	private static final String JOB_SERVICE_URL = CmonkeyServerConfig.JOB_SERVICE_URL;
 	private static IDServerAPIClient _idClient = null;
-	private static UserAndJobStateClient _jobClient = null;
+	private static UserAndJobStateClient _jobClient = null; // this class will
+															// run separately
+															// for each task,
+															// thus UJS client
+															// can be static
+															// singleton
 
 	private static Date date = new Date();
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
@@ -100,7 +105,8 @@ public class CmonkeyServerImpl {
 		writer.flush();
 		series = null;
 		// prepare cache files
-		String genomeName = prepareCacheFiles(jobPath + "cache/", params, token, writer);
+		String genomeName = prepareCacheFiles(jobPath + "cache/", params,
+				token, writer);
 		writer.write("Cache files created in " + jobPath + "cache/\n");
 		writer.flush();
 		// generate command line
@@ -128,10 +134,11 @@ public class CmonkeyServerImpl {
 		writer.write(sqlFile + "\n");
 		writer.flush();
 		String status = parseCmonkeySql(sqlFile, cmonkeyRunResult, genomeName);
-		if (status != null){
+		if (status != null) {
 			writer.write("Error: " + status);
 			if (jobId != null)
-				finishJob(jobId, wsName, null, "Error: " + status, token.toString());
+				finishJob(jobId, wsName, null, "Error: " + status,
+						token.toString());
 			// close log file
 			writer.close();
 		} else {
@@ -142,8 +149,9 @@ public class CmonkeyServerImpl {
 			cmonkeyRunResult.setParameters(params);
 			// save result
 			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(
-				cmonkeyRunResult, UObject.class), "Cmonkey.CmonkeyRunResult",
-				wsName, cmonkeyRunResult.getId(), token.toString());
+					cmonkeyRunResult, UObject.class),
+					"Cmonkey.CmonkeyRunResult", wsName, cmonkeyRunResult
+							.getId(), token.toString());
 			// close log file
 			writer.close();
 			// clean up (if not on AWE)
@@ -153,7 +161,8 @@ public class CmonkeyServerImpl {
 				deleteFilesByPattern(CMONKEY_DIR, "cmonkey-checkpoint.*");
 			}
 			if (jobId != null)
-				finishJob(jobId, wsName, cmonkeyRunResult.getId(), "Finished", token.toString());
+				finishJob(jobId, wsName, cmonkeyRunResult.getId(), "Finished",
+						token.toString());
 		}
 	}
 
@@ -161,8 +170,8 @@ public class CmonkeyServerImpl {
 			CmonkeyRunParameters params, String token, FileWriter writer)
 			throws TokenFormatException, IOException, JsonClientException {
 		// get genome, contigset and export
-		String genomeName = GenomeExporter.writeGenome(params.getGenomeRef(), "my_favorite_pet",
-				cachePath, token);
+		String genomeName = GenomeExporter.writeGenome(params.getGenomeRef(),
+				"my_favorite_pet", cachePath, token);
 		writer.write("Genome files created\n");
 		writer.flush();
 		// get operons and export
@@ -247,8 +256,6 @@ public class CmonkeyServerImpl {
 		initProgress.setPtype("task");
 		initProgress.setMax(tasks);
 		date.setTime(date.getTime() + 108000000L);
-
-		// System.out.println(dateFormat.format(date));
 		jobClient(token).startJob(jobId, token, status, desc, initProgress,
 				dateFormat.format(date));
 	}
@@ -261,9 +268,9 @@ public class CmonkeyServerImpl {
 				dateFormat.format(date));
 	}
 
-	protected static void finishJob(String jobId, String wsId, String objectId, String status,
-			String token) throws UnauthorizedException, IOException,
-			JsonClientException, AuthException {
+	protected static void finishJob(String jobId, String wsId, String objectId,
+			String status, String token) throws UnauthorizedException,
+			IOException, JsonClientException, AuthException {
 		String error = null;
 		Results res = new Results();
 		List<String> workspaceIds = new ArrayList<String>();
@@ -311,8 +318,7 @@ public class CmonkeyServerImpl {
 			List<String> sampleRefs, String token) throws TokenFormatException,
 			IOException, JsonClientException {
 
-		List<ObjectData> objects = WsDeluxeUtil.getObjectsFromWsByRef(
-				sampleRefs, token);
+		List<ObjectData> objects = WsDeluxeUtil.getObjectsFromWsByRef(sampleRefs, token);
 		List<ExpressionSample> samples = new ArrayList<ExpressionSample>();
 		for (ObjectData o : objects) {
 			ExpressionSample s = o.getData().asClassInstance(
@@ -387,15 +393,18 @@ public class CmonkeyServerImpl {
 	}
 
 	protected static String parseCmonkeySql(String sqlFile,
-			CmonkeyRunResult cmonkeyRunResult, String genomeName) throws ClassNotFoundException,
-			SQLException, IOException, JsonClientException {
+			CmonkeyRunResult cmonkeyRunResult, String genomeName)
+			throws ClassNotFoundException, SQLException, IOException,
+			JsonClientException {
 		CmonkeySqlite database = new CmonkeySqlite(sqlFile);
-		String status = database.buildCmonkeyRunResult(cmonkeyRunResult, genomeName);
+		String status = database.buildCmonkeyRunResult(cmonkeyRunResult,
+				genomeName);
 		database.disconnect();
 		return status;
 	}
 
-	protected static void deleteFilesByPattern(String folder, final String pattern) {
+	protected static void deleteFilesByPattern(String folder,
+			final String pattern) {
 		File dir = new File(folder);
 		File fileDelete;
 
@@ -460,26 +469,28 @@ public class CmonkeyServerImpl {
 	 * 
 	 * return cmonkeyRunResult; }
 	 */
+
 	public static void deleteDirectoryRecursively(File startFile) {
-	    if(startFile.isDirectory()){
-	        for(File f : startFile.listFiles()) {
-	            deleteDirectoryRecursively(f);
-	        }
-	        startFile.delete();
-	    } else {
-	    	startFile.delete();
-	    }
-	}
-	
-	public static void gc() {
-		   Object obj = new Object();
-		   @SuppressWarnings("rawtypes")
-		java.lang.ref.WeakReference ref = new java.lang.ref.WeakReference<Object>(obj);
-		   obj = null;
-		   while(ref.get() != null) {
-		      System.out.println("garbage collector");
-		      System.gc();
-		   }
+		if (startFile.isDirectory()) {
+			for (File f : startFile.listFiles()) {
+				deleteDirectoryRecursively(f);
+			}
+			startFile.delete();
+		} else {
+			startFile.delete();
 		}
+	}
+
+	public static void gc() {
+		Object obj = new Object();
+		@SuppressWarnings("rawtypes")
+		java.lang.ref.WeakReference ref = new java.lang.ref.WeakReference<Object>(
+				obj);
+		obj = null;
+		while (ref.get() != null) {
+			System.out.println("garbage collector");
+			System.gc();
+		}
+	}
 
 }

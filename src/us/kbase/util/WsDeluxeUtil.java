@@ -22,53 +22,48 @@ import us.kbase.workspace.WorkspaceClient;
 
 public class WsDeluxeUtil {
 	private static WorkspaceClient _wsClient = null;
-	
+	private static String _token = null;
 	private static final String WS_SERVICE_URL = CmonkeyServerConfig.WS_SERVICE_URL;
-
+	
 	public static WorkspaceClient wsClient(String token) throws TokenFormatException, UnauthorizedException, IOException {
-		if(_wsClient == null)
-		{
-			URL workspaceClientUrl;
-				workspaceClientUrl = new URL (WS_SERVICE_URL);
-				AuthToken authToken = new AuthToken(token);
-				_wsClient = new WorkspaceClient(workspaceClientUrl, authToken);
-				_wsClient.setAuthAllowedForHttp(true);
-				_wsClient.setConnectionReadTimeOut(1000000);
+		if((_wsClient == null)||(_token == null)||(!token.equals(_token))){
+			_token = token;
+			_wsClient = new WorkspaceClient(new URL (WS_SERVICE_URL), new AuthToken(token));
+			_wsClient.setAuthAllowedForHttp(true);
 		}
 		return _wsClient;
 	} 
 	
 	public static List<ObjectData> getObjectsFromWorkspace(String workspaceName,
-			List<String> names, String token) throws IOException, JsonClientException, TokenFormatException  {
+			List<String> names, String token) throws TokenFormatException, UnauthorizedException, IOException, JsonClientException {
 			List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 			for (String name : names){
 				System.out.println(name);
 			ObjectIdentity objectIdentity = new ObjectIdentity().withWorkspace(workspaceName).withName(name);
 			objectsIdentity.add(objectIdentity);
 			}
-			List<ObjectData> output = wsClient(token.toString()).getObjects(
+			List<ObjectData> returnVal = wsClient(token.toString()).getObjects(
 					objectsIdentity);
 
-			return output;
+			return returnVal;
 	}
 
 	public static List<ObjectData> getObjectsFromWsByRef(
-			List<String> refs, String token) throws IOException, JsonClientException, TokenFormatException {
+			List<String> refs, String token) throws TokenFormatException, UnauthorizedException, IOException, JsonClientException {
 			List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 			for (String ref : refs){
-				//System.out.println(ref);
-				ObjectIdentity objectIdentity = new ObjectIdentity().withRef(ref);
-				objectsIdentity.add(objectIdentity);
+				System.out.println(ref);
+			ObjectIdentity objectIdentity = new ObjectIdentity().withRef(ref);
+			objectsIdentity.add(objectIdentity);
 			}
-			List<ObjectData> output = wsClient(token.toString()).getObjects(
+			List<ObjectData> returnVal = wsClient(token.toString()).getObjects(
 					objectsIdentity);
-
-			return output;
+			return returnVal;
 	}
 
 	
 	public static ObjectData getObjectFromWorkspace(String workspaceName,
-			String name, String token) throws IOException, JsonClientException, TokenFormatException {
+			String name, String token) throws TokenFormatException, UnauthorizedException, IOException, JsonClientException {
 			List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 			ObjectIdentity objectIdentity = new ObjectIdentity().withName(name)
 					.withWorkspace(workspaceName);
@@ -79,7 +74,7 @@ public class WsDeluxeUtil {
 			return output.get(0);
 	}
 
-	public static ObjectData getObjectFromWsByRef(String ref, String token) throws IOException, JsonClientException, TokenFormatException {
+	public static ObjectData getObjectFromWsByRef(String ref, String token) throws TokenFormatException, UnauthorizedException, IOException, JsonClientException {
 			List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 			ObjectIdentity objectIdentity = new ObjectIdentity().withRef(ref);
 			objectsIdentity.add(objectIdentity);
@@ -90,7 +85,7 @@ public class WsDeluxeUtil {
 	}
 
 	public static void saveObjectToWorkspace(UObject object, String type,
-			String workspaceName, String name, String token) throws IOException, JsonClientException, TokenFormatException {
+			String workspaceName, String name, String token) throws TokenFormatException, UnauthorizedException, IOException, JsonClientException {
 
 		SaveObjectsParams params = new SaveObjectsParams();
 		params.setWorkspace(workspaceName);
@@ -106,7 +101,8 @@ public class WsDeluxeUtil {
 		params.setObjects(objectsData);
 
 		List<Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>>> ret = null;
-		ret = wsClient(token).saveObjects(params);
+			ret = wsClient(token).saveObjects(params);
+
 		System.out.println("Saving object:");
 		System.out.println(ret.get(0).getE1());
 		System.out.println(ret.get(0).getE2());

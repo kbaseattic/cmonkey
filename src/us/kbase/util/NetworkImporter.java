@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import us.kbase.auth.TokenFormatException;
+import us.kbase.cmonkey.CmonkeyServerConfig;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.UObject;
 import us.kbase.common.service.UnauthorizedException;
@@ -28,7 +29,7 @@ public class NetworkImporter {
 	
 	private static final String PREFIX_OPERONS = "gnc";
 	private static final String POSTFIX_OPERONS = ".named";
-	private static final String ID_SERVICE_URL = "http://kbase.us/services/idserver";
+	private static final String ID_SERVICE_URL = CmonkeyServerConfig.ID_SERVICE_URL;
 
 	private static IDServerAPIClient _idClient = null;
 

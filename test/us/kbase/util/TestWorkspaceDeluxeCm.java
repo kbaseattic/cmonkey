@@ -7,21 +7,16 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 
-import us.kbase.auth.AuthException;
 import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
-import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.Tuple11;
 import us.kbase.common.service.Tuple8;
-import us.kbase.common.service.UnauthorizedException;
 import us.kbase.workspace.GetModuleInfoParams;
 import us.kbase.workspace.ListObjectsParams;
 import us.kbase.workspace.ModuleInfo;
@@ -30,55 +25,19 @@ import us.kbase.workspace.ObjectIdentity;
 import us.kbase.workspace.RegisterTypespecParams;
 import us.kbase.workspace.SetGlobalPermissionsParams;
 import us.kbase.workspace.TypeInfo;
-import us.kbase.workspace.WorkspaceClient;
 import us.kbase.workspace.WorkspaceIdentity;
 
-public class TestWorkspaceDeluxe {
+public class TestWorkspaceDeluxeCm {
 
-
-	private static WorkspaceClient _wsClient = null;
-	private static final String USER_NAME = "kazakov";//"aktest";
-	private static final String PASSWORD = "";//"1475rokegi";
-	private static final String workspaceName = "ENIGMA_KBASE";
-	private static final String WS_SERVICE_URL = "http://140.221.84.209:7058";
-
-	protected static WorkspaceClient wsClient() {
-		if(_wsClient == null)
-		{
-			URL workspaceClientUrl;
-			try {
-				AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-				workspaceClientUrl = new URL (WS_SERVICE_URL);
-				
-				_wsClient = new WorkspaceClient(workspaceClientUrl, authToken);
-				_wsClient.setAuthAllowedForHttp(true);
-				_wsClient.setConnectionReadTimeOut(1000000);
-			} catch (MalformedURLException e) {
-				System.err.println("Bad URL? Unable to communicate with workspace service at" + WS_SERVICE_URL);
-				e.printStackTrace();
-			} catch (TokenFormatException e) {
-				System.err.println("Unable to authenticate");
-				e.printStackTrace();
-			} catch (UnauthorizedException e) {
-				System.err.println("Unable to authenticate in workspace service at" + WS_SERVICE_URL);
-				e.printStackTrace();
-			} catch (IOException e) {
-				System.err.println("Unable to communicate with workspace service at" + WS_SERVICE_URL);
-				e.printStackTrace();
-			} catch (AuthException e) {
-				System.err.println("Authorization error");
-				e.printStackTrace();
-			}
-		}
-		return _wsClient;
-	} 
+	private static final String USER_NAME = "aktest";
+	private static final String PASSWORD = "1475rokegi";
+	private static final String workspaceName = "AKtest";
 
 	@Test
 	public void testRegisterModule() throws Exception {
 		//AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		//WsDeluxeUtil.wsClient(authToken.toString()).requestModuleOwnership("MEME");
 		fail("Nothing to test");
-		
 	}
 
 	@Test
@@ -217,7 +176,7 @@ public class TestWorkspaceDeluxe {
 		ListObjectsParams params = new ListObjectsParams();
 		//String type = "ExpressionServices.ExpressionSeries-1.0";
 		List<String> workspaces = new ArrayList<String>();
-		workspaces.add("ENIGMA_KBASE");
+		workspaces.add(workspaceName);
 		//workspaces.add("networks_typed_objects_examples");
 		//params.setType(type);
 		params.setWorkspaces(workspaces);
@@ -278,9 +237,8 @@ public class TestWorkspaceDeluxe {
 		System.out.println(typeInfo.get(0).getE11());*/
 		
 		assertNotNull(objInfo);
-	}	
+	}
 
-	
 	@Test
 	public void testWsReadObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
@@ -288,18 +246,15 @@ public class TestWorkspaceDeluxe {
 		//String exampleWs = "networks_typed_objects_examples";
 		
 		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace(workspaceName, name, authToken.toString());
-		/*
+		
 		BufferedWriter writer = new BufferedWriter(new FileWriter("string.txt"));
 		writer.write(output.getData().toString());
 		writer.close();
-		*/
 
 		System.out.println(output.getData().toString());
 		assertNotNull(output);
-
 	}	
 	
-
 	@Test
 	public void testWsDeleteObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
@@ -318,7 +273,5 @@ public class TestWorkspaceDeluxe {
 			objectsIdentity.add(objectIdentity);
 		}
 		WsDeluxeUtil.wsClient(authToken.toString()).deleteObjects(objectsIdentity);
-
 	}	
-
 }

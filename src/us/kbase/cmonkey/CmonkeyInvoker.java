@@ -248,9 +248,6 @@ public class CmonkeyInvoker {
 
 	public static void main(String[] args) throws Exception {
 		
-		//AuthToken authToken = AuthService.login("aktest", "1475rokegi").getToken();
-		//System.out.println(authToken.toString());
-		
 		CmonkeyInvoker invoker = new CmonkeyInvoker();
 		invoker.run(args);
 	}

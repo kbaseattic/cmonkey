@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import us.kbase.auth.TokenFormatException;
+import us.kbase.cmonkey.CmonkeyServerConfig;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.Tuple5;
 import us.kbase.common.service.Tuple7;
@@ -29,7 +30,7 @@ public class GenomeImporter {
 	
 	private static final String FEATURES = "_features";
 	private static final String FEATURENAMES = "_feature_names";
-	private static final String ID_SERVICE_URL = "http://kbase.us/services/idserver";
+	private static final String ID_SERVICE_URL = CmonkeyServerConfig.ID_SERVICE_URL;
 
 	private static IDServerAPIClient _idClient = null;
 
@@ -428,19 +429,9 @@ public class GenomeImporter {
 		genome.setScientificName(organismName);
 
 		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(contigSet, UObject.class), "KBaseGenomes.ContigSet-1.0", wsId, contigSet.getId(), token);
-		
 		return returnVal;
-
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
 	private ContigSet readContigs(
 			HashMap<String, String> contigNames) {
 		
