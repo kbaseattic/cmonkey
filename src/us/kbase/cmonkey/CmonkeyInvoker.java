@@ -179,7 +179,7 @@ public class CmonkeyInvoker {
 		    	}
 		    	else {
 			    	HelpFormatter formatter = new HelpFormatter();
-			    	formatter.printHelp( "java -jar /kb/deployment/meme/meme_cluster.jar [parameters]", options );
+			    	formatter.printHelp( "java -jar /kb/deployment/cmonkey/cmonkey_cluster.jar [parameters]", options );
 		    		System.exit(1);
 		    	}
 		    }
