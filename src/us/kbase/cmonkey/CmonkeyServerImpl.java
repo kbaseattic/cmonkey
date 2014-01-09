@@ -50,7 +50,7 @@ public class CmonkeyServerImpl {
 															// can be static
 															// singleton
 
-	private static Date date = new Date();
+//	private static Date date = new Date();
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyy-MM-dd'T'HH:mm:ssZ");
 
@@ -80,11 +80,9 @@ public class CmonkeyServerImpl {
 			JsonClientException, AuthException, InterruptedException,
 			ClassNotFoundException, SQLException {
 		// Let's start!
-		String desc = "Cmonkey service job " + jobId
-				+ ". Method: buildCmonkeyNetworkJobFromWs. Input: "
-				+ params.getSeriesRef() + ". Workspace: " + wsName + ".";
 		if (jobId != null)
-			startJob(jobId, desc, 23L, token.toString());
+			updateJobProgress(jobId,
+					"AWE task started. Preparing input...", token);
 		// get expression data
 		ExpressionSeries series = WsDeluxeUtil
 				.getObjectFromWsByRef(params.getSeriesRef(), token).getData()
@@ -97,6 +95,7 @@ public class CmonkeyServerImpl {
 		// start log file
 		System.setErr(new PrintStream(new File(jobPath + "servererror.txt")));
 		FileWriter writer = new FileWriter(jobPath + "serveroutput.txt");
+		Date date = new Date();
 		writer.write("log file created " + dateFormat.format(date) + "\n");
 		writer.flush();
 		// prepare input file
@@ -255,6 +254,7 @@ public class CmonkeyServerImpl {
 		InitProgress initProgress = new InitProgress();
 		initProgress.setPtype("task");
 		initProgress.setMax(tasks);
+		Date date = new Date();
 		date.setTime(date.getTime() + 108000000L);
 		jobClient(token).startJob(jobId, token, status, desc, initProgress,
 				dateFormat.format(date));
@@ -263,6 +263,7 @@ public class CmonkeyServerImpl {
 	protected static void updateJobProgress(String jobId, String status,
 			String token) throws UnauthorizedException, IOException,
 			JsonClientException, AuthException {
+		Date date = new Date();
 		date.setTime(date.getTime() + 1000000L);
 		jobClient(token).updateJobProgress(jobId, token, status, 1L,
 				dateFormat.format(date));
