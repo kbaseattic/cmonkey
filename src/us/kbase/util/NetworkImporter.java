@@ -1,8 +1,10 @@
 package us.kbase.util;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -221,23 +223,30 @@ public class NetworkImporter {
 		Long startKbaseId = getKbaseIds("Interaction", new Long(fileData.size()));
 		
 		for (String line : fileData){
-			String[] fields = line.split("\t");
+			String[] fields = line.split("\t", -1);
 			String id1 = getFeatureId(fields[0]);
 			String id2 = getFeatureId(fields[1]);
 			if (id1 != null && id2 != null) {
-				Interaction interaction = new Interaction().withEntity1Id(id1).withEntity2Id(id2).withId("kb|interaction." + startKbaseId.toString()).withType("string");
-				startKbaseId++;
 				Map<String, Double> scores = new HashMap<String, Double>();
 				scores.put("STRING_SCORE", Double.parseDouble(fields[2]));
-				interaction.setScores(scores);
-				interactions.add(interaction);
+				interactions.add(new Interaction().withEntity1Id(id1).withEntity2Id(id2).withId("kb|interaction." + startKbaseId.toString()).withType("string").withScores(scores));
+				startKbaseId++;
 			} else {
 				System.out.println("Unknown feature ID in line " + line);
 			}
 		}
-		
+		fileData = null;
+
+/*		BufferedWriter writer = new BufferedWriter(new FileWriter("string.txt"));
+		writer.write(interactions.toString());
+		writer.close();
+*/
+		gc();
 		DatasetSource source = new DatasetSource().withId(getKbaseId("DatasetSource")).withName(ncbiId).withReference("undefined").withDescription("Imported STRING data").withResourceUrl("http://networks.systemsbiology.net/string9/"+ncbiId+".gz");
 		InteractionSet set = new InteractionSet().withName(ncbiId).withSource(source).withInteractions(interactions).withType("string");
+		interactions = null;
+		gc();
+		
 		if (name == null) {
 			set.setId(getKbaseId("InteractionSet"));
 			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);
@@ -309,5 +318,18 @@ public class NetworkImporter {
 		}
 		return returnVal;
 	}
+	
+	public static void gc() {
+		Object obj = new Object();
+		@SuppressWarnings("rawtypes")
+		java.lang.ref.WeakReference ref = new java.lang.ref.WeakReference<Object>(
+				obj);
+		obj = null;
+		while (ref.get() != null) {
+			System.out.println("garbage collector");
+			System.gc();
+		}
+	}
+
 
 }

@@ -106,13 +106,12 @@ public class ExpressionSeriesImporter {
 			while ((line = br.readLine()) != null) {
 				if (line.equals("")) {
 					// do nothing
-				} else if (line.matches("GENE\t.*")) {
-					line = line.substring(5);
+				} else if (line.matches("Systematic_Name\t.*")) {//} else if (line.matches("GENE\t.*")) {
 					String[] fields = line.split("\t");
-					for (String field : fields) {
-						conditions.add(field);
-						 //System.out.println(field);
-						samplesNumber++;
+					samplesNumber = fields.length - 2L;
+					for (int i = 2; i < fields.length; i++) { //skip fields[0] and fields [1]
+						conditions.add(fields[i]);
+						 //System.out.println(fields[i]);
 					}
 					for (Integer i = 0; i < samplesNumber; i++) {
 						HashMap<String, Double> dataValue = new HashMap<String, Double>();
@@ -120,14 +119,19 @@ public class ExpressionSeriesImporter {
 					}
 
 				} else {
-					String[] fields = line.split("\t");
+					//System.out.println(samplesNumber);
+					//System.out.println(line);
+					String[] fields = line.split("\t", -1);
+					//System.out.println(fields.length);
 					Integer j = 0;
 					String id = getFeatureId(fields[0]);
 					if (id != null){
 						while (j < samplesNumber) {
-							dataValues.get(j).put(getFeatureId(fields[0]),
-									Double.valueOf(fields[j + 1]));
-							 //System.out.println(fields[0]+" "+fields[j+1]);
+							if (!fields[j + 2].equals("")){
+								dataValues.get(j).put(getFeatureId(fields[0]),
+										Double.valueOf(fields[j + 2]));//change to j+1 if second column contains expression data
+								//System.out.println(fields[0]+" "+fields[j+1]);
+							}
 							j++;
 						}
 					} else {

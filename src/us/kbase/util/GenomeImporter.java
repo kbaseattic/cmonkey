@@ -28,8 +28,8 @@ import us.kbase.kbasegenomes.Contig;
 
 public class GenomeImporter {
 	
-	private static final String FEATURES = "_features";
-	private static final String FEATURENAMES = "_feature_names";
+	private static final String FEATURES = "features";
+	private static final String FEATURENAMES = "feature_names";
 	private static final String ID_SERVICE_URL = CmonkeyServerConfig.ID_SERVICE_URL;
 
 	private static IDServerAPIClient _idClient = null;
@@ -98,7 +98,7 @@ public class GenomeImporter {
 		genome.setId(id);
 		List<Feature> features = readFeaturesExt(genome);
 		genome.setFeatures(features);
-		genome.setDomain("Archaea");//change to String variable
+		genome.setDomain("Bacteria");//change to String variable
 		genome.setGeneticCode(0L);//not sure
 		genome.setSource("undefined");
 		genome.setSourceId("undefined");//NCBI tax id? 
@@ -439,7 +439,7 @@ public class GenomeImporter {
 		List<Contig> contigs = new ArrayList<Contig>();
 		
 		for (String accession : contigNames.keySet()){
-			String fileName = this.workDir + this.filePrefix + "_" + accession;
+			String fileName = this.workDir + this.filePrefix + accession;
 			File file = new File(fileName);
 			String sequence = "";
 			if (file.exists()) {

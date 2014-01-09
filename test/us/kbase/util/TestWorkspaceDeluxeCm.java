@@ -253,7 +253,7 @@ public class TestWorkspaceDeluxeCm {
 	@Test
 	public void testWsReadObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String name = "kb|inferelatorrunresult.25";
+		String name = "D_vulgaris_series_sample_311";
 		//String exampleWs = "networks_typed_objects_examples";
 		
 		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace(workspaceName, name, authToken.toString());
