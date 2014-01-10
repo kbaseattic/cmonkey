@@ -1,0 +1,30 @@
+{
+	"info": {
+		"pipeline": "cmonkey-runner-pipeline",
+		"name": "cmonkey",
+		"project": "default",
+		"user": "default",
+		"clientgroups":"",
+		"sessionId":"%s" 
+	},
+	
+	"tasks": [
+		{
+			"cmd": {
+				"args": "%s",		
+				"description": "running Cmonkey service", 
+				"name": "run_cmonkey"
+			}, 
+			"dependsOn": [], 
+			"outputs": {
+				"%s.tgz": {
+					"host": "http://140.221.84.236:8000"
+				}
+			},
+			
+			"taskid": "0",
+			"skip": 0,
+			"totalwork": 1
+		}
+	]
+}	

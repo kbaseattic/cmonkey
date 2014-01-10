@@ -16,6 +16,8 @@ public class CmonkeyServerConfig {
 	protected static final String CMONKEY_DIRECTORY = "/kb/runtime/cmonkey-python/";
 	protected static final String DATA_PATH = "/etc/cmonkey-python/KEGG_taxonomy";
 	protected static final String CMONKEY_RUN_PATH = "/kb/runtime/cmonkey-python/cmonkey.py";
+	protected static final String AWF_CONFIG_FILE = "/kb/deployment/services/cmonkey/cmonkey.awf";
+
 
 	//Logging options
 	
