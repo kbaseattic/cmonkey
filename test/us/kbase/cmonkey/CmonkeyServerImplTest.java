@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.UObject;
-import us.kbase.expressionservices.ExpressionSeries;
+import us.kbase.kbaseexpression.ExpressionSeries;
 import us.kbase.meme.MastHit;
 import us.kbase.auth.AuthException;
 import us.kbase.auth.AuthService;
@@ -240,7 +240,8 @@ public class CmonkeyServerImplTest {
 		
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		ExpressionSeries input = WsDeluxeUtil.getObjectFromWsByRef(testSeriesRef, token.toString()).getData().asClassInstance(ExpressionSeries.class);
-		CmonkeyServerImpl.createInputTable(dirName, input.getExpressionSampleIds(), token.toString());
+		List<String> sampleIdsList = input.getGenomeExpressionSampleIdsMap().get(testGenomeRef);
+		CmonkeyServerImpl.createInputTable(dirName, sampleIdsList, token.toString());
 		assertTrue(new File(dirName + "input.txt").exists());
 
 	}

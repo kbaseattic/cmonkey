@@ -1,4 +1,4 @@
-#include <Sequences.types>
+#include <KBaseSequences.types>
 
 /* 
 	Module MEME version 1.0
@@ -390,7 +390,7 @@ module MEME
 		SequenceSet sequenceSet - input set of sequences
 		MemeRunParameters params - parameters of MEME run
 	*/
-	funcdef find_motifs_with_meme(Sequences.SequenceSet sequenceSet, MemeRunParameters params) returns(MemeRunResult meme_run_result);
+	funcdef find_motifs_with_meme(KBaseSequences.SequenceSet sequenceSet, MemeRunParameters params) returns(MemeRunResult meme_run_result);
 
 	/*
 		Returns kbase id of MemeRunResult object that contains results of a single MEME run
@@ -469,7 +469,7 @@ module MEME
 		SequenceSet target - target sequences for MAST run
 		MastRunParameters params - parameters of MAST run
 	*/
-	funcdef find_sites_with_mast(MemePSPM query, Sequences.SequenceSet target, MastRunParameters params) returns(MastRunResult mast_run_result);
+	funcdef find_sites_with_mast(MemePSPM query, KBaseSequences.SequenceSet target, MastRunParameters params) returns(MastRunResult mast_run_result);
 
 	/*
 		Returns kbase ID of MastRunResult containing list of MAST hits
@@ -494,7 +494,7 @@ module MEME
 		SequenceSet target - target sequences for MAST run
 		MastRunParameters params - parameters of MAST run
 	*/
-	funcdef find_sites_with_mast_by_collection (MemePSPMCollection query, Sequences.SequenceSet target, MastRunParameters params) returns(MastRunResult mast_run_result);
+	funcdef find_sites_with_mast_by_collection (MemePSPMCollection query, KBaseSequences.SequenceSet target, MastRunParameters params) returns(MastRunResult mast_run_result);
 
 	/*
 		Returns kbase ID of MastRunResult containing list of MAST hits

@@ -22,8 +22,8 @@ import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.UObject;
 import us.kbase.common.service.UnauthorizedException;
-import us.kbase.expressionservices.ExpressionSample;
-import us.kbase.expressionservices.ExpressionSeries;
+import us.kbase.kbaseexpression.ExpressionSample;
+import us.kbase.kbaseexpression.ExpressionSeries;
 import us.kbase.idserverapi.IDServerAPIClient;
 import us.kbase.userandjobstate.InitProgress;
 import us.kbase.userandjobstate.Results;
@@ -34,6 +34,8 @@ import us.kbase.util.WsDeluxeUtil;
 import us.kbase.workspace.ObjectData;
 
 public class CmonkeyServerImpl {
+	
+	private static final String CMONKEY_RUN_RESULT_TYPE = CmonkeyServerConfig.CMONKEY_RUN_RESULT_TYPE;
 	private static boolean awe = CmonkeyServerConfig.DEPLOY_AWE;
 
 	private static final String JOB_PATH = CmonkeyServerConfig.JOB_DIRECTORY;
@@ -50,7 +52,6 @@ public class CmonkeyServerImpl {
 															// can be static
 															// singleton
 
-//	private static Date date = new Date();
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyy-MM-dd'T'HH:mm:ssZ");
 
@@ -99,7 +100,8 @@ public class CmonkeyServerImpl {
 		writer.write("log file created " + dateFormat.format(date) + "\n");
 		writer.flush();
 		// prepare input file
-		createInputTable(jobPath, series.getExpressionSampleIds(), token);
+		List<String> sampleIdsList = series.getGenomeExpressionSampleIdsMap().get(params.getGenomeRef());
+		createInputTable(jobPath, sampleIdsList, token);
 		writer.write("Input file created\n");
 		writer.flush();
 		series = null;
@@ -149,7 +151,7 @@ public class CmonkeyServerImpl {
 			// save result
 			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(
 					cmonkeyRunResult, UObject.class),
-					"Cmonkey.CmonkeyRunResult", wsName, cmonkeyRunResult
+					CMONKEY_RUN_RESULT_TYPE, wsName, cmonkeyRunResult
 							.getId(), token.toString());
 			// close log file
 			writer.close();
@@ -334,7 +336,7 @@ public class CmonkeyServerImpl {
 		List<Map<String, Double>> dataCollection = new ArrayList<Map<String, Double>>();
 		// make list of conditions
 		for (ExpressionSample sample : samples) {
-			writer.write("\t" + sample.getKbId());
+			writer.write("\t" + sample.getId());
 			Map<String, Double> dataSet = sample.getExpressionLevels();
 			dataCollection.add(dataSet);
 		}

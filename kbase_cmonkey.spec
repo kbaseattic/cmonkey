@@ -5,8 +5,8 @@
 	
 	Data types summary
 	Input data types: 
-	ExpressionSeries from Expression service.
-	ExpressionSample from Expression service.
+	ExpressionSeries from KBaseExpression service.
+	ExpressionSample from KBaseExpression service.
 	KBaseGenomes.Genome
 	Networks.InterationSet with operons data
 	Networks.InterationSet with STRING data
@@ -32,12 +32,12 @@ module Cmonkey
 	typedef string gene_id;
 
 	/* Represents WS expression data sample identifier
-		id ws ExpressionServices.ExpressionSample
+		id ws KBaseExpression.ExpressionSample
 	*/
 	typedef string expression_sample_ws_ref;
 
 	/* Represents WS expression data series identifier
-		@id ws ExpressionServices.ExpressionSeries
+		@id ws KBaseExpression.ExpressionSeries
 	*/
 	typedef string expression_series_ws_ref;
 
@@ -82,8 +82,8 @@ module Cmonkey
 		int pssm_id - number of motif
 		float evalue - motif e-value
 		list<list<float>> pssm_rows - PSSM 
-		list<HitMast> hits - hits (motif annotations)
-		list<SiteMeme> sites - training set
+		list<MEME.HitMast> hits - hits (motif annotations)
+		list<MEME.SiteMeme> sites - training set
 		
 		@optional seq_type pssm_id evalue pssm_rows hits sites
 	*/

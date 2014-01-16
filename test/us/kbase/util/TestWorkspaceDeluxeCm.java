@@ -23,7 +23,7 @@ import us.kbase.workspace.ModuleInfo;
 import us.kbase.workspace.ObjectData;
 import us.kbase.workspace.ObjectIdentity;
 import us.kbase.workspace.RegisterTypespecParams;
-import us.kbase.workspace.SetGlobalPermissionsParams;
+import us.kbase.workspace.SetPermissionsParams;
 import us.kbase.workspace.TypeInfo;
 import us.kbase.workspace.WorkspaceIdentity;
 
@@ -45,9 +45,9 @@ public class TestWorkspaceDeluxeCm {
 		
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		RegisterTypespecParams params = new RegisterTypespecParams();
-		String specFileName = "/home/kbase/dev_container/modules/inferelator/kbase_inferelator.spec";
-		//String specFileName = "/home/kbase/dev_container/modules/cmonkey/kbase_cmonkey.spec";
-		//String specFileName = "/home/kbase/dev_container/modules/meme/kbase_meme.spec";
+		//String specFileName = "/home/kbase/dev_container/modules/inferelator/Inferelator.spec";
+		//String specFileName = "/home/kbase/dev_container/modules/cmonkey/Cmonkey.spec";
+		String specFileName = "/home/kbase/dev_container/modules/meme/MEME.spec";
 		String spec = "";
 		BufferedReader br = null;
 		try {
@@ -67,22 +67,14 @@ public class TestWorkspaceDeluxeCm {
 
 //		params.setMod("Inferelator");
 		List<String> addTypes = new ArrayList<String>();
-//		types.add("ExpressionDataSeries");
-//		types.add("CmonkeyRunResult");
-//		types.add("CmonkeyNetwork");
-//		types.add("CmonkeyCluster");
-//		types.add("CmonkeyMotif");
-		addTypes.add("GeneList");
-		addTypes.add("InferelatorRunResult");
+//		addTypes.add("CmonkeyRunResult");
+//		addTypes.add("GeneList");
+//		addTypes.add("InferelatorRunResult");
 
-/*		types.add("MemeMotif");
-		types.add("MemeRunResult");
-		types.add("TomtomRunResult");
-		types.add("MastRunResult");
-		types.add("MemePSPM");
-		types.add("MemePSPMCollection");
-		types.add("MemeSite");
-		types.add("MastHit");*/
+//		addTypes.add("MemeRunResult");
+//		addTypes.add("TomtomRunResult");
+//		addTypes.add("MastRunResult");
+//		addTypes.add("MemePSPMCollection");
 		params.setNewTypes(addTypes);
 /*		List<String> removeTypes = new ArrayList<String>();
 		removeTypes.add("CmonkeyNetwork");
@@ -106,7 +98,7 @@ public class TestWorkspaceDeluxeCm {
 	public void testWsModuleInfo() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		GetModuleInfoParams params = new GetModuleInfoParams(); 
-		params.setMod("Inferelator");
+		params.setMod("MEME");
 		ModuleInfo moduleInfo = WsDeluxeUtil.wsClient(authToken.toString()).getModuleInfo(params);
 		System.out.println("Description " + moduleInfo.getDescription());
 		System.out.println("Owners " + moduleInfo.getOwners().toString());
@@ -138,8 +130,8 @@ public class TestWorkspaceDeluxeCm {
 	@Test
 	public void testWsReleaseModule() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		//String module = "MEME"; 
-		String module = "Inferelator";
+		String module = "MEME"; 
+		//String module = "Inferelator";
 		List<String> result = WsDeluxeUtil.wsClient(authToken.toString()).releaseModule(module);
 		System.out.println(result.toString());
 		
@@ -151,14 +143,17 @@ public class TestWorkspaceDeluxeCm {
 	public void testSetWsPermission() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		//String module = "MEME"; 
-		SetGlobalPermissionsParams params = new SetGlobalPermissionsParams().withWorkspace("AKtest").withNewPermission("r");
-		WsDeluxeUtil.wsClient(authToken.toString()).setGlobalPermission(params);
+		List<String> users = new ArrayList<String>();
+		users.add("aktest");
+		//SetGlobalPermissionsParams params = new SetGlobalPermissionsParams().withWorkspace("AKtest").withNewPermission("r");
+		SetPermissionsParams params = new SetPermissionsParams().withWorkspace("AKtest").withNewPermission("w").withUsers(users);
+		WsDeluxeUtil.wsClient(authToken.toString()).setPermissions(params);
 	}
 
 	@Test
 	public void testWsInfo() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		WorkspaceIdentity wsI = new WorkspaceIdentity().withWorkspace("ENIGMA_KBASE");
+		WorkspaceIdentity wsI = new WorkspaceIdentity().withWorkspace("AKtest");
 		Tuple8<Long, String, String, String, Long, String, String, String> res = WsDeluxeUtil.wsClient(authToken.toString()).getWorkspaceInfo(wsI);
 		System.out.println(res.getE1());
 		System.out.println(res.getE2());
@@ -177,7 +172,7 @@ public class TestWorkspaceDeluxeCm {
 		ListObjectsParams params = new ListObjectsParams();
 		//String type = "ExpressionServices.ExpressionSeries-1.0";
 		List<String> workspaces = new ArrayList<String>();
-		workspaces.add("networks_typed_objects_examples");//'(workspaceName);
+		workspaces.add("AKtest");//'(workspaceName);
 		//workspaces.add("networks_typed_objects_examples");
 		//params.setType(type);
 		params.setWorkspaces(workspaces);
@@ -253,10 +248,10 @@ public class TestWorkspaceDeluxeCm {
 	@Test
 	public void testWsReadObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String name = "MAKBiclusterSet_example";
+		String name = "D_vulgaris_series_sample_0";
 		//String exampleWs = "networks_typed_objects_examples";
 		
-		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace("networks_typed_objects_examples", name, authToken.toString());
+		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace("AKtest", name, authToken.toString());
 		
 		BufferedWriter writer = new BufferedWriter(new FileWriter("string.txt"));
 		writer.write(output.getData().toString());
@@ -265,7 +260,23 @@ public class TestWorkspaceDeluxeCm {
 		System.out.println(output.getData().toString());
 		assertNotNull(output);
 	}	
-	
+
+	@Test
+	public void testWsReadObjectByRef() throws Exception {
+		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		String ref = "486/16/2";
+		//String exampleWs = "networks_typed_objects_examples";
+		
+		ObjectData output = WsDeluxeUtil.getObjectFromWsByRef(ref, authToken.toString());
+		
+		BufferedWriter writer = new BufferedWriter(new FileWriter("string.txt"));
+		writer.write(output.getData().toString());
+		writer.close();
+
+		System.out.println(output.getData().toString());
+		assertNotNull(output);
+	}	
+
 	@Test
 	public void testWsDeleteObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();

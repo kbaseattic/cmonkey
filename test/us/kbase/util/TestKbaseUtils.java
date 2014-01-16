@@ -13,7 +13,7 @@ import us.kbase.auth.AuthException;
 import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
 import us.kbase.kbasegenomes.Genome;
-import us.kbase.networks.InteractionSet;
+import us.kbase.kbasenetworks.InteractionSet;
 
 public class TestKbaseUtils {
 
@@ -90,9 +90,9 @@ public class TestKbaseUtils {
 	public void testSeriesImport() throws Exception {
 		//To use KBase IDs for samples and series, set namePrefix to null 
 		String fileName = "/home/kbase/Documents/dvh/dvu-ratios.tsv";
-		String genomeRef = workspaceName + "/Desulfovibrio_vulgaris_Hildenborough";
+		String genomeId = "Desulfovibrio_vulgaris_Hildenborough";
 		String namePrefix = "D_vulgaris_series";
-		ExpressionSeriesImporter importer = new ExpressionSeriesImporter (genomeRef, fileName, workspaceName, token.toString());
+		ExpressionSeriesImporter importer = new ExpressionSeriesImporter (genomeId, fileName, workspaceName, token.toString());
 		List<String> result = importer.importExpressionSeriesFile(namePrefix);
 		
 		

@@ -23,9 +23,9 @@ import us.kbase.common.service.UnauthorizedException;
 import us.kbase.idserverapi.IDServerAPIClient;
 import us.kbase.kbasegenomes.Feature;
 import us.kbase.kbasegenomes.Genome;
-import us.kbase.networks.DatasetSource;
-import us.kbase.networks.Interaction;
-import us.kbase.networks.InteractionSet;
+import us.kbase.kbasenetworks.DatasetSource;
+import us.kbase.kbasenetworks.Interaction;
+import us.kbase.kbasenetworks.InteractionSet;
 
 public class NetworkImporter {
 	
