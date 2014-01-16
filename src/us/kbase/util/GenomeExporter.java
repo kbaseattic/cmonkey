@@ -78,7 +78,7 @@ public class GenomeExporter {
 */					writer.write("\t" + feature.getId()); //or primary name
 //				}
 				writer.write("\t" + feature.getLocation().get(0).getE1()); //contig
-				writer.write("\t" + feature.getLocation().get(0).getE3().toString()); //start position
+				writer.write("\t" + feature.getLocation().get(0).getE2().toString()); //start position
 				Long endPos = feature.getLocation().get(0).getE2() + feature.getLocation().get(0).getE4() - 1;
 				writer.write("\t" + endPos.toString()); //end pos
 				writer.write("\t" + feature.getLocation().get(0).getE3());//strand

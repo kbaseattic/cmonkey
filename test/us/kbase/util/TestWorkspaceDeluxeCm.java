@@ -45,9 +45,9 @@ public class TestWorkspaceDeluxeCm {
 		
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		RegisterTypespecParams params = new RegisterTypespecParams();
-		//String specFileName = "/home/kbase/dev_container/modules/inferelator/Inferelator.spec";
+		String specFileName = "/home/kbase/dev_container/modules/inferelator/Inferelator.spec";
 		//String specFileName = "/home/kbase/dev_container/modules/cmonkey/Cmonkey.spec";
-		String specFileName = "/home/kbase/dev_container/modules/meme/MEME.spec";
+		//String specFileName = "/home/kbase/dev_container/modules/meme/MEME.spec";
 		String spec = "";
 		BufferedReader br = null;
 		try {
@@ -65,12 +65,15 @@ public class TestWorkspaceDeluxeCm {
 		}
 		params.setSpec(spec);
 
-//		params.setMod("Inferelator");
+//		params.setMod("MEME");
 		List<String> addTypes = new ArrayList<String>();
 //		addTypes.add("CmonkeyRunResult");
-//		addTypes.add("GeneList");
-//		addTypes.add("InferelatorRunResult");
+		addTypes.add("GeneList");
+		addTypes.add("InferelatorRunResult");
 
+//		addTypes.add("MemePSPM");
+//		addTypes.add("MemeSite");
+//		addTypes.add("MastHit");
 //		addTypes.add("MemeRunResult");
 //		addTypes.add("TomtomRunResult");
 //		addTypes.add("MastRunResult");
@@ -86,7 +89,7 @@ public class TestWorkspaceDeluxeCm {
 //		removeTypes.add("MastHit");
 //		params.setRemoveTypes(removeTypes);
 		
-		params.setDryrun(0L);
+		params.setDryrun(1L);
 		Map<String,String> result = WsDeluxeUtil.wsClient(authToken.toString()).registerTypespec(params);
 		//Map<String,String> result = wsClient().registerTypespec(params);
 		System.out.println(result.toString());
@@ -130,8 +133,8 @@ public class TestWorkspaceDeluxeCm {
 	@Test
 	public void testWsReleaseModule() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String module = "MEME"; 
-		//String module = "Inferelator";
+		//String module = "Cmonkey"; 
+		String module = "Inferelator";
 		List<String> result = WsDeluxeUtil.wsClient(authToken.toString()).releaseModule(module);
 		System.out.println(result.toString());
 		
@@ -248,7 +251,7 @@ public class TestWorkspaceDeluxeCm {
 	@Test
 	public void testWsReadObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String name = "Halobacterium_sp_operons";
+		String name = "Halobacterium_sp_NRC-1";
 		//String exampleWs = "networks_typed_objects_examples";
 		
 		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace("AKtest", name, authToken.toString());

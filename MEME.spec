@@ -45,8 +45,8 @@
 
 module MEME
 {
-	/* Represents WS Sequences.SequenceSet identifier
-		@id ws Sequences.SequenceSet
+	/* Represents WS KBaseSequences.SequenceSet identifier
+		@id ws KBaseSequences.SequenceSet
 	*/
 	typedef string sequence_set_ref;
 
