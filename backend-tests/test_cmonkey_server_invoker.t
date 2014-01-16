@@ -25,7 +25,7 @@ my $auth_token = $token->token;
 
 my $job_client = Bio::KBase::userandjobstate::Client->new("https://kbase.us/services/userandjobstate", "user_id", $user, "password", $pw);
 
-my $deployment_dir = "/kb/deployment/cmonkey/";
+my $deployment_dir = "/kb/deployment/lib/jars/cmonkey/";
 
 my $command_line = "java -jar ".$deployment_dir."cmonkey.jar";
 

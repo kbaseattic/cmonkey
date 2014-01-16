@@ -21,7 +21,7 @@ public class TestKbaseUtils {
 	private static final String PASSWORD = "1475rokegi";
 	private static final String workspaceName = "AKtest";
 	private static AuthToken token = null;
-	private String testGenomeRef = "AKtest/Desulfovibrio_vulgaris_Hildenborough";//"AKtest/kb|genome.9";
+	private String testGenomeRef = "AKtest/Halobacterium_sp_NRC-1";//"AKtest/Desulfovibrio_vulgaris_Hildenborough";//
 
 	@Before
 	public void setUp() throws Exception {
@@ -65,8 +65,10 @@ public class TestKbaseUtils {
 
 	@Test
 	public void testGenomeImportExtId() throws Exception {
-		GenomeImporter reader = new GenomeImporter("", "DVU", "/home/kbase/Documents/dvh/", workspaceName, token.toString());
-		String id = "Desulfovibrio_vulgaris_Hildenborough";
+		GenomeImporter reader = new GenomeImporter("Halobacterium_sp_", "VNG", "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
+		//GenomeImporter reader = new GenomeImporter("", "DVU", "/home/kbase/Documents/dvh/", workspaceName, token.toString());
+		//String id = "Desulfovibrio_vulgaris_Hildenborough";
+		String id = "Halobacterium_sp_NRC-1";
 		Genome result = reader.readGenomeWithExternalIds(id);
 		
 		
@@ -89,9 +91,9 @@ public class TestKbaseUtils {
 	@Test
 	public void testSeriesImport() throws Exception {
 		//To use KBase IDs for samples and series, set namePrefix to null 
-		String fileName = "/home/kbase/Documents/dvh/dvu-ratios.tsv";
-		String genomeId = "Desulfovibrio_vulgaris_Hildenborough";
-		String namePrefix = "D_vulgaris_series";
+		String fileName = "test/hal-ratios.tsv";//"/home/kbase/Documents/dvh/dvu-ratios.tsv";
+		String genomeId = "Halobacterium_sp_NRC-1";//"Desulfovibrio_vulgaris_Hildenborough";
+		String namePrefix = "Halobacterium_sp_expression";//"D_vulgaris_series";
 		ExpressionSeriesImporter importer = new ExpressionSeriesImporter (genomeId, fileName, workspaceName, token.toString());
 		List<String> result = importer.importExpressionSeriesFile(namePrefix);
 		
@@ -136,9 +138,10 @@ public class TestKbaseUtils {
 
 	@Test
 	public void testStringImport() throws Exception {
-		String ncbiId = "882";
-		String name = "D_vulgaris_STRING";
-		NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, "/home/kbase/Documents/dvh/", workspaceName, token.toString());
+		String ncbiId = "64091";
+		String name = "Halobacterium_sp_STRING";//"D_vulgaris_STRING";
+		//NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, "/home/kbase/Documents/dvh/", workspaceName, token.toString());
+		NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
 		InteractionSet result = importer.ImportStringFile(name);
 		
 		
@@ -163,9 +166,10 @@ public class TestKbaseUtils {
 	
 	@Test
 	public void testOperonsImport() throws Exception {
-		String ncbiId = "882";
-		String name = "D_vulgaris_operons";
-		NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, "/home/kbase/Documents/dvh/", workspaceName, token.toString());
+		String ncbiId = "64091";
+		String name = "Halobacterium_sp_operons";//"D_vulgaris_operons";
+		String dataDir = "/home/kbase/cmonkey20131126/cache/";//"/home/kbase/Documents/dvh/";
+		NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, dataDir, workspaceName, token.toString());
 		InteractionSet result = importer.ImportOperonsFile(name);
 		
 		

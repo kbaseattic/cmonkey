@@ -100,7 +100,7 @@ public class CmonkeyServerImpl {
 		writer.write("log file created " + dateFormat.format(date) + "\n");
 		writer.flush();
 		// prepare input file
-		List<String> sampleIdsList = series.getGenomeExpressionSampleIdsMap().get(params.getGenomeRef());
+		List<String> sampleIdsList = series.getGenomeExpressionSampleIdsMap().get(params.getGenomeRef().split("/")[params.getGenomeRef().split("/").length -1]);//all this "split" madness used solely for extraction of genome name from genome reference 
 		createInputTable(jobPath, sampleIdsList, token);
 		writer.write("Input file created\n");
 		writer.flush();

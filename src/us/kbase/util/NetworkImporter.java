@@ -175,10 +175,10 @@ public class NetworkImporter {
 		InteractionSet set = new InteractionSet().withName(ncbiId).withSource(source).withInteractions(interactions).withType("operons");
 		if (name == null) {
 			set.setId(getKbaseId("InteractionSet"));
-			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "KBaseNetworks.InteractionSet", wsId, set.getId(), token);
 		} else {
 			set.setId(name);
-			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, name, token);
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "KBaseNetworks.InteractionSet", wsId, name, token);
 		}
 				
 		return set;
@@ -249,10 +249,10 @@ public class NetworkImporter {
 		
 		if (name == null) {
 			set.setId(getKbaseId("InteractionSet"));
-			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "KBaseNetworks.InteractionSet", wsId, set.getId(), token);
 		} else {
 			set.setId(name);
-			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, name, token);
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "KBaseNetworks.InteractionSet", wsId, name, token);
 		}
 		return set;
 	}

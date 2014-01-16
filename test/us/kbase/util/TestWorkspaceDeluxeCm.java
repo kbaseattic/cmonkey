@@ -248,7 +248,7 @@ public class TestWorkspaceDeluxeCm {
 	@Test
 	public void testWsReadObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String name = "D_vulgaris_series_sample_0";
+		String name = "Halobacterium_sp_operons";
 		//String exampleWs = "networks_typed_objects_examples";
 		
 		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace("AKtest", name, authToken.toString());
@@ -264,7 +264,7 @@ public class TestWorkspaceDeluxeCm {
 	@Test
 	public void testWsReadObjectByRef() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String ref = "486/16/2";
+		String ref = "AKtest/Halobacterium_sp_expression_sample_0";
 		//String exampleWs = "networks_typed_objects_examples";
 		
 		ObjectData output = WsDeluxeUtil.getObjectFromWsByRef(ref, authToken.toString());

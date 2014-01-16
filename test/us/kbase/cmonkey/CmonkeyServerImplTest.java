@@ -246,6 +246,15 @@ public class CmonkeyServerImplTest {
 
 	}
 
+	@Test
+	public final void testExtractGenomeId() throws Exception {
+	String genomeRef = testGenomeRef;
+	String[] g = genomeRef.split("/");
+	String genomeId = g[g.length - 1];
+	System.out.println (genomeId);
+	}
+
+
 	public static void showCmonkeyRun (CmonkeyRunResult runResult){
 		DecimalFormat df = new DecimalFormat("0.000");
 		System.out.println("CMONKEY RUN PARAMETERS:");

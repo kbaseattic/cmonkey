@@ -109,10 +109,10 @@ public class ExpressionSeriesImporter {
 			while ((line = br.readLine()) != null) {
 				if (line.equals("")) {
 					// do nothing
-				} else if (line.matches("Systematic_Name\t.*")) {//} else if (line.matches("GENE\t.*")) {
+				} else if (line.matches("GENE\t.*")) {//(line.matches("Systematic_Name\t.*")) {//
 					String[] fields = line.split("\t");
-					samplesNumber = fields.length - 2L;
-					for (int i = 2; i < fields.length; i++) { //skip fields[0] and fields [1]
+					samplesNumber = fields.length - 1L; //change to 1L if second column contains expression data
+					for (int i = 1; i < fields.length; i++) { //skip fields[0] and fields [1]; change to int i = 1 ... if second column contains expression data
 						conditions.add(fields[i]);
 						 //System.out.println(fields[i]);
 					}
@@ -130,9 +130,9 @@ public class ExpressionSeriesImporter {
 					String id = getFeatureId(fields[0]);
 					if (id != null){
 						while (j < samplesNumber) {
-							if (!fields[j + 2].equals("")){
+							if (!fields[j + 1].equals("")){
 								dataValues.get(j).put(getFeatureId(fields[0]),
-										Double.valueOf(fields[j + 2]));//change to j+1 if second column contains expression data
+										Double.valueOf(fields[j + 1]));//change to j+1 if second column contains expression data
 								//System.out.println(fields[0]+" "+fields[j+1]);
 							}
 							j++;
