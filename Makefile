@@ -17,15 +17,18 @@ MAIN_CLASS = us.kbase.cmonkey.CmonkeyInvoker
 SERVICE_PSGI = $(SERVICE_NAME).psgi
 TPAGE_ARGS = --define kb_top=$(TARGET) --define kb_runtime=$(DEPLOY_RUNTIME) --define kb_service_name=$(SERVICE_NAME) --define kb_service_dir=$(SERVICE_DIR) --define kb_service_port=$(SERVICE_PORT) --define kb_psgi=$(SERVICE_PSGI)
 SCRIPTS_TESTS = $(wildcard script-tests/*.t)
+JAR_TESTS = $(wildcard backend-tests/*.t)
 DEPLOY_JAR = $(KB_TOP)/lib/jars/cmonkey
-DATA_DIR = /var/tmp/cmonkey/data
+TMP_DIR = /var/tmp/cmonkey
 SCRIPTS_TESTS_CLUSTER = $(wildcard script-test-cluster/*.t)
 
 default: compile
 
-deploy: distrib deploy-client deploy-jar
+deploy: deploy-client deploy-scripts deploy-service deploy-jar
 
 deploy-all: distrib deploy-client
+
+deploy-scripts: deploy-pl-scripts
 
 deploy-jar: compile-jar deploy-sh-scripts distrib-jar test-jar
 
@@ -40,10 +43,14 @@ distrib-jar:
 	cp ./dist/cmonkey.jar $(DEPLOY_JAR)
 
 
-deploy-client: deploy-libs deploy-pl-scripts deploy-docs
+deploy-client: deploy-libs deploy-docs
 
 deploy-libs: build-libs
 	rsync --exclude '*.bak*' -arv lib/. $(TARGET)/lib/.
+
+deploy-docs: build-docs
+	mkdir -p $(TARGET)/services/$(SERVICE_NAME)/webroot/.
+	cp docs/*.html $(TARGET)/services/$(SERVICE_NAME)/webroot/.
 
 deploy-pl-scripts:
 	export KB_TOP=$(TARGET); \
@@ -57,9 +64,18 @@ deploy-pl-scripts:
 		$(WRAP_PERL_SCRIPT) "$(TARGET)/plbin/$$basefile" $(TARGET)/bin/$$base ; \
 	done
 
-deploy-docs: build-docs
-	mkdir -p $(TARGET)/services/$(SERVICE_NAME)/webroot/.
-	cp docs/*.html $(TARGET)/services/$(SERVICE_NAME)/webroot/.
+deploy-service:
+	@echo "Target folder: $(TARGET_DIR)"
+	mkdir -p $(TARGET_DIR)
+	mkdir -p $(TMP_DIR)
+	cp -f ./dist/service.war $(TARGET_DIR)
+	cp -f ./glassfish_start_service.sh $(TARGET_DIR)
+	cp -f ./glassfish_stop_service.sh $(TARGET_DIR)
+	cp -f ./cmonkey.awf $(TARGET_DIR)
+	echo "./glassfish_start_service.sh $(TARGET_DIR)/service.war $(TARGET_PORT) $(THREADPOOL_SIZE)" > $(TARGET_DIR)/start_service.sh
+	chmod +x $(TARGET_DIR)/start_service.sh
+	echo "./glassfish_stop_service.sh $(TARGET_PORT)" > $(TARGET_DIR)/stop_service.sh
+	chmod +x $(TARGET_DIR)/stop_service.sh
 
 
 SRC_SH = $(wildcard scripts/*.sh)
@@ -77,20 +93,6 @@ deploy-sh-scripts:
 		cp $$src $(TARGET)/shbin ; \
 		$(WRAP_SH_SCRIPT) "$(TARGET)/shbin/$$basefile" $(TARGET)/bin/$$base ; \
 	done 
-
-distrib:
-	@echo "Target folder: $(TARGET_DIR)"
-	mkdir -p $(TARGET_DIR)
-	mkdir -p $(DATA_DIR)
-	cp -f ./dist/service.war $(TARGET_DIR)
-	cp -f ./glassfish_start_service.sh $(TARGET_DIR)
-	cp -f ./glassfish_stop_service.sh $(TARGET_DIR)
-	cp -f ./cmonkey.awf $(TARGET_DIR)
-	cp -f ./data/KEGG_taxonomy $(DATA_DIR)
-	echo "./glassfish_start_service.sh $(TARGET_DIR)/service.war $(TARGET_PORT) $(THREADPOOL_SIZE)" > $(TARGET_DIR)/start_service.sh
-	chmod +x $(TARGET_DIR)/start_service.sh
-	echo "./glassfish_stop_service.sh $(TARGET_PORT)" > $(TARGET_DIR)/stop_service.sh
-	chmod +x $(TARGET_DIR)/stop_service.sh
 
 build-docs: compile-docs
 	pod2html --infile=lib/Bio/KBase/$(SERVICE_NAME)/Client.pm --outfile=docs/$(SERVICE_NAME).html
@@ -125,7 +127,15 @@ test-scripts:
 	done
 
 test-jar:
-	@echo "nothing to test"
+	# run each test
+	for t in $(JAR_TESTS) ; do \
+		if [ -f $$t ] ; then \
+			$(DEPLOY_RUNTIME)/bin/perl $$t ; \
+			if [ $$? -ne 0 ] ; then \
+				exit 1 ; \
+			fi \
+		fi \
+	done
 
 clean:
 	@echo "nothing to clean"

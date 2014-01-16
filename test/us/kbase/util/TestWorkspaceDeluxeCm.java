@@ -29,14 +29,14 @@ import us.kbase.workspace.WorkspaceIdentity;
 
 public class TestWorkspaceDeluxeCm {
 
-	private static final String USER_NAME = "aktest";
-	private static final String PASSWORD = "1475rokegi";
+	private static final String USER_NAME = "kazakov";
+	private static final String PASSWORD = "1475.kafa";
 	private static final String workspaceName = "AKtest";
 
 	@Test
 	public void testRegisterModule() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		WsDeluxeUtil.wsClient(authToken.toString()).requestModuleOwnership("MEME");
+		WsDeluxeUtil.wsClient(authToken.toString()).requestModuleOwnership("Inferelator");
 		fail("Nothing to test");
 	}
 
@@ -177,7 +177,7 @@ public class TestWorkspaceDeluxeCm {
 		ListObjectsParams params = new ListObjectsParams();
 		//String type = "ExpressionServices.ExpressionSeries-1.0";
 		List<String> workspaces = new ArrayList<String>();
-		workspaces.add(workspaceName);
+		workspaces.add("networks_typed_objects_examples");//'(workspaceName);
 		//workspaces.add("networks_typed_objects_examples");
 		//params.setType(type);
 		params.setWorkspaces(workspaces);
@@ -253,10 +253,10 @@ public class TestWorkspaceDeluxeCm {
 	@Test
 	public void testWsReadObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String name = "D_vulgaris_series_sample_311";
+		String name = "MAKBiclusterSet_example";
 		//String exampleWs = "networks_typed_objects_examples";
 		
-		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace(workspaceName, name, authToken.toString());
+		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace("networks_typed_objects_examples", name, authToken.toString());
 		
 		BufferedWriter writer = new BufferedWriter(new FileWriter("string.txt"));
 		writer.write(output.getData().toString());
@@ -272,7 +272,7 @@ public class TestWorkspaceDeluxeCm {
 		List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
 		
 		String[] names = {
-				"kb|inferelatorrunresult.26"
+				"D_vulgaris_Hildenboroug_TFs"
 				}; 
 
 		for (String name : names){

@@ -8,13 +8,12 @@ public class CmonkeyServerConfig {
 	public static final String JOB_SERVICE_URL = " https://kbase.us/services/userandjobstate";//dev:"http://140.221.84.180:7083";
 	public static final String AWE_SERVICE_URL = "http://140.221.85.171:7080/job";
 	public static final String ID_SERVICE_URL = "http://kbase.us/services/idserver";
-	public static final String WS_SERVICE_URL = "http://140.221.84.209:7058";//"https://kbase.us/services/workspace/";//
+	public static final String WS_SERVICE_URL = "https://kbase.us/services/ws";//dev: "http://140.221.84.209:7058";
 	public static final String SHOCK_URL = "http://140.221.84.236:8000";
 	
 	//Paths
 	protected static final String JOB_DIRECTORY = "/var/tmp/cmonkey/";
 	protected static final String CMONKEY_DIRECTORY = "/kb/runtime/cmonkey-python/";
-	protected static final String DATA_PATH = "/etc/cmonkey-python/KEGG_taxonomy";
 	protected static final String CMONKEY_RUN_PATH = "/kb/runtime/cmonkey-python/cmonkey.py";
 	protected static final String AWF_CONFIG_FILE = "/kb/deployment/services/cmonkey/cmonkey.awf";
 
