@@ -21,7 +21,7 @@ public class CmonkeyServerConfig {
 	//With LOG_AWE_CALLS = true, Cmonkey will write all JSON calls to AWE client and all AWE responses to /var/tmp/cmonkey/cmonkey-awe.log
 	//This is a serious security threat because log will contain all auth tokens
 	//SET IT TO FALSE ON PRODUCTION  
-	public static final boolean LOG_AWE_CALLS = true;
+	public static final boolean LOG_AWE_CALLS = false;
 	
 	protected static final String CMONKEY_RUN_RESULT_TYPE = "Cmonkey.CmonkeyRunResult";
 	
