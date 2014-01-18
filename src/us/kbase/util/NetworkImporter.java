@@ -246,6 +246,9 @@ public class NetworkImporter {
 		InteractionSet set = new InteractionSet().withName(ncbiId).withSource(source).withInteractions(interactions).withType("string");
 		interactions = null;
 		gc();
+		System.out.println("Free memory " + Runtime.getRuntime().freeMemory());
+		System.out.println("Max memory " + Runtime.getRuntime().maxMemory());
+		System.out.println("Total memory " + Runtime.getRuntime().totalMemory());
 		
 		if (name == null) {
 			set.setId(getKbaseId("InteractionSet"));

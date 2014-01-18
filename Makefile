@@ -16,11 +16,8 @@ SERVLET_CLASS = us.kbase.cmonkey.CmonkeyServer
 MAIN_CLASS = us.kbase.cmonkey.CmonkeyInvoker
 SERVICE_PSGI = $(SERVICE_NAME).psgi
 TPAGE_ARGS = --define kb_top=$(TARGET) --define kb_runtime=$(DEPLOY_RUNTIME) --define kb_service_name=$(SERVICE_NAME) --define kb_service_dir=$(SERVICE_DIR) --define kb_service_port=$(SERVICE_PORT) --define kb_psgi=$(SERVICE_PSGI)
-SCRIPTS_TESTS = $(wildcard script-tests/*.t)
-JAR_TESTS = $(wildcard backend-tests/*.t)
 DEPLOY_JAR = $(KB_TOP)/lib/jars/cmonkey
 TMP_DIR = /var/tmp/cmonkey
-SCRIPTS_TESTS_CLUSTER = $(wildcard script-test-cluster/*.t)
 
 default: compile
 
@@ -30,7 +27,7 @@ deploy-all: distrib deploy-client
 
 deploy-scripts: deploy-pl-scripts
 
-deploy-jar: compile-jar deploy-sh-scripts distrib-jar test-jar
+deploy-jar: compile-jar deploy-sh-scripts distrib-jar
 
 compile-jar: src lib
 	./make_jar.sh $(MAIN_CLASS)
@@ -112,30 +109,22 @@ build-libs:
 compile: src lib
 	./make_war.sh $(SERVLET_CLASS)
 
-test: test-scripts
+test: test-scripts test-jar
 	@echo "running script tests"
 
 test-scripts:
 	# run each test
-	for t in $(SCRIPTS_TESTS) ; do \
-		if [ -f $$t ] ; then \
-			$(DEPLOY_RUNTIME)/bin/perl $$t ; \
-			if [ $$? -ne 0 ] ; then \
-				exit 1 ; \
-			fi \
-		fi \
-	done
+	$(DEPLOY_RUNTIME)/bin/perl test/script_tests-command-line.t ; \
+	if [ $$? -ne 0 ] ; then \
+		exit 1 ; \
+	fi \
 
 test-jar:
 	# run each test
-	for t in $(JAR_TESTS) ; do \
-		if [ -f $$t ] ; then \
-			$(DEPLOY_RUNTIME)/bin/perl $$t ; \
-			if [ $$? -ne 0 ] ; then \
-				exit 1 ; \
-			fi \
-		fi \
-	done
+	$(DEPLOY_RUNTIME)/bin/perl test/test_cmonkey_server_invoker.t ; \
+	if [ $$? -ne 0 ] ; then \
+		exit 1 ; \
+	fi \
 
 clean:
 	@echo "nothing to clean"

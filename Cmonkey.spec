@@ -47,12 +47,12 @@ module Cmonkey
 	typedef string genome_ws_ref;
 
 	/* Represents WS operome identifier
-		@id ws Networks.InteractionSet
+		@id ws KBaseNetworks.InteractionSet
 	*/
 	typedef string operons_ws_ref;
 
 	/* Represents WS network identifier
-		@id ws Networks.InteractionSet
+		@id ws KBaseNetworks.InteractionSet
 	*/
 	typedef string network_ws_ref;
 

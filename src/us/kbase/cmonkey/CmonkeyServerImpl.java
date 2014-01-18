@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import us.kbase.auth.AuthException;
 import us.kbase.auth.AuthToken;
@@ -77,9 +78,7 @@ public class CmonkeyServerImpl {
 
 	public static void buildCmonkeyNetworkJobFromWs(String wsName,
 			CmonkeyRunParameters params, String jobId, String token,
-			String currentDir) throws UnauthorizedException, IOException,
-			JsonClientException, AuthException, InterruptedException,
-			ClassNotFoundException, SQLException {
+			String currentDir) throws Exception {
 		// Let's start!
 		if (jobId != null)
 			updateJobProgress(jobId,
@@ -100,7 +99,14 @@ public class CmonkeyServerImpl {
 		writer.write("log file created " + dateFormat.format(date) + "\n");
 		writer.flush();
 		// prepare input file
-		List<String> sampleIdsList = series.getGenomeExpressionSampleIdsMap().get(params.getGenomeRef().split("/")[params.getGenomeRef().split("/").length -1]);//all this "split" madness used solely for extraction of genome name from genome reference 
+		Set<String> genomeIds = series.getGenomeExpressionSampleIdsMap().keySet();
+		List<String> sampleIdsList = null;
+		if (genomeIds.size() > 1) {
+			throw new Exception ("ExpressionSeries contains more than one genome ID");
+		} else {
+			String genomeId = genomeIds.iterator().next();
+			sampleIdsList = series.getGenomeExpressionSampleIdsMap().get(genomeId);
+		}
 		createInputTable(jobPath, sampleIdsList, token);
 		writer.write("Input file created\n");
 		writer.flush();

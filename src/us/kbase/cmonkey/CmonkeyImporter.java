@@ -10,17 +10,17 @@ public class CmonkeyImporter {
 	/**
 	 * @param args
 	 */
-	private static final String USER_NAME = "aktest";
-	private static final String PASSWORD = "1475rokegi";
-	private final static String workspaceName = "AKtest";
+	private static final String USER_NAME = "kazakov";
+	private static final String PASSWORD = "1475.kafa";
+	private final static String workspaceName = "ENIGMA_KBASE";
 	private static AuthToken token = null;
-	private static String testGenomeRef = "AKtest/Desulfovibrio_vulgaris_Hildenborough";//"AKtest/kb|genome.9";
+	private static String testGenomeRef = "ENIGMA_KBASE/Halobacterium_sp_NRC-1";//"AKtest/kb|genome.9";
 
 	public static void main(String[] args) throws Exception {
-		String ncbiId = "882";
-		String name = "D_vulgaris_STRING";
+		String ncbiId = "64091";
+		String name = "Halobacterium_sp_STRING";
 		token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, "/home/kbase/Documents/dvh/", workspaceName, token.toString());
+		NetworkImporter importer = new NetworkImporter(testGenomeRef, ncbiId, "/home/kbase/cmonkey20131126/cache/", workspaceName, token.toString());
 		InteractionSet result = importer.ImportStringFile(name);
 		
 		

@@ -98,7 +98,7 @@ public class GenomeImporter {
 		genome.setId(id);
 		List<Feature> features = readFeaturesExt(genome);
 		genome.setFeatures(features);
-		genome.setDomain("Archaea");//change to String variable
+		genome.setDomain("Bacteria");//change to String variable
 		genome.setGeneticCode(0L);//not sure
 		genome.setSource("undefined");
 		genome.setSourceId("undefined");//NCBI tax id? 

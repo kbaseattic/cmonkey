@@ -22,13 +22,13 @@ import us.kbase.userandjobstate.Results;
 import us.kbase.util.WsDeluxeUtil;
 
 public class CmonkeyServerImplTest {
-	private static final String USER_NAME = "aktest";
-	private static final String PASSWORD = "1475rokegi";
+	private static final String USER_NAME = "";
+	private static final String PASSWORD = "";
 	private static final String workspaceName = "AKtest";
-	private String testSeriesRef = "AKtest/Halobacterium_sp_NRC1_series";
+	private String testSeriesRef = "AKtest/Halobacterium_sp_NRC-1";
 	private String testGenomeRef = "AKtest/kb|genome.9";
-	private String testStringNetworkRef = "AKtest/kb|interactionset.7";
-	private String testOperonNetworkRef = "AKtest/kb|interactionset.8";
+	private String testStringNetworkRef = "AKtest/Halobacterium_sp_STRING";
+	private String testOperonNetworkRef = "AKtest/Halobacterium_sp_operons";
 	private final String TEST_DATABASE_PATH = "test/cmonkey_run_test.db";
 	//private final String TEST_DATABASE_PATH = "/home/kbase/Documents/inferelator-test/out/cmonkey_run.db";
 	private static AuthToken token = null;

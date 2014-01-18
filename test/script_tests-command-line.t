@@ -17,8 +17,8 @@ my $bin  = "scripts";
 my $ws = "\"AKtest\"";
 my $user = "aktest";
 my $pw = "1475rokegi";
-my $series_ref = "\"AKtest/test_Halobacterium__series\"";
-my $genome_ref = "\"AKtest/kb|genome.9\"";
+my $series_ref = "\"AKtest/test_Halobacterium_sp_expression_series\"";
+my $genome_ref = "\"AKtest/Halobacterium_sp_NRC-1\"";
 
 
 #1

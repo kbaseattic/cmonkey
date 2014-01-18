@@ -17,16 +17,16 @@ import us.kbase.util.WsDeluxeUtil;
 
 public class CmonkeyClientTest {
 
-	private static final String USER_NAME = "aktest";
-	private static final String PASSWORD = "1475rokegi";
-	private static final String workspaceName = "AKtest";//"ENIGMA_KBASE";
+	private static final String USER_NAME = "";
+	private static final String PASSWORD = "";
+	private static final String workspaceName = "AKtest";//"ENIGMA_KBASE";//
 	private String serverUrl = "http://140.221.85.173:7078";
 //	private String serverUrl = "http://localhost:7049";
 	private String quickTestSeriesRef = "AKtest/test_Halobacterium_sp_expression_series";
-	private String testSeriesRef = "AKtest/Halobacterium_sp_expression_series";//"AKtest/D_vulgaris_series_series";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_series_250_series";
-	private String genomeRef = "AKtest/Halobacterium_sp_NRC-1";//"AKtest/Desulfovibrio_vulgaris_Hildenborough";//
-	private String testStringNetworkRef = "AKtest/Halobacterium_sp_STRING";//"AKtest/D_vulgaris_STRING";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_string";
-	private String testOperonNetworkRef = "AKtest/Halobacterium_sp_operons";//"AKtest/D_vulgaris_operons";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_operons";
+	private String testSeriesRef = "ENIGMA_KBASE/Halobacterium_sp_expression_series";//"ENIGMA_KBASE/D_vulgaris_Hildenborough_expression_series";//"AKtest/Halobacterium_sp_expression_series";//
+	private String genomeRef = "ENIGMA_KBASE/Halobacterium_sp_NRC-1";//"ENIGMA_KBASE/Desulfovibrio_vulgaris_Hildenborough";//"AKtest/Halobacterium_sp_NRC-1";//
+	private String testStringNetworkRef = "ENIGMA_KBASE/Halobacterium_sp_STRING";//"AKtest/Halobacterium_sp_STRING";//"ENIGMA_KBASE/D_vulgaris_STRING";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_string";
+	private String testOperonNetworkRef = "ENIGMA_KBASE/Halobacterium_sp_operons";//"AKtest/Halobacterium_sp_operons";//"AKtest/D_vulgaris_Hildenborough_operons";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_operons";
 	
 	@Test
 	public final void testQuickBuildCmonkeyNetworkJobFromWs() throws Exception {

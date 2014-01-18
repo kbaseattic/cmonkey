@@ -16,8 +16,8 @@ import us.kbase.util.WsDeluxeUtil;
 
 public class CmonkeyInvokerTest {
 
-	private static final String USER_NAME = "aktest";
-	private static final String PASSWORD = "1475rokegi";
+	private static final String USER_NAME = "";
+	private static final String PASSWORD = "";
 	private static final String workspaceName = "AKtest";
 	private String quickTestSeriesId = "QuickTestExpressionDataSeries";
 	private String testSeriesId = "TestExpressionDataSeries";
