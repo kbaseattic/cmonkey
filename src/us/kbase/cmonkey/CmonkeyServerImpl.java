@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import us.kbase.auth.AuthException;
+import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
 import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.JsonClientException;
@@ -264,7 +265,7 @@ public class CmonkeyServerImpl {
 		initProgress.setMax(tasks);
 		Date date = new Date();
 		date.setTime(date.getTime() + 108000000L);
-		jobClient(token).startJob(jobId, token, status, desc, initProgress,
+		jobClient(token).startJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, desc, initProgress,
 				dateFormat.format(date));
 	}
 
@@ -273,7 +274,7 @@ public class CmonkeyServerImpl {
 			JsonClientException, AuthException {
 		Date date = new Date();
 		date.setTime(date.getTime() + 1000000L);
-		jobClient(token).updateJobProgress(jobId, token, status, 1L,
+		jobClient(token).updateJobProgress(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, 1L,
 				dateFormat.format(date));
 	}
 
@@ -285,7 +286,7 @@ public class CmonkeyServerImpl {
 		List<String> workspaceIds = new ArrayList<String>();
 		workspaceIds.add(wsId + "/" + objectId);
 		res.setWorkspaceids(workspaceIds);
-		jobClient(token).completeJob(jobId, token, status, error, res);
+		jobClient(token).completeJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, error, res);
 	}
 
 	protected static String getKbaseId(String entityType)

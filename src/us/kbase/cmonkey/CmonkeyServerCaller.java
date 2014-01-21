@@ -26,6 +26,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.kbase.auth.AuthException;
+import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
 import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.JacksonTupleModule;
@@ -65,7 +67,7 @@ public class CmonkeyServerCaller {
 				jobServiceUrl, authPart);
 		// jobClient.setAuthAllowedForHttp(true);
 		returnVal = jobClient.createJob();
-		jobClient.startJob(returnVal, authPart.toString(),
+		jobClient.startJob(returnVal, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(),
 				"Starting new Cmonkey service job...",
 				"Cmonkey service job " + returnVal
 				+ ". Method: buildCmonkeyNetworkJobFromWs. Input: "
@@ -176,22 +178,21 @@ public class CmonkeyServerCaller {
 	}
 	
 	protected static void updateJobProgress(String jobId, String status,
-			Long tasks, String token) throws TokenFormatException,
-			MalformedURLException, IOException, JsonClientException {
+			Long tasks, String token) throws MalformedURLException, IOException, JsonClientException, AuthException {
 		Date date = new Date();
 		date.setTime(date.getTime() + 10000L);
 		UserAndJobStateClient jobClient = new UserAndJobStateClient(new URL(
 				JOB_SERVICE), new AuthToken(token));
 		// jobClient.setAuthAllowedForHttp(true);
-		jobClient.updateJobProgress(jobId, token, status, tasks,
+		jobClient.updateJobProgress(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, tasks,
 				dateFormat.format(date));
 		jobClient = null;
 	}
 
 	protected static void reportAweStatus(AuthToken authPart, String returnVal,
 			String result) throws IOException, JsonProcessingException,
-			TokenFormatException, MalformedURLException, JsonClientException,
-			JsonParseException, JsonMappingException, ServerException {
+			MalformedURLException, JsonClientException,
+			JsonParseException, JsonMappingException, ServerException, AuthException {
 		JsonNode rootNode = new ObjectMapper().registerModule(new JacksonTupleModule()).readTree(result);
 		String aweId = "";
 		if (rootNode.has("data")){
