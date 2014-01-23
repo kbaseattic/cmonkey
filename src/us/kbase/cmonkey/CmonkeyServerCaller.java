@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import us.kbase.auth.AuthException;
 import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
-import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.JacksonTupleModule;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.ServerException;
