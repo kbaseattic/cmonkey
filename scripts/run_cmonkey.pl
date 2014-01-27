@@ -4,11 +4,11 @@ use Carp;
 
 =head1 NAME
 
-    build_cmonkey_network_job_from_ws - build bi-cluster network starting with expression data series stored in workspace
+    run_cmonkey - build bi-cluster network starting with expression data series stored in workspace
 
 =head1 SYNOPSIS
 
-    build_cmonkey_network_job_from_ws [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]
+    run_cmonkey [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]
 
 =head1 DESCRIPTION
 
@@ -62,9 +62,9 @@ use Carp;
 
 =head1 EXAMPLE
 
-    build_cmonkey_network_job_from_ws --url=http://140.221.85.173:7078/ --ws=AKtest --input="AKtest/Halobacterium_sp_NRC1_series" --genome="AKtest/kb|genome.9" --motifs --networks --operons="AKtest/kb|interactionset.8" --string="AKtest/kb|interactionset.7" --user=<username> --pw=<password>
-    build_cmonkey_network_job_from_ws --help
-    build_cmonkey_network_job_from_ws --version
+    run_cmonkey --url=http://140.221.85.173:7078/ --ws=AKtest --input="AKtest/Halobacterium_sp_NRC1_series" --genome="AKtest/kb|genome.9" --motifs --networks --operons="AKtest/kb|interactionset.8" --string="AKtest/kb|interactionset.7" --user=<username> --pw=<password>
+    run_cmonkey --help
+    run_cmonkey --version
 
 =head1 VERSION
 
@@ -77,7 +77,7 @@ use Bio::KBase::cmonkey::Client;
 use Bio::KBase::AuthToken;
 use Bio::KBase::AuthUser;
 
-my $usage = "Usage: build_cmonkey_network_job_from_ws [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]\n";
+my $usage = "Usage: run_cmonkey [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]\n";
 
 my $url        = "http://140.221.85.173:7078/";
 my $ws         = "";
@@ -108,14 +108,14 @@ GetOptions("help"       => \$help,
 
 if($help){
 print "NAME\n";
-print "build_cmonkey_network_job_from_ws - This command discovers co-regulated modules, or biclusters in gene expression profiles stored in workspace.\n";
+print "run_cmonkey - This command discovers co-regulated modules, or biclusters in gene expression profiles stored in workspace.\n";
 print "\n";
 print "\n";
 print "VERSION\n";
 print "1.0\n";
 print "\n";
 print "SYNOPSIS\n";
-print "build_cmonkey_network_job_from_ws [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]\n";
+print "run_cmonkey [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]\n";
 print "\n";
 print "DESCRIPTION\n";
 print "INPUT:            This command requires the URL of the service, workspace name, and run parameters.\n";
@@ -149,7 +149,7 @@ print "--version         Print version information. \n";
 print "\n";
 print " \n";
 print "EXAMPLES \n";
-print "build_cmonkey_network_job_from_ws --url=http://140.221.85.173:7078/ --ws=AKtest --input=\"AKtest/Halobacterium_sp_NRC1_series\" --genome=\"AKtest/kb|genome.9\" --motifs --networks --operons=\"AKtest/kb|interactionset.8\" --string=\"AKtest/kb|interactionset.7\" --user=<username> --pw=<password>\n";
+print "run_cmonkey --url=http://140.221.85.173:7078/ --ws=AKtest --input=\"AKtest/Halobacterium_sp_NRC1_series\" --genome=\"AKtest/kb|genome.9\" --motifs --networks --operons=\"AKtest/kb|interactionset.8\" --string=\"AKtest/kb|interactionset.7\" --user=<username> --pw=<password>\n";
 print "\n";
 print "This command will return a Job object ID.\n";
 print "\n";
@@ -160,7 +160,7 @@ exit(0);
 
 if($version)
 {
-    print "build_cmonkey_network_job_from_ws\n";
+    print "run_cmonkey\n";
     print "Copyright (C) 2013 DOE Systems Biology Knowledgebase\n";
     print "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.\n";
     print "This is free software: you are free to change and redistribute it.\n";
@@ -196,7 +196,7 @@ my $cmonkey_run_parameters = {
 };
 
 my $obj = {
-	method => "Cmonkey.build_cmonkey_network_job_from_ws",
+	method => "Cmonkey.run_cmonkey",
 	params => [$ws, $cmonkey_run_parameters],
 };
 

@@ -69,7 +69,7 @@ public class CmonkeyServerCaller {
 		jobClient.startJob(returnVal, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(),
 				"Starting new Cmonkey service job...",
 				"Cmonkey service job " + returnVal
-				+ ". Method: buildCmonkeyNetworkJobFromWs. Input: "
+				+ ". Input: "
 				+ params.getSeriesRef() + ". Workspace: " + wsName + ".",
 				new InitProgress().withPtype("task").withMax(24L),
 				dateFormat.format(date));

@@ -40,7 +40,7 @@ public class CmonkeyClientTest {
 		URL url = new URL(serverUrl);
 		CmonkeyClient client = new CmonkeyClient(url, token);
 		client.setAuthAllowedForHttp(true);
-		String jobId = client.buildCmonkeyNetworkJobFromWs(workspaceName, params);
+		String jobId = client.runCmonkey(workspaceName, params);
 		
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);
@@ -116,7 +116,7 @@ public class CmonkeyClientTest {
 		URL url = new URL(serverUrl);
 		CmonkeyClient client = new CmonkeyClient(url, token);
 		client.setAuthAllowedForHttp(true);
-		String jobId = client.buildCmonkeyNetworkJobFromWs(workspaceName, params);
+		String jobId = client.runCmonkey(workspaceName, params);
 		
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);

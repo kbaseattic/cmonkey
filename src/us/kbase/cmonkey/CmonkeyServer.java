@@ -14,8 +14,8 @@ import us.kbase.common.service.JsonServerServlet;
  * This module provides a set of methods for work with cMonkey biclustering tool.
  * Data types summary
  * Input data types: 
- * ExpressionSeries from Expression service.
- * ExpressionSample from Expression service.
+ * ExpressionSeries from KBaseExpression service.
+ * ExpressionSample from KBaseExpression service.
  * KBaseGenomes.Genome
  * Networks.InterationSet with operons data
  * Networks.InterationSet with STRING data
@@ -41,7 +41,7 @@ public class CmonkeyServer extends JsonServerServlet {
     }
 
     /**
-     * <p>Original spec-file function name: build_cmonkey_network_job_from_ws</p>
+     * <p>Original spec-file function name: run_cmonkey</p>
      * <pre>
      * Starts cMonkey server run for a series of expression data stored in workspace and returns job ID of the run
      * string ws_id - workspace id
@@ -52,12 +52,12 @@ public class CmonkeyServer extends JsonServerServlet {
      * @param   params   instance of type {@link us.kbase.cmonkey.CmonkeyRunParameters CmonkeyRunParameters}
      * @return   parameter "cmonkey_run_result_job_id" of String
      */
-    @JsonServerMethod(rpc = "Cmonkey.build_cmonkey_network_job_from_ws")
-    public String buildCmonkeyNetworkJobFromWs(String wsId, CmonkeyRunParameters params, AuthToken authPart) throws Exception {
+    @JsonServerMethod(rpc = "Cmonkey.run_cmonkey")
+    public String runCmonkey(String wsId, CmonkeyRunParameters params, AuthToken authPart) throws Exception {
         String returnVal = null;
-        //BEGIN build_cmonkey_network_job_from_ws
+        //BEGIN run_cmonkey
         returnVal = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(wsId, params, authPart);
-        //END build_cmonkey_network_job_from_ws
+        //END run_cmonkey
         return returnVal;
     }
 

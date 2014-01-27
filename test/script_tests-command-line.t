@@ -22,10 +22,10 @@ my $genome_ref = "\"AKtest/Halobacterium_sp_NRC-1\"";
 
 
 #1
-my $tes = Test::Cmd->new(prog => "$bin/build_cmonkey_network_job_from_ws.pl", workdir => '', interpreter => '/kb/runtime/bin/perl');
-ok($tes, "creating Test::Cmd object for build_cmonkey_network_job_from_ws");
+my $tes = Test::Cmd->new(prog => "$bin/run_cmonkey.pl", workdir => '', interpreter => '/kb/runtime/bin/perl');
+ok($tes, "creating Test::Cmd object for run_cmonkey");
 $tes->run(args => "--url=$url --ws=$ws --input=$series_ref --genome=$genome_ref --user=$user --pw=$pw");
-ok($? == 0,"Running build_cmonkey_network_job_from_ws");
+ok($? == 0,"Running cmonkey");
 my $tem=$tes->stdout;
 print "Job ID:\t",$tem,"\n";
 ok($tem =~ /[1-9]+/, "Cmonkey runs OK");
