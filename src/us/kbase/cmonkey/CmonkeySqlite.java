@@ -193,8 +193,7 @@ public class CmonkeySqlite {
 
 	public String buildCmonkeyRunResult(CmonkeyRunResult cmonkeyRunResult, String genomeName)
 			throws IOException, JsonClientException, SQLException {
-		cmonkeyRunResult.setId(getKbaseId(CmonkeyRunResult.class
-				.getSimpleName()));
+		//cmonkeyRunResult.setId(getKbaseId(CmonkeyRunResult.class.getSimpleName()));
 		CmonkeyNetwork network = new CmonkeyNetwork();
 		network.setGenomeName(genomeName);
 		String sqlQuery = "SELECT * FROM run_infos";
@@ -234,8 +233,8 @@ public class CmonkeySqlite {
 		URL url = new URL(ID_SERVICE_URL);
 		IDServerAPIClient idClient = new IDServerAPIClient(url);
 
-		if (entityType.equals("CmonkeyRun")) {
-			returnVal = "kb|cmonkeyrun."
+		if (entityType.equals("CmonkeyRunResult")) {
+			returnVal = "kb|cmonkeyrunresult."
 					+ idClient.allocateIdRange("cmonkeyrun", 1L).toString();
 		} else if (entityType.equals("CmonkeyNetwork")) {
 			returnVal = "kb|cmonkeynetwork."
