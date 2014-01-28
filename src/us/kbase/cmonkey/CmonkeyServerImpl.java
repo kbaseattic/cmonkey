@@ -27,6 +27,7 @@ import us.kbase.common.service.UnauthorizedException;
 import us.kbase.kbaseexpression.ExpressionSample;
 import us.kbase.kbaseexpression.ExpressionSeries;
 import us.kbase.idserverapi.IDServerAPIClient;
+import us.kbase.inferelator.InferelatorServerConfig;
 import us.kbase.userandjobstate.InitProgress;
 import us.kbase.userandjobstate.Results;
 import us.kbase.userandjobstate.UserAndJobStateClient;
@@ -91,19 +92,19 @@ public class CmonkeyServerImpl {
 					.getObjectFromWsByRef(params.getSeriesRef(), token).getData()
 					.asClassInstance(ExpressionSeries.class);
 		} catch (TokenFormatException e) {
-			finishJobWithError(jobId, "Expression series download error\n" + e.getMessage(), token);
+			finishJobWithError(jobId, e.getMessage(), "Expression series download error", token);
 			e.printStackTrace();
 			throw new Exception ("Expression series download error");
 		} catch (UnauthorizedException e) {
-			finishJobWithError(jobId, "Expression series download error\n" + e.getMessage(), token);
+			finishJobWithError(jobId, e.getMessage(), "Expression series download error", token);
 			e.printStackTrace();
 			throw new Exception ("Expression series download error");
 		} catch (IOException e) {
-			finishJobWithError(jobId, "Expression series download error\n" + e.getMessage(), token);
+			finishJobWithError(jobId, e.getMessage(), "Expression series download error", token);
 			e.printStackTrace();
 			throw new Exception ("Expression series download error");
 		} catch (JsonClientException e) {
-			finishJobWithError(jobId, "Expression series download error\n" + e.getMessage(), token);
+			finishJobWithError(jobId, e.getMessage(), "Expression series download error", token);
 			e.printStackTrace();
 			throw new Exception ("Expression series download error");
 		}
@@ -114,19 +115,19 @@ public class CmonkeyServerImpl {
 			cmonkeyRunResult = new CmonkeyRunResult()
 					.withId(getKbaseId("CmonkeyRunResult"));
 		} catch (TokenFormatException e) {
-			finishJobWithError(jobId, "Unable to get ID for cMonkey result", token);
+			finishJobWithError(jobId, e.getMessage(), "Unable to get ID for cMonkey result", token);
 			e.printStackTrace();
 			throw new Exception ("Unable to get ID for cMonkey result");
 		} catch (UnauthorizedException e) {
-			finishJobWithError(jobId, "Unable to get ID for cMonkey result", token);
+			finishJobWithError(jobId, e.getMessage(), "Unable to get ID for cMonkey result", token);
 			e.printStackTrace();
 			throw new Exception ("Unable to get ID for cMonkey result");
 		} catch (IOException e) {
-			finishJobWithError(jobId, "Unable to get ID for cMonkey result", token);
+			finishJobWithError(jobId, e.getMessage(), "Unable to get ID for cMonkey result", token);
 			e.printStackTrace();
 			throw new Exception ("Unable to get ID for cMonkey result");
 		} catch (JsonClientException e) {
-			finishJobWithError(jobId, "Unable to get ID for cMonkey result", token);
+			finishJobWithError(jobId, e.getMessage(), "Unable to get ID for cMonkey result", token);
 			e.printStackTrace();
 			throw new Exception ("Unable to get ID for cMonkey result");
 		}
@@ -143,6 +144,7 @@ public class CmonkeyServerImpl {
 		Set<String> genomeIds = series.getGenomeExpressionSampleIdsMap().keySet();
 		List<String> sampleIdsList = null;
 		if (genomeIds.size() > 1) {
+			finishJobWithError(jobId, "ExpressionSeries contains more than one genome ID", "Incompatible expression series format", token);
 			throw new Exception ("ExpressionSeries contains more than one genome ID");
 		} else {
 			String genomeId = genomeIds.iterator().next();
@@ -151,15 +153,15 @@ public class CmonkeyServerImpl {
 		try {
 			createInputTable(jobPath, sampleIdsList, token);
 		} catch (TokenFormatException e) {
-			finishJobWithError(jobId, "Expression samples download error\n" + e.getMessage(), token);
+			finishJobWithError(jobId, e.getMessage(), "Expression samples download error", token);
 			e.printStackTrace();
 			throw new Exception ("Expression samples download error");
 		} catch (IOException e) {
-			finishJobWithError(jobId, "Expression samples download error\n" + e.getMessage(), token);
+			finishJobWithError(jobId, e.getMessage(), "Expression samples download error", token);
 			e.printStackTrace();
 			throw new Exception ("Expression samples download error");
 		} catch (JsonClientException e) {
-			finishJobWithError(jobId, "Expression samples download error\n" + e.getMessage(), token);
+			finishJobWithError(jobId, e.getMessage(), "Expression samples download error", token);
 			e.printStackTrace();
 			throw new Exception ("Expression samples download error");
 		}
@@ -199,7 +201,7 @@ public class CmonkeyServerImpl {
 		if (status != null) {
 			writer.write("Error: " + status);
 			if (jobId != null)
-				finishJobWithError(jobId, "Error: " + status, token);
+				finishJobWithError(jobId, "Error: " + status, "cMonkey execution error", token);
 			// close log file
 			writer.close();
 		} else {
@@ -212,19 +214,19 @@ public class CmonkeyServerImpl {
 						CMONKEY_RUN_RESULT_TYPE, wsName, cmonkeyRunResult
 								.getId(), token.toString());
 			} catch (TokenFormatException e) {
-				finishJobWithError(jobId, "Cmonkey run result upload error\n" + e.getMessage(), token);
+				finishJobWithError(jobId, e.getMessage(), "Cmonkey run result upload error", token);
 				e.printStackTrace();
 				throw new Exception ("Cmonkey run result upload error");
 			} catch (UnauthorizedException e) {
-				finishJobWithError(jobId, "Cmonkey run result upload error\n" + e.getMessage(), token);
+				finishJobWithError(jobId, e.getMessage(), "Cmonkey run result upload error", token);
 				e.printStackTrace();
 				throw new Exception ("Cmonkey run result upload error");
 			} catch (IOException e) {
-				finishJobWithError(jobId, "Cmonkey run result upload error\n" + e.getMessage(), token);
+				finishJobWithError(jobId, e.getMessage(), "Cmonkey run result upload error", token);
 				e.printStackTrace();
 				throw new Exception ("Cmonkey run result upload error");
 			} catch (JsonClientException e) {
-				finishJobWithError(jobId, "Cmonkey run result upload error\n" + e.getMessage(), token);
+				finishJobWithError(jobId, e.getMessage(), "Cmonkey run result upload error", token);
 				e.printStackTrace();
 				throw new Exception ("Cmonkey run result upload error");
 			}
@@ -357,12 +359,14 @@ public class CmonkeyServerImpl {
 		jobClient(token).completeJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, error, res);
 	}
 
-	protected static void finishJobWithError(String jobId, String error, String token) throws UnauthorizedException,
-			IOException, JsonClientException, AuthException {
+	protected static void finishJobWithError(String jobId, String error, String status, String token) throws UnauthorizedException,
+	IOException, JsonClientException, AuthException {
 		Results res = new Results();
-		String status = "Error";
-		jobClient(token).completeJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, error, res);
+		URL jobServiceUrl = new URL(JOB_SERVICE_URL);
+		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, new AuthToken(token));
+		jobClient.completeJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, error, res);
 	}
+
 
 	protected static String getKbaseId(String entityType)
 			throws TokenFormatException, UnauthorizedException, IOException,

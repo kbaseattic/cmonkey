@@ -24,7 +24,7 @@ public class CmonkeyClientTest {
 //	private String serverUrl = "http://localhost:7049";
 	private String quickTestSeriesRef = "AKtest/test_Halobacterium_sp_expression_series";
 	private String testSeriesRef = "ENIGMA_KBASE/Halobacterium_sp_expression_series";//"ENIGMA_KBASE/D_vulgaris_Hildenborough_expression_series";//"AKtest/Halobacterium_sp_expression_series";//
-	private String genomeRef = "AKtest/Halobacterium_sp_NRC-1";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1";//"ENIGMA_KBASE/Desulfovibrio_vulgaris_Hildenborough";//
+	private String genomeRef = "ENIGMA_KBASE/Halobacterium_sp_NRC-1";//"AKtest/Halobacterium_sp_NRC-1";//"ENIGMA_KBASE/Desulfovibrio_vulgaris_Hildenborough";//
 	private String testStringNetworkRef = "ENIGMA_KBASE/Halobacterium_sp_STRING";//"AKtest/Halobacterium_sp_STRING";//"ENIGMA_KBASE/D_vulgaris_STRING";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_string";
 	private String testOperonNetworkRef = "ENIGMA_KBASE/Halobacterium_sp_operons";//"AKtest/Halobacterium_sp_operons";//"AKtest/D_vulgaris_Hildenborough_operons";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_operons";
 	
