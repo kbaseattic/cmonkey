@@ -108,8 +108,9 @@ public class CmonkeyServerImpl {
 			throw new Exception ("Expression series download error");
 		}
 		// create result object
-		CmonkeyRunResult cmonkeyRunResult = new CmonkeyRunResult();
-/*		try {
+		CmonkeyRunResult cmonkeyRunResult;
+		// get ID for the result
+		try {
 			cmonkeyRunResult = new CmonkeyRunResult()
 					.withId(getKbaseId("CmonkeyRunResult"));
 		} catch (TokenFormatException e) {
@@ -129,7 +130,7 @@ public class CmonkeyServerImpl {
 			e.printStackTrace();
 			throw new Exception ("Unable to get ID for cMonkey result");
 		}
-*/
+
 		// create working directory
 		String jobPath = createDirs(jobId, currentDir);
 		// start log file
@@ -202,10 +203,7 @@ public class CmonkeyServerImpl {
 			// close log file
 			writer.close();
 		} else {
-			String resultId = getKbaseId("CmonkeyRunResult");
 			writer.write(cmonkeyRunResult.getId() + "\n");
-			// get ID for the result
-			cmonkeyRunResult.setId(resultId);
 			cmonkeyRunResult.setParameters(params);
 			// save result
 			try {
