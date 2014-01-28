@@ -27,7 +27,6 @@ import us.kbase.common.service.UnauthorizedException;
 import us.kbase.kbaseexpression.ExpressionSample;
 import us.kbase.kbaseexpression.ExpressionSeries;
 import us.kbase.idserverapi.IDServerAPIClient;
-import us.kbase.inferelator.InferelatorServerConfig;
 import us.kbase.userandjobstate.InitProgress;
 import us.kbase.userandjobstate.Results;
 import us.kbase.userandjobstate.UserAndJobStateClient;
