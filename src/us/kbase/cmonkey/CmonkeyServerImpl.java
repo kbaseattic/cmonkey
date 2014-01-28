@@ -202,10 +202,10 @@ public class CmonkeyServerImpl {
 			// close log file
 			writer.close();
 		} else {
-			//String resultId = getKbaseId("CmonkeyRunResult");
+			String resultId = getKbaseId("CmonkeyRunResult");
 			writer.write(cmonkeyRunResult.getId() + "\n");
 			// get ID for the result
-			//cmonkeyRunResult.setId(resultId);
+			cmonkeyRunResult.setId(resultId);
 			cmonkeyRunResult.setParameters(params);
 			// save result
 			try {
