@@ -309,7 +309,7 @@ public class CmonkeyServerImplTest {
 
 	@Test
 	public void testDeleteJob() throws AuthException, IOException, UnauthorizedException, JsonClientException {
-		String jobId = "52ddfd65e4b0ef83573320aa";
+		String jobId = "52e70eb7e4b0ef83573320eb";
 
 //		AuthToken token = AuthService.login(JOB_ACCOUNT, new String(JOB_PASSWORD)).getToken();
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();

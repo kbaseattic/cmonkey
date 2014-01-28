@@ -109,18 +109,16 @@ build-libs:
 compile: src lib
 	./make_war.sh $(SERVLET_CLASS)
 
-test: test-scripts test-jar
+test: test-scripts
 	@echo "running script tests"
 
 test-scripts:
-	# run each test
 	$(DEPLOY_RUNTIME)/bin/perl test/script_tests-command-line.t ; \
 	if [ $$? -ne 0 ] ; then \
 		exit 1 ; \
 	fi \
 
 test-jar:
-	# run each test
 	$(DEPLOY_RUNTIME)/bin/perl test/test_cmonkey_server_invoker.t ; \
 	if [ $$? -ne 0 ] ; then \
 		exit 1 ; \

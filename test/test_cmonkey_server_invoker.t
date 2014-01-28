@@ -58,9 +58,9 @@ print $test_command."\n\n";
 system ($test_command);
 
 #2 build_cmonkey_network_job_from_ws
-my $job = $job_client->create_and_start_job($auth_token, "Test job started", "Cmonkey server back-end test", $progress, $timestamp);
-$test_command = $command_line." --job $job --method build_cmonkey_network_job_from_ws --ws \"$ws\" --series \"$series\" --genome \"$genome\" --motifs $use_motifs --networks $use_networks --operons \"$operons\" --string \"$string\" --token \"$auth_token\"";
-print $test_command."\n\n";
-system ($test_command);
+#my $job = $job_client->create_and_start_job($auth_token, "Test job started", "Cmonkey server back-end test", $progress, $timestamp);
+#$test_command = $command_line." --job $job --method build_cmonkey_network_job_from_ws --ws \"$ws\" --series \"$series\" --genome \"$genome\" --motifs $use_motifs --networks $use_networks --operons \"$operons\" --string \"$string\" --token \"$auth_token\"";
+#print $test_command."\n\n";
+#system ($test_command);
 
 exit(0);
