@@ -85,12 +85,50 @@ public class CmonkeyServerImpl {
 			updateJobProgress(jobId,
 					"AWE task started. Preparing input...", token);
 		// get expression data
-		ExpressionSeries series = WsDeluxeUtil
-				.getObjectFromWsByRef(params.getSeriesRef(), token).getData()
-				.asClassInstance(ExpressionSeries.class);
+		ExpressionSeries series;
+		try {
+			series = WsDeluxeUtil
+					.getObjectFromWsByRef(params.getSeriesRef(), token).getData()
+					.asClassInstance(ExpressionSeries.class);
+		} catch (TokenFormatException e) {
+			finishJobWithError(jobId, "Expression series download error", token);
+			e.printStackTrace();
+			throw new Exception ("Expression series download error");
+		} catch (UnauthorizedException e) {
+			finishJobWithError(jobId, "Expression series download error", token);
+			e.printStackTrace();
+			throw new Exception ("Expression series download error");
+		} catch (IOException e) {
+			finishJobWithError(jobId, "Expression series download error", token);
+			e.printStackTrace();
+			throw new Exception ("Expression series download error");
+		} catch (JsonClientException e) {
+			finishJobWithError(jobId, "Expression series download error", token);
+			e.printStackTrace();
+			throw new Exception ("Expression series download error");
+		}
 		// create result object
-		CmonkeyRunResult cmonkeyRunResult = new CmonkeyRunResult()
-				.withId(getKbaseId("CmonkeyRunResult"));
+		CmonkeyRunResult cmonkeyRunResult;
+		try {
+			cmonkeyRunResult = new CmonkeyRunResult()
+					.withId(getKbaseId("CmonkeyRunResult"));
+		} catch (TokenFormatException e) {
+			finishJobWithError(jobId, "Unable to get ID for cMonkey result", token);
+			e.printStackTrace();
+			throw new Exception ("Unable to get ID for cMonkey result");
+		} catch (UnauthorizedException e) {
+			finishJobWithError(jobId, "Unable to get ID for cMonkey result", token);
+			e.printStackTrace();
+			throw new Exception ("Unable to get ID for cMonkey result");
+		} catch (IOException e) {
+			finishJobWithError(jobId, "Unable to get ID for cMonkey result", token);
+			e.printStackTrace();
+			throw new Exception ("Unable to get ID for cMonkey result");
+		} catch (JsonClientException e) {
+			finishJobWithError(jobId, "Unable to get ID for cMonkey result", token);
+			e.printStackTrace();
+			throw new Exception ("Unable to get ID for cMonkey result");
+		}
 		// create working directory
 		String jobPath = createDirs(jobId, currentDir);
 		// start log file
@@ -108,7 +146,21 @@ public class CmonkeyServerImpl {
 			String genomeId = genomeIds.iterator().next();
 			sampleIdsList = series.getGenomeExpressionSampleIdsMap().get(genomeId);
 		}
-		createInputTable(jobPath, sampleIdsList, token);
+		try {
+			createInputTable(jobPath, sampleIdsList, token);
+		} catch (TokenFormatException e) {
+			finishJobWithError(jobId, "Expression samples download error", token);
+			e.printStackTrace();
+			throw new Exception ("Expression samples download error");
+		} catch (IOException e) {
+			finishJobWithError(jobId, "Expression samples download error", token);
+			e.printStackTrace();
+			throw new Exception ("Expression samples download error");
+		} catch (JsonClientException e) {
+			finishJobWithError(jobId, "Expression samples download error", token);
+			e.printStackTrace();
+			throw new Exception ("Expression samples download error");
+		}
 		writer.write("Input file created\n");
 		writer.flush();
 		series = null;
@@ -145,21 +197,38 @@ public class CmonkeyServerImpl {
 		if (status != null) {
 			writer.write("Error: " + status);
 			if (jobId != null)
-				finishJob(jobId, wsName, null, "Error: " + status,
-						token.toString());
+				finishJobWithError(jobId, "Error: " + status, token);
 			// close log file
 			writer.close();
 		} else {
-			String resultId = getKbaseId("CmonkeyRunResult");
-			writer.write(resultId + "\n");
+			//String resultId = getKbaseId("CmonkeyRunResult");
+			//writer.write(resultId + "\n");
 			// get ID for the result
-			cmonkeyRunResult.setId(resultId);
+			//cmonkeyRunResult.setId(resultId);
 			cmonkeyRunResult.setParameters(params);
 			// save result
-			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(
-					cmonkeyRunResult, UObject.class),
-					CMONKEY_RUN_RESULT_TYPE, wsName, cmonkeyRunResult
-							.getId(), token.toString());
+			try {
+				WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(
+						cmonkeyRunResult, UObject.class),
+						CMONKEY_RUN_RESULT_TYPE, wsName, cmonkeyRunResult
+								.getId(), token.toString());
+			} catch (TokenFormatException e) {
+				finishJobWithError(jobId, "Cmonkey run result upload error", token);
+				e.printStackTrace();
+				throw new Exception ("Cmonkey run result upload error");
+			} catch (UnauthorizedException e) {
+				finishJobWithError(jobId, "Cmonkey run result upload error", token);
+				e.printStackTrace();
+				throw new Exception ("Cmonkey run result upload error");
+			} catch (IOException e) {
+				finishJobWithError(jobId, "Cmonkey run result upload error", token);
+				e.printStackTrace();
+				throw new Exception ("Cmonkey run result upload error");
+			} catch (JsonClientException e) {
+				finishJobWithError(jobId, "Cmonkey run result upload error", token);
+				e.printStackTrace();
+				throw new Exception ("Cmonkey run result upload error");
+			}
 			// close log file
 			writer.close();
 			// clean up (if not on AWE)
@@ -286,6 +355,13 @@ public class CmonkeyServerImpl {
 		List<String> workspaceIds = new ArrayList<String>();
 		workspaceIds.add(wsId + "/" + objectId);
 		res.setWorkspaceids(workspaceIds);
+		jobClient(token).completeJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, error, res);
+	}
+
+	protected static void finishJobWithError(String jobId, String error, String token) throws UnauthorizedException,
+			IOException, JsonClientException, AuthException {
+		Results res = new Results();
+		String status = "Error";
 		jobClient(token).completeJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, error, res);
 	}
 

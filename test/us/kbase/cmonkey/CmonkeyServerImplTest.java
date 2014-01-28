@@ -4,8 +4,12 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.After;
 import org.junit.Before;
@@ -13,12 +17,15 @@ import org.junit.Test;
 
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.UObject;
+import us.kbase.common.service.UnauthorizedException;
 import us.kbase.kbaseexpression.ExpressionSeries;
 import us.kbase.meme.MastHit;
 import us.kbase.auth.AuthException;
 import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
+import us.kbase.userandjobstate.InitProgress;
 import us.kbase.userandjobstate.Results;
+import us.kbase.userandjobstate.UserAndJobStateClient;
 import us.kbase.util.WsDeluxeUtil;
 
 public class CmonkeyServerImplTest {
@@ -304,6 +311,35 @@ public class CmonkeyServerImplTest {
 		}
 	}
 
+	@Test
+	public void testDeleteJob() throws AuthException, IOException, UnauthorizedException, JsonClientException {
+		String jobId = "52ddfd65e4b0ef83573320aa";
 
+//		AuthToken token = AuthService.login(JOB_ACCOUNT, new String(JOB_PASSWORD)).getToken();
+		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		AuthToken serviceToken = AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken();
+
+		URL jobServiceUrl = new URL(CmonkeyServerConfig.JOB_SERVICE_URL);
+		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, token);
+		jobClient.forceDeleteJob(serviceToken.toString(), jobId);
+	}
+
+/*	@Test
+	public void testUJS() throws Exception, IOException{
+        AuthToken token = AuthService.login(USER_NAME, PASSWORD).getToken();
+        AuthToken serviceToken = AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken();
+        
+        UserAndJobStateClient jobService = new UserAndJobStateClient(new URL ("https://kbase.us/services/userandjobstate"), token ); 
+        jobService.setAuthAllowedForHttp(true);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        dateFormat.setLenient(false);
+        Date date = new Date();
+        jobService.createAndStartJob(serviceToken.toString(), "java job", "desc5",
+                new InitProgress().withPtype("none"), dateFormat.format(date));	
+	}
+*/
+	
 }
 
