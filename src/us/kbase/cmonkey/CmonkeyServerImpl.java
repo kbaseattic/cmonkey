@@ -168,8 +168,23 @@ public class CmonkeyServerImpl {
 		writer.flush();
 		series = null;
 		// prepare cache files
-		String genomeName = prepareCacheFiles(jobPath + "cache/", params,
-				token, writer);
+		String genomeName;
+		try {
+			genomeName = prepareCacheFiles(jobPath + "cache/", params,
+					token, writer);
+		} catch (TokenFormatException e1) {
+			finishJobWithError(jobId, e1.getMessage(), "Genome data download/write error", token);
+			e1.printStackTrace();
+			throw new Exception ("Genome data download/write error");
+		} catch (IOException e1) {
+			finishJobWithError(jobId, e1.getMessage(), "Genome data download/write error", token);
+			e1.printStackTrace();
+			throw new Exception ("Genome data download/write error");
+		} catch (JsonClientException e1) {
+			finishJobWithError(jobId, e1.getMessage(), "Genome data download/write error", token);
+			e1.printStackTrace();
+			throw new Exception ("Genome data download/write error");
+		}
 		writer.write("Cache files created in " + jobPath + "cache/\n");
 		writer.flush();
 		// generate command line
