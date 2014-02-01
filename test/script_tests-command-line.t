@@ -11,7 +11,7 @@ use Test::Cmd;
 use JSON;
 
 
-my $url = "\"http://140.221.85.173:7078/\"";
+my $url = "\"http://localhost:7112/\"";
 my $bin  = "scripts";
 
 my $ws = "\"AKtest\"";
