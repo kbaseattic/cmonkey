@@ -21,8 +21,6 @@ import us.kbase.workspace.WorkspaceClient;
 
 public class CmonkeyClientTest {
 
-	private static final String WS_SERVICE_URL = "https://kbase.us/services/ws";
-	private static final String UJS_SERVICE_URL = "https://kbase.us/services/userandjobstate";
 	private static final String USER_NAME = "";
 	private static final String PASSWORD = "";
 	private static final String workspaceName = "AKtest";//"ENIGMA_KBASE";//
@@ -34,6 +32,8 @@ public class CmonkeyClientTest {
 	private String testStringNetworkRef = "ENIGMA_KBASE/Halobacterium_sp_STRING";//"AKtest/Halobacterium_sp_STRING";//"ENIGMA_KBASE/D_vulgaris_STRING";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_string";
 	private String testOperonNetworkRef = "ENIGMA_KBASE/Halobacterium_sp_operons";//"AKtest/Halobacterium_sp_operons";//"AKtest/D_vulgaris_Hildenborough_operons";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_operons";
 
+	private static final String WS_SERVICE_URL = "https://kbase.us/services/ws";
+	private static final String UJS_SERVICE_URL = "https://kbase.us/services/userandjobstate";
 	
 	
 	@Test
