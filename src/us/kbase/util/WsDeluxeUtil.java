@@ -23,7 +23,7 @@ import us.kbase.workspace.WorkspaceClient;
 public class WsDeluxeUtil {
 	private static WorkspaceClient _wsClient = null;
 	private static String _token = null;
-	private static final String WS_SERVICE_URL = CmonkeyServerConfig.WS_SERVICE_URL;
+	private static final String WS_SERVICE_URL = CmonkeyServerConfig.getWsUrl();
 	
 	public static WorkspaceClient wsClient(String token) throws TokenFormatException, UnauthorizedException, IOException {
 		if((_wsClient == null)||(_token == null)||(!token.equals(_token))){

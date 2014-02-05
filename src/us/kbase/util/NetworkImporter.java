@@ -31,7 +31,7 @@ public class NetworkImporter {
 	
 	private static final String PREFIX_OPERONS = "gnc";
 	private static final String POSTFIX_OPERONS = ".named";
-	private static final String ID_SERVICE_URL = CmonkeyServerConfig.ID_SERVICE_URL;
+	private static final String ID_SERVICE_URL = CmonkeyServerConfig.getIdUrl();
 
 	private static IDServerAPIClient _idClient = null;
 

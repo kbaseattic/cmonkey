@@ -37,6 +37,7 @@ public class CmonkeyServer extends JsonServerServlet {
     public CmonkeyServer() throws Exception {
         super("Cmonkey");
         //BEGIN_CONSTRUCTOR
+        CmonkeyServerImpl.startup();
         //END_CONSTRUCTOR
     }
 

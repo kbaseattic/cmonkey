@@ -2,9 +2,11 @@ package us.kbase.cmonkey;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.sql.SQLException;
@@ -15,6 +17,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import us.kbase.auth.AuthException;
@@ -37,22 +40,7 @@ import us.kbase.workspace.ObjectData;
 
 public class CmonkeyServerImpl {
 	
-	private static final String CMONKEY_RUN_RESULT_TYPE = CmonkeyServerConfig.CMONKEY_RUN_RESULT_TYPE;
-	private static boolean awe = CmonkeyServerConfig.DEPLOY_AWE;
-
-	private static final String JOB_PATH = CmonkeyServerConfig.JOB_DIRECTORY;
-	private static final String CMONKEY_DIR = CmonkeyServerConfig.CMONKEY_DIRECTORY;
-	private static final String CMONKEY_COMMAND = CmonkeyServerConfig.CMONKEY_RUN_PATH;
-
-	private static final String ID_SERVICE_URL = CmonkeyServerConfig.ID_SERVICE_URL;
-	private static final String JOB_SERVICE_URL = CmonkeyServerConfig.JOB_SERVICE_URL;
 	private static IDServerAPIClient _idClient = null;
-	private static UserAndJobStateClient _jobClient = null; // this class will
-															// run separately
-															// for each task,
-															// thus UJS client
-															// can be static
-															// singleton
 
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyy-MM-dd'T'HH:mm:ssZ");
@@ -60,21 +48,47 @@ public class CmonkeyServerImpl {
 	protected static IDServerAPIClient idClient() throws TokenFormatException,
 			UnauthorizedException, IOException {
 		if (_idClient == null) {
-			URL idServerUrl = new URL(ID_SERVICE_URL);
+			URL idServerUrl = new URL(CmonkeyServerConfig.ID_SERVICE_URL);
 			_idClient = new IDServerAPIClient(idServerUrl);
 		}
 		return _idClient;
 	}
 
-	protected static UserAndJobStateClient jobClient(String token)
-			throws UnauthorizedException, IOException, AuthException {
-		if (_jobClient == null) {
-			URL jobServiceUrl = new URL(JOB_SERVICE_URL);
-			AuthToken authToken = new AuthToken(token);
-			_jobClient = new UserAndJobStateClient(jobServiceUrl, authToken);
-			_jobClient.setAuthAllowedForHttp(true);
+	protected static void startup() {
+		File propertiesFile;
+		String kbTop = System.getenv("KB_TOP");
+		if (!kbTop.substring(kbTop.length() - 1).equals("/")) {
+			kbTop = kbTop + "/";
 		}
-		return _jobClient;
+		propertiesFile = new File (kbTop + "/services/cmonkey/cmonkey.properties");
+		Properties prop = new Properties();
+		InputStream input = null;
+		 
+		try {
+	 
+			input = new FileInputStream(propertiesFile);
+			// load a properties file
+			prop.load(input);
+			// set service configs
+			CmonkeyServerConfig.CMONKEY_DIRECTORY = prop.getProperty("cmonkey");
+			CmonkeyServerConfig.CMONKEY_RUN_PATH = CmonkeyServerConfig.CMONKEY_DIRECTORY + "cmonkey.py";
+			CmonkeyServerConfig.JOB_SERVICE_URL = prop.getProperty("ujs_url");
+			CmonkeyServerConfig.AWE_SERVICE_URL = prop.getProperty("awe_url");
+			CmonkeyServerConfig.ID_SERVICE_URL = prop.getProperty("id_url");
+			CmonkeyServerConfig.WS_SERVICE_URL = prop.getProperty("ws_url");
+			CmonkeyServerConfig.AWF_CONFIG_FILE = prop.getProperty("awf_config");
+	 
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	public static void buildCmonkeyNetworkJobFromWs(String wsName,
@@ -225,7 +239,7 @@ public class CmonkeyServerImpl {
 			try {
 				WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(
 						cmonkeyRunResult, UObject.class),
-						CMONKEY_RUN_RESULT_TYPE, wsName, cmonkeyRunResult
+						CmonkeyServerConfig.CMONKEY_RUN_RESULT_TYPE, wsName, cmonkeyRunResult
 								.getId(), token.toString());
 			} catch (TokenFormatException e) {
 				finishJobWithError(jobId, e.getMessage(), "Cmonkey run result upload error", token);
@@ -247,10 +261,10 @@ public class CmonkeyServerImpl {
 			// close log file
 			writer.close();
 			// clean up (if not on AWE)
-			if (awe == false) {
+			if (CmonkeyServerConfig.DEPLOY_AWE == false) {
 				File fileDelete = new File(jobPath);
 				deleteDirectoryRecursively(fileDelete);
-				deleteFilesByPattern(CMONKEY_DIR, "cmonkey-checkpoint.*");
+				deleteFilesByPattern(CmonkeyServerConfig.CMONKEY_DIRECTORY, "cmonkey-checkpoint.*");
 			}
 			if (jobId != null)
 				finishJob(jobId, wsName, cmonkeyRunResult.getId(), "Finished",
@@ -291,12 +305,12 @@ public class CmonkeyServerImpl {
 		String jobPath = null;
 
 		if (currentDir == null) {
-			jobPath = JOB_PATH + jobId + "/";
+			jobPath = CmonkeyServerConfig.JOB_DIRECTORY + jobId + "/";
 			new File(jobPath).mkdir();
 		} else {
 			jobPath = currentDir + "/" + jobId + "/";
 			new File(jobPath).mkdir();
-			awe = true;
+			CmonkeyServerConfig.DEPLOY_AWE = true;
 		}
 		new File(jobPath + "out/").mkdir();
 		new File(jobPath + "cache/").mkdir();
@@ -312,7 +326,7 @@ public class CmonkeyServerImpl {
 		String cacheDirectory = jobPath + "cache";
 		String inputFile = jobPath + "input.txt";
 
-		String commandLine = CMONKEY_COMMAND
+		String commandLine = CmonkeyServerConfig.CMONKEY_RUN_PATH
 				+ " --rsat_organism my_favorite_pet --rsat_dir "
 				+ cacheDirectory + " --ratios " + inputFile + " --cache "
 				+ cacheDirectory + " --out " + outputDirectory
@@ -349,7 +363,9 @@ public class CmonkeyServerImpl {
 		initProgress.setMax(tasks);
 		Date date = new Date();
 		date.setTime(date.getTime() + 108000000L);
-		jobClient(token).startJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, desc, initProgress,
+		URL jobServiceUrl = new URL(CmonkeyServerConfig.JOB_SERVICE_URL);
+		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, new AuthToken(token));
+		jobClient.startJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, desc, initProgress,
 				dateFormat.format(date));
 	}
 
@@ -358,7 +374,9 @@ public class CmonkeyServerImpl {
 			JsonClientException, AuthException {
 		Date date = new Date();
 		date.setTime(date.getTime() + 1000000L);
-		jobClient(token).updateJobProgress(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, 1L,
+		URL jobServiceUrl = new URL(CmonkeyServerConfig.JOB_SERVICE_URL);
+		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, new AuthToken(token));
+		jobClient.updateJobProgress(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, 1L,
 				dateFormat.format(date));
 	}
 
@@ -370,13 +388,15 @@ public class CmonkeyServerImpl {
 		List<String> workspaceIds = new ArrayList<String>();
 		workspaceIds.add(wsId + "/" + objectId);
 		res.setWorkspaceids(workspaceIds);
-		jobClient(token).completeJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, error, res);
+		URL jobServiceUrl = new URL(CmonkeyServerConfig.JOB_SERVICE_URL);
+		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, new AuthToken(token));
+		jobClient.completeJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, error, res);
 	}
 
 	protected static void finishJobWithError(String jobId, String error, String status, String token) throws UnauthorizedException,
 	IOException, JsonClientException, AuthException {
 		Results res = new Results();
-		URL jobServiceUrl = new URL(JOB_SERVICE_URL);
+		URL jobServiceUrl = new URL(CmonkeyServerConfig.JOB_SERVICE_URL);
 		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, new AuthToken(token));
 		jobClient.completeJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, error, res);
 	}
@@ -472,7 +492,7 @@ public class CmonkeyServerImpl {
 			IOException {
 		Integer exitVal = null;
 		Process p = Runtime.getRuntime().exec(commandLine, null,
-				new File(CMONKEY_DIR));
+				new File(CmonkeyServerConfig.CMONKEY_DIRECTORY));
 
 		StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(),
 				"ERROR", jobId, token, jobPath + "errorlog.txt");

@@ -30,7 +30,7 @@ public class GenomeImporter {
 	
 	private static final String FEATURES = "features";
 	private static final String FEATURENAMES = "feature_names";
-	private static final String ID_SERVICE_URL = CmonkeyServerConfig.ID_SERVICE_URL;
+	private static final String ID_SERVICE_URL = CmonkeyServerConfig.getIdUrl();
 
 	private static IDServerAPIClient _idClient = null;
 

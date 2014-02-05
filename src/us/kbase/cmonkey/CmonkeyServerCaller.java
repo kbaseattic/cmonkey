@@ -37,11 +37,6 @@ import us.kbase.userandjobstate.UserAndJobStateClient;
 
 public class CmonkeyServerCaller {
 
-	private static boolean deployCluster = CmonkeyServerConfig.DEPLOY_AWE;
-	private static final String JOB_SERVICE = CmonkeyServerConfig.JOB_SERVICE_URL;
-	private static final String AWE_SERVICE = CmonkeyServerConfig.AWE_SERVICE_URL;
-	private static final String AWF_CONFIG_FILE = CmonkeyServerConfig.AWF_CONFIG_FILE;
-
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"yyyy-MM-dd'T'HH:mm:ssZ");
 
@@ -61,7 +56,7 @@ public class CmonkeyServerCaller {
 		Date date = new Date();
 		date.setTime(date.getTime() + 10000L);
 
-		URL jobServiceUrl = new URL(JOB_SERVICE);
+		URL jobServiceUrl = new URL(CmonkeyServerConfig.JOB_SERVICE_URL);
 		UserAndJobStateClient jobClient = new UserAndJobStateClient(
 				jobServiceUrl, authPart);
 		// jobClient.setAuthAllowedForHttp(true);
@@ -75,7 +70,7 @@ public class CmonkeyServerCaller {
 				dateFormat.format(date));
 		jobClient = null;
 
-		if (deployCluster == false) {
+		if (CmonkeyServerConfig.DEPLOY_AWE == false) {
 			CmonkeyServerThread cmonkeyServerThread = new CmonkeyServerThread(
 					wsName, params, returnVal, authPart.toString());
 			cmonkeyServerThread.start();
@@ -140,7 +135,7 @@ public class CmonkeyServerCaller {
 		String formattedConfig;
 		try {
 			String config = FileUtils.readFileToString(new File(
-					AWF_CONFIG_FILE));
+					CmonkeyServerConfig.AWF_CONFIG_FILE));
 			String args =  " --job " + jobId
 					+ " --method build_cmonkey_network_job_from_ws --ws '" + wsName
 					+ "' --series '" + params.getSeriesRef() + "' --genome '"
@@ -171,7 +166,7 @@ public class CmonkeyServerCaller {
 			formattedConfig = String.format(config, jobId, args, jobId);
 		} catch (IOException e) {
 			throw new Exception("Can not load AWE config file: "
-					+ AWF_CONFIG_FILE);
+					+ CmonkeyServerConfig.AWF_CONFIG_FILE);
 		}
 		return formattedConfig;
 	}
@@ -181,7 +176,7 @@ public class CmonkeyServerCaller {
 		Date date = new Date();
 		date.setTime(date.getTime() + 10000L);
 		UserAndJobStateClient jobClient = new UserAndJobStateClient(new URL(
-				JOB_SERVICE), new AuthToken(token));
+				CmonkeyServerConfig.JOB_SERVICE_URL), new AuthToken(token));
 		// jobClient.setAuthAllowedForHttp(true);
 		jobClient.updateJobProgress(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, tasks,
 				dateFormat.format(date));
@@ -197,7 +192,7 @@ public class CmonkeyServerCaller {
 		if (rootNode.has("data")){
 			JsonNode dataNode = rootNode.get("data");
 			if (dataNode.has("id")){
-				aweId = AWE_SERVICE + "/" + dataNode.get("id").textValue();
+				aweId = CmonkeyServerConfig.AWE_SERVICE_URL + "/" + dataNode.get("id").textValue();
 				System.out.println(aweId);
 				updateJobProgress(returnVal, "AWE job submitted: " + aweId, 1L, authPart.toString());
 			}
