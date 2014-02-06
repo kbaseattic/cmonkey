@@ -16,7 +16,7 @@ import java.util.List;
 import us.kbase.auth.TokenFormatException;
 import us.kbase.cmonkey.CmonkeyServerConfig;
 import us.kbase.common.service.JsonClientException;
-import us.kbase.common.service.Tuple5;
+import us.kbase.common.service.Tuple4;
 import us.kbase.common.service.Tuple7;
 import us.kbase.common.service.UObject;
 import us.kbase.common.service.UnauthorizedException;
@@ -30,7 +30,7 @@ public class GenomeImporter {
 	
 	private static final String FEATURES = "features";
 	private static final String FEATURENAMES = "feature_names";
-	private static final String ID_SERVICE_URL = CmonkeyServerConfig.ID_SERVICE_URL;
+	private static final String ID_SERVICE_URL = CmonkeyServerConfig.getIdUrl();
 
 	private static IDServerAPIClient _idClient = null;
 
@@ -44,7 +44,7 @@ public class GenomeImporter {
 	public GenomeImporter (String filePrefix, String idPrefix, String workDir, String wsId, String token) throws Exception{
 		if (filePrefix != null) this.filePrefix = filePrefix;
 		if (idPrefix == null) {
-			throw new Exception("ID prefix not assigned");
+			//throw new Exception("ID prefix not assigned");
 		} else {
 			this.idPattern = "^" + idPrefix + ".*";
 		}
@@ -88,7 +88,7 @@ public class GenomeImporter {
 		List<Tuple7<Long, String, String, String, String, String, String>> publications = new ArrayList<Tuple7<Long,String,String,String,String,String,String>>();
 		genome.setPublications(publications);
 		genome.setId(getKbaseId("Genome"));
-		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(genome, UObject.class), "KBaseGenomes.Genome-1.0", wsId, genome.getId(), token);
+		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(genome, UObject.class), "KBaseGenomes.Genome", wsId, genome.getId(), token);
 		
 		return genome;
 	}
@@ -104,7 +104,7 @@ public class GenomeImporter {
 		genome.setSourceId("undefined");//NCBI tax id? 
 		List<Tuple7<Long, String, String, String, String, String, String>> publications = new ArrayList<Tuple7<Long,String,String,String,String,String,String>>();
 		genome.setPublications(publications);
-		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(genome, UObject.class), "KBaseGenomes.Genome-1.0", wsId, genome.getId(), token);
+		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(genome, UObject.class), "KBaseGenomes.Genome", wsId, genome.getId(), token);
 		
 		return genome;
 	}
@@ -160,8 +160,7 @@ public class GenomeImporter {
 		byte[] thedigest = md.digest(bytesOfMessage);
 		System.out.println("MD5 = " + thedigest);
 		contigSet.setMd5(thedigest.toString());
-				
-		
+		contigSet.setId(genome.getId()+"_contigset");
 		
 		HashMap<String, String> contigIds = new HashMap<String, String>();
 		for (Contig contig : contigSet.getContigs()){
@@ -222,13 +221,12 @@ public class GenomeImporter {
 			}
 */
 			
-			Tuple5<String, String, Long, String, Long> region = new Tuple5<String, String, Long, String, Long>();
+			Tuple4<String, Long, String, Long> region = new Tuple4<String, Long, String, Long>();
 			region.setE1(fields[3]);
-			region.setE2(wsId + "/" + contigSet.getId() + "/" + fields[3]);
-			region.setE3(Long.parseLong(fields[4]));
-			region.setE4(fields[6]);
-			region.setE5(Long.parseLong(fields[5]) - Long.parseLong(fields[4]) + 1L);
-			List<Tuple5<String, String, Long, String, Long>> location = new ArrayList<Tuple5<String,String,Long,String,Long>>();
+			region.setE2(Long.parseLong(fields[4]));
+			region.setE3(fields[6]);
+			region.setE4(Long.parseLong(fields[5]) - Long.parseLong(fields[4]) + 1L);
+			List<Tuple4<String, Long, String, Long>> location = new ArrayList<Tuple4<String,Long,String,Long>>();
 			location.add(region);
 			feature.setLocation(location);
 			feature.setFunction(fields[7]);
@@ -255,11 +253,10 @@ public class GenomeImporter {
 		}
 		
 		contigSet.setSource(organismName);
-		contigSet.setId(genome.getId()+"_contigset");
 		genome.setContigsetRef(wsId + "/" + contigSet.getId());
 		genome.setScientificName(organismName);
 
-		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(contigSet, UObject.class), "KBaseGenomes.ContigSet-1.0", wsId, contigSet.getId(), token);
+		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(contigSet, UObject.class), "KBaseGenomes.ContigSet-1.0", wsId, genome.getId()+"_contigset", token);
 		
 		return returnVal;
 
@@ -392,13 +389,12 @@ public class GenomeImporter {
 */
 			feature.setId(getKbaseId("Feature")); // no more external IDs for features!
 			
-			Tuple5<String, String, Long, String, Long> region = new Tuple5<String, String, Long, String, Long>();
+			Tuple4<String, Long, String, Long> region = new Tuple4<String, Long, String, Long>();
 			region.setE1(fields[3]);
-			region.setE2(wsId + "/" + contigSet.getId() + "/" + fields[3]);
-			region.setE3(Long.parseLong(fields[4]));
-			region.setE4(fields[6]);
-			region.setE5(Long.parseLong(fields[5]) - Long.parseLong(fields[4]) + 1L);
-			List<Tuple5<String, String, Long, String, Long>> location = new ArrayList<Tuple5<String,String,Long,String,Long>>();
+			region.setE2(Long.parseLong(fields[4]));
+			region.setE3(fields[6]);
+			region.setE4(Long.parseLong(fields[5]) - Long.parseLong(fields[4]) + 1L);
+			List<Tuple4<String, Long, String, Long>> location = new ArrayList<Tuple4<String,Long,String,Long>>();
 			location.add(region);
 			feature.setLocation(location);
 			feature.setFunction(fields[7]);
@@ -428,7 +424,7 @@ public class GenomeImporter {
 		genome.setContigsetRef(wsId + "/" + contigSet.getId());
 		genome.setScientificName(organismName);
 
-		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(contigSet, UObject.class), "KBaseGenomes.ContigSet-1.0", wsId, contigSet.getId(), token);
+		WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(contigSet, UObject.class), "KBaseGenomes.ContigSet", wsId, contigSet.getId(), token);
 		return returnVal;
 	}
 

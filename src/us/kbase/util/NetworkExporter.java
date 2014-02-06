@@ -11,8 +11,8 @@ import java.util.zip.GZIPOutputStream;
 
 import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.JsonClientException;
-import us.kbase.networks.Interaction;
-import us.kbase.networks.InteractionSet;
+import us.kbase.kbasenetworks.Interaction;
+import us.kbase.kbasenetworks.InteractionSet;
 
 public class NetworkExporter {
 

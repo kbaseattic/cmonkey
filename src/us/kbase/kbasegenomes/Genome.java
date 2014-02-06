@@ -23,7 +23,7 @@ import us.kbase.common.service.Tuple7;
  *         Should the Genome object have a list of feature ids? (in
  *         addition to having a list of feature_refs)
  *         Should the Genome object contain a list of contig_ids too?
- * @optional md5 taxonomy gc_content complete dna_size num_contigs contig_lengths contigset_ref proteinset_ref transcriptset_ref
+ * @optional contig_ids publications md5 taxonomy gc_content complete dna_size num_contigs contig_lengths contigset_ref proteinset_ref transcriptset_ref
  * @searchable ws_subset features.[*].(md5,id,type,function,aliases) taxonomy num_contigs source_id source genetic_code id scientific_name domain contigset_ref proteinset_ref transcriptset_ref
  * </pre>
  * 

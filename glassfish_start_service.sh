@@ -26,7 +26,7 @@ ps ax | grep "\-Dcom.sun.aas.installRoot=\/kb/runtime/glassfish3/glassfish " > /
 if [ $? -eq 0 ]; then
     echo "Glassfish is already running."
 else
-    $asadmin start-domain
+    $asadmin start-domain domain1
 fi
 
 $asadmin list-virtual-servers | grep server-${TARGET_PORT} > /dev/null

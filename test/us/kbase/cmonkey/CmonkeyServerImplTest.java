@@ -4,7 +4,9 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -13,22 +15,30 @@ import org.junit.Test;
 
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.UObject;
-import us.kbase.expressionservices.ExpressionSeries;
+import us.kbase.common.service.UnauthorizedException;
+import us.kbase.kbaseexpression.ExpressionSeries;
 import us.kbase.meme.MastHit;
 import us.kbase.auth.AuthException;
 import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
 import us.kbase.userandjobstate.Results;
+import us.kbase.userandjobstate.UserAndJobStateClient;
 import us.kbase.util.WsDeluxeUtil;
+import us.kbase.workspace.ObjectIdentity;
+import us.kbase.workspace.WorkspaceClient;
 
 public class CmonkeyServerImplTest {
-	private static final String USER_NAME = "aktest";
-	private static final String PASSWORD = "1475rokegi";
+
+	private static final String WS_SERVICE_URL = "https://kbase.us/services/ws";
+	private static final String UJS_SERVICE_URL = "https://kbase.us/services/userandjobstate";
+
+	private static final String USER_NAME = "";
+	private static final String PASSWORD = "";
 	private static final String workspaceName = "AKtest";
-	private String testSeriesRef = "AKtest/Halobacterium_sp_NRC1_series";
+	private String testSeriesRef = "AKtest/Halobacterium_sp_NRC-1";
 	private String testGenomeRef = "AKtest/kb|genome.9";
-	private String testStringNetworkRef = "AKtest/kb|interactionset.7";
-	private String testOperonNetworkRef = "AKtest/kb|interactionset.8";
+	private String testStringNetworkRef = "AKtest/Halobacterium_sp_STRING";
+	private String testOperonNetworkRef = "AKtest/Halobacterium_sp_operons";
 	private final String TEST_DATABASE_PATH = "test/cmonkey_run_test.db";
 	//private final String TEST_DATABASE_PATH = "/home/kbase/Documents/inferelator-test/out/cmonkey_run.db";
 	private static AuthToken token = null;
@@ -110,8 +120,9 @@ public class CmonkeyServerImplTest {
 		params.setGenomeRef(testGenomeRef);
 		params.setNetworkRef(testStringNetworkRef);
 		params.setOperomeRef(testOperonNetworkRef);
-		
-		String jobId = CmonkeyServerImpl.jobClient(token.toString()).createJob();
+
+		URL jobServiceUrl = new URL(UJS_SERVICE_URL);
+		String jobId = new UserAndJobStateClient(jobServiceUrl, token).createJob();
 		//String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, params, token);
 		CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(workspaceName, params, jobId, token.toString(), null);
 		
@@ -120,7 +131,7 @@ public class CmonkeyServerImplTest {
 		String resultId = "";
 
 		try {
-			Results res = CmonkeyServerImpl.jobClient(token.toString()).getResults(jobId);			
+			Results res = new UserAndJobStateClient(jobServiceUrl, token).getResults(jobId);			
 			resultId = res.getWorkspaceids().get(0);
 			System.out.println("Result ID = " + resultId);
 			assertNotNull(resultId);
@@ -132,9 +143,13 @@ public class CmonkeyServerImplTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		WorkspaceClient wsClient = new WorkspaceClient(new URL (WS_SERVICE_URL), new AuthToken(token.toString()));
+		wsClient.setAuthAllowedForHttp(true);
 		
-		CmonkeyRunResult result = WsDeluxeUtil.getObjectFromWsByRef(resultId, token.toString()).getData().asClassInstance(CmonkeyRunResult.class);
-		
+		List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
+		ObjectIdentity objectIdentity = new ObjectIdentity().withRef(resultId);
+		objectsIdentity.add(objectIdentity);
+		CmonkeyRunResult result = wsClient.getObjects(objectsIdentity).get(0).getData().asClassInstance(CmonkeyRunResult.class);
 		
 		assertEquals(Long.valueOf("43"), result.getNetwork().getClustersNumber());
 	}
@@ -146,8 +161,9 @@ public class CmonkeyServerImplTest {
 		params.setNetworksScoring(0L);
 		params.setSeriesRef(testSeriesRef);
 		params.setGenomeRef(testGenomeRef);
+		URL jobServiceUrl = new URL(UJS_SERVICE_URL);
 		
-		String jobId = CmonkeyServerImpl.jobClient(token.toString()).createJob();
+		String jobId = new UserAndJobStateClient(jobServiceUrl, token).createJob();
 		//String jobId = CmonkeyServerCaller.buildCmonkeyNetworkJobFromWs(workspaceName, params, token);
 		CmonkeyServerImpl.buildCmonkeyNetworkJobFromWs(workspaceName, params, jobId, token.toString(), null);
 		
@@ -156,7 +172,7 @@ public class CmonkeyServerImplTest {
 		String resultId = "";
 
 		try {
-			Results res = CmonkeyServerImpl.jobClient(token.toString()).getResults(jobId);			
+			Results res = new UserAndJobStateClient(jobServiceUrl, token).getResults(jobId);			
 			resultId = res.getWorkspaceids().get(0);
 			System.out.println("Result ID = " + resultId);
 			assertNotNull(resultId);
@@ -171,7 +187,13 @@ public class CmonkeyServerImplTest {
 		
 		String[] resultIdParts = resultId.split("/");
 		resultId = resultIdParts[1];
-		CmonkeyRunResult result = WsDeluxeUtil.getObjectFromWsByRef(resultId, token.toString()).getData().asClassInstance(CmonkeyRunResult.class);;
+		WorkspaceClient wsClient = new WorkspaceClient(new URL (WS_SERVICE_URL), new AuthToken(token.toString()));
+		wsClient.setAuthAllowedForHttp(true);
+		
+		List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
+		ObjectIdentity objectIdentity = new ObjectIdentity().withRef(resultId);
+		objectsIdentity.add(objectIdentity);
+		CmonkeyRunResult result = wsClient.getObjects(objectsIdentity).get(0).getData().asClassInstance(CmonkeyRunResult.class);
 		
 		assertEquals(Long.valueOf("3"), result.getNetwork().getClustersNumber());
 	}
@@ -240,10 +262,20 @@ public class CmonkeyServerImplTest {
 		
 		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
 		ExpressionSeries input = WsDeluxeUtil.getObjectFromWsByRef(testSeriesRef, token.toString()).getData().asClassInstance(ExpressionSeries.class);
-		CmonkeyServerImpl.createInputTable(dirName, input.getExpressionSampleIds(), token.toString());
+		List<String> sampleIdsList = input.getGenomeExpressionSampleIdsMap().get(testGenomeRef);
+		CmonkeyServerImpl.createInputTable(dirName, sampleIdsList, token.toString());
 		assertTrue(new File(dirName + "input.txt").exists());
 
 	}
+
+	@Test
+	public final void testExtractGenomeId() throws Exception {
+	String genomeRef = testGenomeRef;
+	String[] g = genomeRef.split("/");
+	String genomeId = g[g.length - 1];
+	System.out.println (genomeId);
+	}
+
 
 	public static void showCmonkeyRun (CmonkeyRunResult runResult){
 		DecimalFormat df = new DecimalFormat("0.000");
@@ -294,6 +326,35 @@ public class CmonkeyServerImplTest {
 		}
 	}
 
+	@Test
+	public void testDeleteJob() throws AuthException, IOException, UnauthorizedException, JsonClientException {
+		String jobId = "52e70eb7e4b0ef83573320eb";
 
+//		AuthToken token = AuthService.login(JOB_ACCOUNT, new String(JOB_PASSWORD)).getToken();
+		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		AuthToken serviceToken = AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken();
+
+		URL jobServiceUrl = new URL(UJS_SERVICE_URL);
+		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, token);
+		jobClient.forceDeleteJob(serviceToken.toString(), jobId);
+	}
+
+/*	@Test
+	public void testUJS() throws Exception, IOException{
+        AuthToken token = AuthService.login(USER_NAME, PASSWORD).getToken();
+        AuthToken serviceToken = AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken();
+        
+        UserAndJobStateClient jobService = new UserAndJobStateClient(new URL ("https://kbase.us/services/userandjobstate"), token ); 
+        jobService.setAuthAllowedForHttp(true);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        dateFormat.setLenient(false);
+        Date date = new Date();
+        jobService.createAndStartJob(serviceToken.toString(), "java job", "desc5",
+                new InitProgress().withPtype("none"), dateFormat.format(date));	
+	}
+*/
+	
 }
 

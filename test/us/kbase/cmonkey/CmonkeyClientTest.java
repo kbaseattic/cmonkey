@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -13,21 +15,26 @@ import us.kbase.auth.AuthToken;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.Tuple7;
 import us.kbase.userandjobstate.Results;
-import us.kbase.util.WsDeluxeUtil;
+import us.kbase.userandjobstate.UserAndJobStateClient;
+import us.kbase.workspace.ObjectIdentity;
+import us.kbase.workspace.WorkspaceClient;
 
 public class CmonkeyClientTest {
 
-	private static final String USER_NAME = "aktest";
-	private static final String PASSWORD = "1475rokegi";
-	private static final String workspaceName = "AKtest";//"ENIGMA_KBASE";
+	private static final String USER_NAME = "";
+	private static final String PASSWORD = "";
+	private static final String workspaceName = "AKtest";//"ENIGMA_KBASE";//
 	private String serverUrl = "http://140.221.85.173:7078";
 //	private String serverUrl = "http://localhost:7049";
-	private String quickTestSeriesRef = "AKtest/test_Halobacterium__series";
-	private String testSeriesRef = "AKtest/D_vulgaris_series";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_series_250_series";
-	private String genomeRef = "AKtest/Desulfovibrio_vulgaris_Hildenborough";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1";
-	//private String genomeRef = "AKtest/kb|genome.9";
-	private String testStringNetworkRef = "AKtest/D_vulgaris_STRING";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_string";
-	private String testOperonNetworkRef = "AKtest/D_vulgaris_operons";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_operons";
+	private String quickTestSeriesRef = "AKtest/test_Halobacterium_sp_expression_series";
+	private String testSeriesRef = "ENIGMA_KBASE/Halobacterium_sp_expression_series";//"ENIGMA_KBASE/D_vulgaris_Hildenborough_expression_series";//"AKtest/Halobacterium_sp_expression_series";//
+	private String genomeRef = "AKtest/Halobacterium_sp_NRC-1";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1";//"ENIGMA_KBASE/Desulfovibrio_vulgaris_Hildenborough";//
+	private String testStringNetworkRef = "ENIGMA_KBASE/Halobacterium_sp_STRING";//"AKtest/Halobacterium_sp_STRING";//"ENIGMA_KBASE/D_vulgaris_STRING";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_string";
+	private String testOperonNetworkRef = "ENIGMA_KBASE/Halobacterium_sp_operons";//"AKtest/Halobacterium_sp_operons";//"AKtest/D_vulgaris_Hildenborough_operons";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_operons";
+
+	private static final String WS_SERVICE_URL = "https://kbase.us/services/ws";
+	private static final String UJS_SERVICE_URL = "https://kbase.us/services/userandjobstate";
+	
 	
 	@Test
 	public final void testQuickBuildCmonkeyNetworkJobFromWs() throws Exception {
@@ -41,7 +48,7 @@ public class CmonkeyClientTest {
 		URL url = new URL(serverUrl);
 		CmonkeyClient client = new CmonkeyClient(url, token);
 		client.setAuthAllowedForHttp(true);
-		String jobId = client.buildCmonkeyNetworkJobFromWs(workspaceName, params);
+		String jobId = client.runCmonkey(workspaceName, params);
 		
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);
@@ -49,6 +56,9 @@ public class CmonkeyClientTest {
 
 		String status = "";
 		Integer waitingTime = 2;
+		URL jobServiceUrl = new URL(UJS_SERVICE_URL);
+		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, token);
+		
 		while (!status.equalsIgnoreCase("finished")){
 			
 			try {
@@ -58,7 +68,8 @@ public class CmonkeyClientTest {
 			}
 		
 			try {
-				Tuple7<String,String,String,Long,String,Long,Long> t = CmonkeyServerImpl.jobClient(token.toString()).getJobStatus(jobId); 
+				
+				Tuple7<String,String,String,Long,String,Long,Long> t = jobClient.getJobStatus(jobId); 
 				//System.out.println(t.getE1());
 				//System.out.println(t.getE2());
 				status = t.getE3();
@@ -79,7 +90,7 @@ public class CmonkeyClientTest {
 		}
 
 		try {
-			Results res = CmonkeyServerImpl.jobClient(token.toString()).getResults(jobId);			
+			Results res = jobClient.getResults(jobId);			
 			resultId = res.getWorkspaceids().get(0);
 			System.out.println("Result ID = " + resultId);
 			assertNotNull(resultId);
@@ -95,7 +106,13 @@ public class CmonkeyClientTest {
 		String[] resultIdParts = resultId.split("/");
 		resultId = resultIdParts[1];
 		
-		CmonkeyRunResult result = WsDeluxeUtil.getObjectFromWorkspace(workspaceName, resultId, token.toString()).getData().asClassInstance(CmonkeyRunResult.class);
+		WorkspaceClient wsClient = new WorkspaceClient(new URL (WS_SERVICE_URL), new AuthToken(token.toString()));
+		wsClient.setAuthAllowedForHttp(true);
+		
+		List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
+		ObjectIdentity objectIdentity = new ObjectIdentity().withName(resultId).withWorkspace(workspaceName);
+		objectsIdentity.add(objectIdentity);
+		CmonkeyRunResult result = wsClient.getObjects(objectsIdentity).get(0).getData().asClassInstance(CmonkeyRunResult.class);
 		
 		assertEquals(Long.valueOf("39"), result.getNetwork().getClustersNumber());
 		assertEquals(Long.valueOf("2001"), result.getLastIteration());
@@ -117,7 +134,7 @@ public class CmonkeyClientTest {
 		URL url = new URL(serverUrl);
 		CmonkeyClient client = new CmonkeyClient(url, token);
 		client.setAuthAllowedForHttp(true);
-		String jobId = client.buildCmonkeyNetworkJobFromWs(workspaceName, params);
+		String jobId = client.runCmonkey(workspaceName, params);
 		
 		System.out.println("Job ID = " + jobId);
 		assertNotNull(jobId);
@@ -125,6 +142,9 @@ public class CmonkeyClientTest {
 
 		String status = "";
 		Integer waitingTime = 2;
+		URL jobServiceUrl = new URL(UJS_SERVICE_URL);
+		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, token);
+
 		while (!status.equalsIgnoreCase("finished")){
 			
 			try {
@@ -134,7 +154,7 @@ public class CmonkeyClientTest {
 			}
 		
 			try {
-				Tuple7<String,String,String,Long,String,Long,Long> t = CmonkeyServerImpl.jobClient(token.toString()).getJobStatus(jobId); 
+				Tuple7<String,String,String,Long,String,Long,Long> t = jobClient.getJobStatus(jobId); 
 				System.out.println(t.getE1());
 				System.out.println(t.getE2());
 				status = t.getE3();
@@ -155,7 +175,7 @@ public class CmonkeyClientTest {
 		}
 
 		try {
-			Results res = CmonkeyServerImpl.jobClient(token.toString()).getResults(jobId);			
+			Results res = jobClient.getResults(jobId);			
 			resultId = res.getWorkspaceids().get(0);
 			System.out.println("Result ID = " + resultId);
 			assertNotNull(resultId);
@@ -171,7 +191,13 @@ public class CmonkeyClientTest {
 		String[] resultIdParts = resultId.split("/");
 		resultId = resultIdParts[1];
 
-		CmonkeyRunResult result = WsDeluxeUtil.getObjectFromWsByRef(workspaceName+"/"+resultId, token.toString()).getData().asClassInstance(CmonkeyRunResult.class);
+		WorkspaceClient wsClient = new WorkspaceClient(new URL (WS_SERVICE_URL), new AuthToken(token.toString()));
+		wsClient.setAuthAllowedForHttp(true);
+		
+		List<ObjectIdentity> objectsIdentity = new ArrayList<ObjectIdentity>();
+		ObjectIdentity objectIdentity = new ObjectIdentity().withName(resultId).withWorkspace(workspaceName);
+		objectsIdentity.add(objectIdentity);
+		CmonkeyRunResult result = wsClient.getObjects(objectsIdentity).get(0).getData().asClassInstance(CmonkeyRunResult.class);
 
 		assertEquals(Long.valueOf("194"), result.getNetwork().getClustersNumber());
 		assertEquals(Long.valueOf("2001"), result.getLastIteration());

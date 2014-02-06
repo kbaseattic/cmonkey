@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import us.kbase.common.service.Tuple5;
+import us.kbase.common.service.Tuple4;
 import us.kbase.common.service.Tuple7;
 
 
@@ -24,7 +24,7 @@ import us.kbase.common.service.Tuple7;
  *         Should sequence be in separate objects too?
  *         We may want to add additional fields for other CDM functions
  *         (e.g., atomic regulons, coexpressed fids, co_occurring fids,...)
- *     @optional function protein_translation protein_families subsystems roles publications subsystems subsystem_data aliases annotations regulon_data atomic_regulons coexpressed_fids co_occurring_fids dna_sequence protein_translation_length dna_sequence_length
+ *     @optional md5 location function protein_translation protein_families subsystems publications subsystems subsystem_data aliases annotations regulon_data atomic_regulons coexpressed_fids co_occurring_fids dna_sequence protein_translation_length dna_sequence_length
  *     @searchable ws_subset id type function aliases md5
  * </pre>
  * 
@@ -41,7 +41,6 @@ import us.kbase.common.service.Tuple7;
     "dna_sequence",
     "protein_translation_length",
     "dna_sequence_length",
-    "roles",
     "publications",
     "subsystems",
     "protein_families",
@@ -58,7 +57,7 @@ public class Feature {
     @JsonProperty("id")
     private java.lang.String id;
     @JsonProperty("location")
-    private List<Tuple5 <String, String, Long, String, Long>> location;
+    private List<Tuple4 <String, Long, String, Long>> location;
     @JsonProperty("type")
     private java.lang.String type;
     @JsonProperty("function")
@@ -73,8 +72,6 @@ public class Feature {
     private java.lang.Long proteinTranslationLength;
     @JsonProperty("dna_sequence_length")
     private java.lang.Long dnaSequenceLength;
-    @JsonProperty("roles")
-    private List<String> roles;
     @JsonProperty("publications")
     private List<Tuple7 <Long, String, String, String, String, String, String>> publications;
     @JsonProperty("subsystems")
@@ -113,16 +110,16 @@ public class Feature {
     }
 
     @JsonProperty("location")
-    public List<Tuple5 <String, String, Long, String, Long>> getLocation() {
+    public List<Tuple4 <String, Long, String, Long>> getLocation() {
         return location;
     }
 
     @JsonProperty("location")
-    public void setLocation(List<Tuple5 <String, String, Long, String, Long>> location) {
+    public void setLocation(List<Tuple4 <String, Long, String, Long>> location) {
         this.location = location;
     }
 
-    public Feature withLocation(List<Tuple5 <String, String, Long, String, Long>> location) {
+    public Feature withLocation(List<Tuple4 <String, Long, String, Long>> location) {
         this.location = location;
         return this;
     }
@@ -229,21 +226,6 @@ public class Feature {
 
     public Feature withDnaSequenceLength(java.lang.Long dnaSequenceLength) {
         this.dnaSequenceLength = dnaSequenceLength;
-        return this;
-    }
-
-    @JsonProperty("roles")
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    @JsonProperty("roles")
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
-
-    public Feature withRoles(List<String> roles) {
-        this.roles = roles;
         return this;
     }
 
@@ -409,7 +391,7 @@ public class Feature {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((((((((((((((((((((((((((((((((("Feature"+" [id=")+ id)+", location=")+ location)+", type=")+ type)+", function=")+ function)+", md5=")+ md5)+", proteinTranslation=")+ proteinTranslation)+", dnaSequence=")+ dnaSequence)+", proteinTranslationLength=")+ proteinTranslationLength)+", dnaSequenceLength=")+ dnaSequenceLength)+", roles=")+ roles)+", publications=")+ publications)+", subsystems=")+ subsystems)+", proteinFamilies=")+ proteinFamilies)+", aliases=")+ aliases)+", annotations=")+ annotations)+", subsystemData=")+ subsystemData)+", regulonData=")+ regulonData)+", atomicRegulons=")+ atomicRegulons)+", coexpressedFids=")+ coexpressedFids)+", coOccurringFids=")+ coOccurringFids)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((((((((((((((((((((((((("Feature"+" [id=")+ id)+", location=")+ location)+", type=")+ type)+", function=")+ function)+", md5=")+ md5)+", proteinTranslation=")+ proteinTranslation)+", dnaSequence=")+ dnaSequence)+", proteinTranslationLength=")+ proteinTranslationLength)+", dnaSequenceLength=")+ dnaSequenceLength)+", publications=")+ publications)+", subsystems=")+ subsystems)+", proteinFamilies=")+ proteinFamilies)+", aliases=")+ aliases)+", annotations=")+ annotations)+", subsystemData=")+ subsystemData)+", regulonData=")+ regulonData)+", atomicRegulons=")+ atomicRegulons)+", coexpressedFids=")+ coexpressedFids)+", coOccurringFids=")+ coOccurringFids)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

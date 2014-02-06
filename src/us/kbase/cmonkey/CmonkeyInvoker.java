@@ -247,7 +247,7 @@ public class CmonkeyInvoker {
 	}
 
 	public static void main(String[] args) throws Exception {
-		
+		CmonkeyServerImpl.startup();
 		CmonkeyInvoker invoker = new CmonkeyInvoker();
 		invoker.run(args);
 	}

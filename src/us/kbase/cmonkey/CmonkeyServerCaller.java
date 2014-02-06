@@ -1,31 +1,44 @@
 package us.kbase.cmonkey;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import us.kbase.auth.AuthException;
+import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
-import us.kbase.auth.TokenFormatException;
+import us.kbase.common.service.JacksonTupleModule;
 import us.kbase.common.service.JsonClientException;
-import us.kbase.common.service.UnauthorizedException;
-//import us.kbase.expressionservices.ExpressionSeries;
+import us.kbase.common.service.ServerException;
+import us.kbase.userandjobstate.InitProgress;
 import us.kbase.userandjobstate.UserAndJobStateClient;
 
 public class CmonkeyServerCaller {
 
-	private static boolean deployCluster = CmonkeyServerConfig.DEPLOY_AWE;
-	private static final String JOB_SERVICE = CmonkeyServerConfig.JOB_SERVICE_URL;
-	private static final String AWE_SERVICE = CmonkeyServerConfig.AWE_SERVICE_URL;
-	private static final String SHOCK_URL = CmonkeyServerConfig.SHOCK_URL;
-
-	private static Integer connectionReadTimeOut = 30 * 60 * 1000;
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
+			"yyyy-MM-dd'T'HH:mm:ssZ");
 
 	/*
 	 * public static CmonkeyRunResult buildCmonkeyNetwork( ExpressionSeries
@@ -35,26 +48,35 @@ public class CmonkeyServerCaller {
 	 * authPart.toString(), null); return returnVal; }
 	 */
 
-	public static String buildCmonkeyNetworkJobFromWs(String wsId,
+	public static String buildCmonkeyNetworkJobFromWs(String wsName,
 			CmonkeyRunParameters params, AuthToken authPart)
-			throws TokenFormatException, UnauthorizedException, IOException,
-			JsonClientException {
+			throws Exception {
 
 		String returnVal = null;
-		URL jobServiceUrl = new URL(JOB_SERVICE);
+		Date date = new Date();
+		date.setTime(date.getTime() + 10000L);
+
+		URL jobServiceUrl = new URL(CmonkeyServerConfig.JOB_SERVICE_URL);
 		UserAndJobStateClient jobClient = new UserAndJobStateClient(
 				jobServiceUrl, authPart);
 		// jobClient.setAuthAllowedForHttp(true);
 		returnVal = jobClient.createJob();
+		jobClient.startJob(returnVal, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(),
+				"Starting new Cmonkey service job...",
+				"Cmonkey service job " + returnVal
+				+ ". Input: "
+				+ params.getSeriesRef() + ". Workspace: " + wsName + ".",
+				new InitProgress().withPtype("task").withMax(24L),
+				dateFormat.format(date));
 		jobClient = null;
 
-		if (deployCluster == false) {
+		if (CmonkeyServerConfig.DEPLOY_AWE == false) {
 			CmonkeyServerThread cmonkeyServerThread = new CmonkeyServerThread(
-					wsId, params, returnVal, authPart.toString());
+					wsName, params, returnVal, authPart.toString());
 			cmonkeyServerThread.start();
 		} else {
-			String jsonArgs = prepareJson(wsId, returnVal, params,
-					authPart.toString());
+			String jsonArgs = formatAWEConfig(returnVal, wsName, params, authPart.toString());
+			
 			if (CmonkeyServerConfig.LOG_AWE_CALLS) {
 				System.out.println(jsonArgs);
 				PrintWriter out = new PrintWriter(new FileWriter(
@@ -66,7 +88,10 @@ public class CmonkeyServerCaller {
 					out.close();
 				}
 			}
-			String result = executePost(jsonArgs);
+			
+			String result = submitJob(jsonArgs);
+			reportAweStatus(authPart, returnVal, result);
+			
 			if (CmonkeyServerConfig.LOG_AWE_CALLS) {
 				System.out.println(result);
 				PrintWriter out = new PrintWriter(new FileWriter(
@@ -81,92 +106,105 @@ public class CmonkeyServerCaller {
 		return returnVal;
 	}
 
-	protected static String prepareJson(String wsId, String jobId,
-			CmonkeyRunParameters params, String token) {
-		String returnVal = "{\"info\": {\"pipeline\": \"cmonkey-runner-pipeline\",\"name\": \"cmonkey\",\"project\": \"default\""
-				+ ",\"user\": \"default\",\"clientgroups\":\"\",\"sessionId\":\""
-				+ jobId + "\"},\"tasks\": [{\"cmd\": {\"args\": \"";
-		returnVal += " --job " + jobId
-				+ " --method build_cmonkey_network_job_from_ws --ws '" + wsId
-				+ "' --series '" + params.getSeriesRef() + "' --genome '"
-				+ params.getGenomeRef() + "'";
+	protected static String submitJob(String aweConfig) throws Exception {
 
-		if (params.getMotifsScoring() == 0L) {
-			returnVal += " --motifs 0";
-		} else {
-			returnVal += " --motifs 1";
+		String postResponse = null;
+		try {
+			CloseableHttpClient httpClient = HttpClients.createDefault();
+			HttpPost httpPost = new HttpPost(
+					CmonkeyServerConfig.AWE_SERVICE_URL);
+			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+			InputStream stream = new ByteArrayInputStream(
+					aweConfig.getBytes("UTF-8"));
+			builder.addBinaryBody("upload", stream,
+					ContentType.APPLICATION_OCTET_STREAM, "cmonkey.awf");
+			httpPost.setEntity(builder.build());
+			HttpResponse response = httpClient.execute(httpPost);
+			postResponse = EntityUtils.toString(response.getEntity());
+		} catch (Exception e) {
+			throw new Exception("Can not submit AWE post request: "
+					+ e.getMessage());
 		}
-		if (params.getNetworksScoring() == 0L) {
-			returnVal += " --networks 0";
-		} else {
-			returnVal += " --networks 1";
-		}
-		if (params.getOperomeRef() != null) {
-			returnVal += " --operons '" + params.getOperomeRef() + "'";
-		} else {
-			returnVal += " --operons 'null'";
-		}
-		if (params.getNetworkRef() != null) {
-			returnVal += " --string '" + params.getNetworkRef() + "'";
-		} else {
-			returnVal += " --string 'null'";
-		}
-
-		returnVal += " --token '" + token + "'";
-		returnVal += "\", \"description\": \"running cMonkey service\", \"name\": \"run_cmonkey\"}, \"dependsOn\": [], \"outputs\": {\""
-				+ jobId
-				+ ".tgz\": {\"host\": \"" + SHOCK_URL + "\"}},\"taskid\": \"0\",\"skip\": 0,\"totalwork\": 1}]}";
-
-		return returnVal;
+		return postResponse;
 	}
 
-	protected static String executePost(String jsonRequest) throws IOException {
-		URL url;
-		HttpURLConnection connection = null;
-		PrintWriter writer = null;
-		url = new URL(AWE_SERVICE);
-		String boundary = Long.toHexString(System.currentTimeMillis());
-		connection = (HttpURLConnection) url.openConnection();
-		connection.setConnectTimeout(10000);
-		if (connectionReadTimeOut != null) {
-			connection.setReadTimeout(connectionReadTimeOut);
-		}
-		connection.setRequestMethod("POST");
-		connection.setRequestProperty("Content-Type",
-				"multipart/form-data; boundary=" + boundary);
-		connection.setDoOutput(true);
-		// connection.setDoInput(true);
-		OutputStream output = connection.getOutputStream();
-		writer = new PrintWriter(new OutputStreamWriter(output), true); //set true for autoFlush!
-		String CRLF = "\r\n";
-		writer.append("--" + boundary).append(CRLF);
-		writer.append(
-				"Content-Disposition: form-data; name=\"upload\"; filename=\"cmonkey.awe\"")
-				.append(CRLF);
-		writer.append("Content-Type: application/octet-stream").append(CRLF);
-		writer.append(CRLF).flush();
-		writer.append(jsonRequest).append(CRLF);
-		writer.flush();
-		writer.append("--" + boundary + "--").append(CRLF);
-		writer.append(CRLF).flush();
+	protected static String formatAWEConfig(String jobId, String wsName,
+			CmonkeyRunParameters params, String token
+			) throws Exception {
 
-		// Get Response
-		InputStream is = connection.getInputStream();
-		BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-		String line;
-		StringBuffer response = new StringBuffer();
-		while ((line = rd.readLine()) != null) {
-			response.append(line);
-			response.append('\r');
-		}
-		rd.close();
+		String formattedConfig;
+		try {
+			String config = FileUtils.readFileToString(new File(
+					CmonkeyServerConfig.AWF_CONFIG_FILE));
+			String args =  " --job " + jobId
+					+ " --method build_cmonkey_network_job_from_ws --ws '" + wsName
+					+ "' --series '" + params.getSeriesRef() + "' --genome '"
+					+ params.getGenomeRef() + "'";
 
-		if (writer != null)
-			writer.close();
+			if (params.getMotifsScoring() == 0L) {
+				args += " --motifs 0";
+			} else {
+				args += " --motifs 1";
+			}
+			if (params.getNetworksScoring() == 0L) {
+				args += " --networks 0";
+			} else {
+				args += " --networks 1";
+			}
+			if (params.getOperomeRef() != null) {
+				args += " --operons '" + params.getOperomeRef() + "'";
+			} else {
+				args += " --operons 'null'";
+			}
+			if (params.getNetworkRef() != null) {
+				args += " --string '" + params.getNetworkRef() + "'";
+			} else {
+				args += " --string 'null'";
+			}
+			args += " --token '" + token + "'";
 
-		if (connection != null) {
-			connection.disconnect();
+			formattedConfig = String.format(config, jobId, args, jobId);
+		} catch (IOException e) {
+			throw new Exception("Can not load AWE config file: "
+					+ CmonkeyServerConfig.AWF_CONFIG_FILE);
 		}
-		return response.toString();
+		return formattedConfig;
 	}
+	
+	protected static void updateJobProgress(String jobId, String status,
+			Long tasks, String token) throws MalformedURLException, IOException, JsonClientException, AuthException {
+		Date date = new Date();
+		date.setTime(date.getTime() + 10000L);
+		UserAndJobStateClient jobClient = new UserAndJobStateClient(new URL(
+				CmonkeyServerConfig.JOB_SERVICE_URL), new AuthToken(token));
+		// jobClient.setAuthAllowedForHttp(true);
+		jobClient.updateJobProgress(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, tasks,
+				dateFormat.format(date));
+		jobClient = null;
+	}
+
+	protected static void reportAweStatus(AuthToken authPart, String returnVal,
+			String result) throws IOException, JsonProcessingException,
+			MalformedURLException, JsonClientException,
+			JsonParseException, JsonMappingException, ServerException, AuthException {
+		JsonNode rootNode = new ObjectMapper().registerModule(new JacksonTupleModule()).readTree(result);
+		String aweId = "";
+		if (rootNode.has("data")){
+			JsonNode dataNode = rootNode.get("data");
+			if (dataNode.has("id")){
+				aweId = CmonkeyServerConfig.AWE_SERVICE_URL + "/" + dataNode.get("id").textValue();
+				System.out.println(aweId);
+				updateJobProgress(returnVal, "AWE job submitted: " + aweId, 1L, authPart.toString());
+			}
+		}
+		if (rootNode.has("error")){
+			if (rootNode.get("error").textValue()!=null){
+				System.out.println(rootNode.get("error").textValue());
+				updateJobProgress(returnVal, "AWE reported error on job " + aweId, 1L, authPart.toString());
+				throw new ServerException(rootNode.get("error").textValue(), 0, "Unknown", null);
+			}
+		}
+	}
+
+
 }

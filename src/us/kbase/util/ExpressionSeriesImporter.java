@@ -8,13 +8,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import us.kbase.auth.TokenFormatException;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.UObject;
 import us.kbase.common.service.UnauthorizedException;
-import us.kbase.expressionservices.ExpressionSample;
-import us.kbase.expressionservices.ExpressionSeries;
+import us.kbase.kbaseexpression.ExpressionSample;
+import us.kbase.kbaseexpression.ExpressionSeries;
 import us.kbase.idserverapi.IDServerAPIClient;
 import us.kbase.kbasegenomes.Feature;
 import us.kbase.kbasegenomes.Genome;
@@ -28,11 +29,12 @@ public class ExpressionSeriesImporter {
 	private String fileName = null;
 	private String token = null;
 	private String workspaceName = null;
+	private String genomeId = null;
 	private Genome genome;
 	private HashMap<String, String> aliases;
 
 	
-	public ExpressionSeriesImporter (String genomeRef, String fileName, String workspaceName, String token) throws Exception{
+	public ExpressionSeriesImporter (String genomeId, String fileName, String workspaceName, String token) throws Exception{
 		if (fileName == null) {
 			System.out.println("Expression data file name required");
 		} else {
@@ -50,7 +52,8 @@ public class ExpressionSeriesImporter {
 			this.workspaceName = workspaceName;
 		}
 		
-		this.genome = WsDeluxeUtil.getObjectFromWsByRef(genomeRef, token).getData().asClassInstance(Genome.class);
+		this.genome = WsDeluxeUtil.getObjectFromWsByRef(workspaceName + "/" + genomeId, token).getData().asClassInstance(Genome.class);
+		this.genomeId = genomeId;
 		this.aliases = readFeatures(this.genome);
 		
 
@@ -86,14 +89,14 @@ public class ExpressionSeriesImporter {
 		List<String> result = new ArrayList<String>();
 		ExpressionSeries series = new ExpressionSeries();
 		try {
-			series.setKbId(namePrefix);//(getKbaseId("ExpressionSeries"));
+			series.setId(namePrefix);//(getKbaseId("ExpressionSeries"));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		series.setSourceId(fileName);
 		series.setExternalSourceDate("unknown");
-		result.add(series.getKbId());
+		result.add(series.getId());
 
 		List<String> sampleRefs = new ArrayList<String>();
 		List<String> conditions = new ArrayList<String>();
@@ -106,10 +109,10 @@ public class ExpressionSeriesImporter {
 			while ((line = br.readLine()) != null) {
 				if (line.equals("")) {
 					// do nothing
-				} else if (line.matches("Systematic_Name\t.*")) {//} else if (line.matches("GENE\t.*")) {
+				} else if (line.matches("Systematic_Name\t.*")) {//(line.matches("GENE\t.*")) {//
 					String[] fields = line.split("\t");
-					samplesNumber = fields.length - 2L;
-					for (int i = 2; i < fields.length; i++) { //skip fields[0] and fields [1]
+					samplesNumber = fields.length - 2L; //change to 1L if second column contains expression data
+					for (int i = 2; i < fields.length; i++) { //skip fields[0] and fields [1]; change to int i = 1 ... if second column contains expression data
 						conditions.add(fields[i]);
 						 //System.out.println(fields[i]);
 					}
@@ -127,7 +130,7 @@ public class ExpressionSeriesImporter {
 					String id = getFeatureId(fields[0]);
 					if (id != null){
 						while (j < samplesNumber) {
-							if (!fields[j + 2].equals("")){
+							if (!fields[j + 2].equals("")){//change to j+1 if second column contains expression data
 								dataValues.get(j).put(getFeatureId(fields[0]),
 										Double.valueOf(fields[j + 2]));//change to j+1 if second column contains expression data
 								//System.out.println(fields[0]+" "+fields[j+1]);
@@ -156,28 +159,30 @@ public class ExpressionSeriesImporter {
 			sample.setType("microarray");
 			sample.setNumericalInterpretation("undefined");
 			sample.setExternalSourceDate("undefined");
-			sample.setGenomeId("kb|genome.1");
+			sample.setGenomeId(genomeId);
 			sample.setExpressionLevels(dataValues.get(i));
 			String sampleName = null;
 			if (namePrefix == null) {
 				sampleName = "kb|sample." + startSamplesId.toString();
-				sample.setKbId(sampleName);
-				WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(sample, UObject.class), "ExpressionServices.ExpressionSample-1.0", workspaceName, sampleName, token.toString());
+				sample.setId(sampleName);
+				WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(sample, UObject.class), "KBaseExpression.ExpressionSample", workspaceName, sampleName, token.toString());
 				startSamplesId++;
 			} else {
 				sampleName = namePrefix + "_sample_" + i;
-				sample.setKbId(sampleName);
-				WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(sample, UObject.class), "ExpressionServices.ExpressionSample-1.0", workspaceName, sampleName, token.toString());
+				sample.setId(sampleName);
+				WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(sample, UObject.class), "KBaseExpression.ExpressionSample", workspaceName, sampleName, token.toString());
 			}
 			sampleRefs.add(workspaceName + "/" + sampleName);
 			result.add(sampleName);
 						
 		}
-		series.setExpressionSampleIds(sampleRefs);
+		Map<String, List<String>> sampleIdsList = new HashMap<String, List<String>>();
+		sampleIdsList.put(genomeId, sampleRefs);
+		series.setGenomeExpressionSampleIdsMap(sampleIdsList);
 		if (namePrefix == null) {
-			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(series, UObject.class), "ExpressionServices.ExpressionSeries-1.0", workspaceName, series.getKbId(), token.toString());
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(series, UObject.class), "KBaseExpression.ExpressionSeries", workspaceName, series.getId(), token.toString());
 		} else {
-			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(series, UObject.class), "ExpressionServices.ExpressionSeries-1.0", workspaceName, namePrefix + "_series", token.toString());
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(series, UObject.class), "KBaseExpression.ExpressionSeries", workspaceName, namePrefix + "_series", token.toString());
 		}
 		
 		return result;

@@ -1,0 +1,15 @@
+OVERVIEW
+-----------------------------------------
+	This KBase service builds bi-cluster network using cMonkey biclustering tool.
+
+
+
+VERSION: 0.0.1 (Released 01/22/2014)
+------------------------------------------
+NEW FEATURES:
+-This is the first release of the Cmonkey Service.
+
+UPDATED FEATURES / MAJOR BUG FIXES:
+-none.
+
+

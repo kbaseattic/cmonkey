@@ -18,8 +18,8 @@ import us.kbase.common.service.UnauthorizedException;
  * This module provides a set of methods for work with cMonkey biclustering tool.
  * Data types summary
  * Input data types: 
- * ExpressionSeries from Expression service.
- * ExpressionSample from Expression service.
+ * ExpressionSeries from KBaseExpression service.
+ * ExpressionSample from KBaseExpression service.
  * KBaseGenomes.Genome
  * Networks.InterationSet with operons data
  * Networks.InterationSet with STRING data
@@ -80,7 +80,7 @@ public class CmonkeyClient {
     }
 
     /**
-     * <p>Original spec-file function name: build_cmonkey_network_job_from_ws</p>
+     * <p>Original spec-file function name: run_cmonkey</p>
      * <pre>
      * Starts cMonkey server run for a series of expression data stored in workspace and returns job ID of the run
      * string ws_id - workspace id
@@ -93,12 +93,12 @@ public class CmonkeyClient {
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public String buildCmonkeyNetworkJobFromWs(String wsId, CmonkeyRunParameters params) throws IOException, JsonClientException {
+    public String runCmonkey(String wsId, CmonkeyRunParameters params) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(wsId);
         args.add(params);
         TypeReference<List<String>> retType = new TypeReference<List<String>>() {};
-        List<String> res = caller.jsonrpcCall("Cmonkey.build_cmonkey_network_job_from_ws", args, retType, true, true);
+        List<String> res = caller.jsonrpcCall("Cmonkey.run_cmonkey", args, retType, true, true);
         return res.get(0);
     }
 }

@@ -23,15 +23,15 @@ import us.kbase.common.service.UnauthorizedException;
 import us.kbase.idserverapi.IDServerAPIClient;
 import us.kbase.kbasegenomes.Feature;
 import us.kbase.kbasegenomes.Genome;
-import us.kbase.networks.DatasetSource;
-import us.kbase.networks.Interaction;
-import us.kbase.networks.InteractionSet;
+import us.kbase.kbasenetworks.DatasetSource;
+import us.kbase.kbasenetworks.Interaction;
+import us.kbase.kbasenetworks.InteractionSet;
 
 public class NetworkImporter {
 	
 	private static final String PREFIX_OPERONS = "gnc";
 	private static final String POSTFIX_OPERONS = ".named";
-	private static final String ID_SERVICE_URL = CmonkeyServerConfig.ID_SERVICE_URL;
+	private static final String ID_SERVICE_URL = CmonkeyServerConfig.getIdUrl();
 
 	private static IDServerAPIClient _idClient = null;
 
@@ -175,10 +175,10 @@ public class NetworkImporter {
 		InteractionSet set = new InteractionSet().withName(ncbiId).withSource(source).withInteractions(interactions).withType("operons");
 		if (name == null) {
 			set.setId(getKbaseId("InteractionSet"));
-			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "KBaseNetworks.InteractionSet", wsId, set.getId(), token);
 		} else {
 			set.setId(name);
-			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, name, token);
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "KBaseNetworks.InteractionSet", wsId, name, token);
 		}
 				
 		return set;
@@ -246,13 +246,16 @@ public class NetworkImporter {
 		InteractionSet set = new InteractionSet().withName(ncbiId).withSource(source).withInteractions(interactions).withType("string");
 		interactions = null;
 		gc();
+		System.out.println("Free memory " + Runtime.getRuntime().freeMemory());
+		System.out.println("Max memory " + Runtime.getRuntime().maxMemory());
+		System.out.println("Total memory " + Runtime.getRuntime().totalMemory());
 		
 		if (name == null) {
 			set.setId(getKbaseId("InteractionSet"));
-			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, set.getId(), token);
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "KBaseNetworks.InteractionSet", wsId, set.getId(), token);
 		} else {
 			set.setId(name);
-			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "Networks.InteractionSet", wsId, name, token);
+			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(set, UObject.class), "KBaseNetworks.InteractionSet", wsId, name, token);
 		}
 		return set;
 	}
