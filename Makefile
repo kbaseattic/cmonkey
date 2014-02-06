@@ -1,6 +1,6 @@
 TOP_DIR = ../..
 include $(TOP_DIR)/tools/Makefile.common
-KB_RUNTIME ?= /kb/runtime
+KB_RUNTIME ?= /kbase/runtimes/20140109-prod
 DEPLOY_RUNTIME ?= $(KB_RUNTIME)
 KB_TOP ?= /kb/deployment
 TARGET ?= $(KB_TOP)
@@ -20,6 +20,8 @@ SCRIPTS_TESTS = $(wildcard script-tests/*.t)
 DEPLOY_JAR = $(KB_TOP)/lib/jars/cmonkey
 DATA_DIR = /var/tmp/cmonkey/data
 SCRIPTS_TESTS_CLUSTER = $(wildcard script-test-cluster/*.t)
+
+DIR = $(shell pwd)
 
 default: compile
 
@@ -96,8 +98,19 @@ build-docs: compile-docs
 
 compile-docs: build-libs
 
+init:
+	git submodule init
+	git submodule update
+	mkdir -p bin
+	mkdir -p classes
+	echo "export PATH=$(DEPLOY_RUNTIME)/bin" > bin/compile_typespec
+	echo "export PERL5LIB=$(DIR)/typecomp/lib" >> bin/compile_typespec
+	echo "perl $(DIR)/typecomp/scripts/compile_typespec.pl \"\$$@\"" >> bin/compile_typespec 
+	echo $(DIR) > classes/kidlinit
+	chmod a+x bin/compile_typespec
+
 build-libs:
-	compile_typespec \
+	./bin/compile_typespec \
 		--psgi $(SERVICE_PSGI)  \
 		--impl Bio::KBase::$(SERVICE_NAME)::$(SERVICE_NAME)Impl \
 		--service Bio::KBase::$(SERVICE_NAME)::Service \
