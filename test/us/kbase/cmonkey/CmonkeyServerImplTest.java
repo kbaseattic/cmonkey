@@ -355,6 +355,13 @@ public class CmonkeyServerImplTest {
                 new InitProgress().withPtype("none"), dateFormat.format(date));	
 	}
 */
-	
+
+	@Test
+	public void test() throws Exception  {
+
+		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+
+	}
+
 }
 

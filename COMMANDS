@@ -1,2 +1,2 @@
-#group-name	cmonkey	Cmonkey
+#group-name	cmonkey	Cmonkey Biclustering
 #command-set	scripts/(.*).pl	cmonkey

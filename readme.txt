@@ -7,7 +7,7 @@ make deploy
 
 Deployment of Cmonkey service requires typecomp (dev-prototype branch) and java type generator (dev branch).
 Cmonkey server calls AWE client to run cMonkey tool. To install Cmonkey service back-end for AWE client, clone cmonkey.git repo on the host running AWE client and run command 'make deploy-jar'. This command will work with master branches of typecomp and java type generator as well.
-URL of AWE client can be changed in us.kbase.cmonkey.CmonkeyServerConfig source file. Run "make", "make deploy" and then restart the service to apply changes.
+URL of AWE client can be changed in Makefile. Run "make", "make deploy" and then restart the service to apply changes.
 
 Requirements for cMonkey installation on AWE server:
 cmonkey-python (installation script in bootstrap.git repo: ./kb_cmonkey/build.cmonkey)
