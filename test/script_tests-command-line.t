@@ -22,7 +22,7 @@ my $genome_ref = "\"AKtest/Halobacterium_sp_NRC-1\"";
 
 
 #1
-my $tes = Test::Cmd->new(prog => "$bin/run_cmonkey.pl", workdir => '', interpreter => '/kb/runtime/bin/perl');
+my $tes = Test::Cmd->new(prog => "$bin/run_cmonkey.pl", workdir => '', interpreter => 'perl');
 ok($tes, "creating Test::Cmd object for run_cmonkey");
 $tes->run(args => "--url=$url --ws=$ws --input=$series_ref --genome=$genome_ref --user=$user --pw=$pw");
 ok($? == 0,"Running cmonkey");
