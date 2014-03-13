@@ -362,7 +362,7 @@ public class CmonkeyServerImpl {
 		initProgress.setPtype("task");
 		initProgress.setMax(tasks);
 		Date date = new Date();
-		date.setTime(date.getTime() + 108000000L);
+		date.setTime(date.getTime() + 10080000L);
 		URL jobServiceUrl = new URL(CmonkeyServerConfig.JOB_SERVICE_URL);
 		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, new AuthToken(token));
 		jobClient.startJob(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, desc, initProgress,

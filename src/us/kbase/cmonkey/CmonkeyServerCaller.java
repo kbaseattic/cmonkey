@@ -88,12 +88,11 @@ public class CmonkeyServerCaller {
 					out.close();
 				}
 			}
-			
+			System.out.println(jsonArgs);
 			String result = submitJob(jsonArgs);
 			reportAweStatus(authPart, returnVal, result);
 			
 			if (CmonkeyServerConfig.LOG_AWE_CALLS) {
-				System.out.println(result);
 				PrintWriter out = new PrintWriter(new FileWriter(
 						"/var/tmp/cmonkey/cmonkey-awe.log", true));
 				out.write("Job " + returnVal + " : AWE response\n" + result
@@ -187,6 +186,7 @@ public class CmonkeyServerCaller {
 			String result) throws IOException, JsonProcessingException,
 			MalformedURLException, JsonClientException,
 			JsonParseException, JsonMappingException, ServerException, AuthException {
+		System.out.println(result);
 		JsonNode rootNode = new ObjectMapper().registerModule(new JacksonTupleModule()).readTree(result);
 		String aweId = "";
 		if (rootNode.has("data")){

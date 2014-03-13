@@ -8,7 +8,7 @@ use Carp;
 
 =head1 SYNOPSIS
 
-    run_cmonkey [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]
+    run_cmonkey [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference>]
 
 =head1 DESCRIPTION
 
@@ -52,17 +52,11 @@ use Carp;
 =item B<--string>
     Workspace reference of STRING data set
 
-=item B<--user>
-    User name for access to workspace
-
-=item B<--pw>
-    Password for access to workspace
-
 =back
 
 =head1 EXAMPLE
 
-    run_cmonkey --url=http://140.221.85.173:7078/ --ws=AKtest --input="AKtest/Halobacterium_sp_NRC1_series" --genome="AKtest/kb|genome.9" --motifs --networks --operons="AKtest/kb|interactionset.8" --string="AKtest/kb|interactionset.7" --user=<username> --pw=<password>
+    run_cmonkey --url=http://140.221.85.173:7078/ --ws=AKtest --input="AKtest/Halobacterium_sp_NRC1_series" --genome="AKtest/kb|genome.9" --motifs --networks --operons="AKtest/kb|interactionset.8" --string="AKtest/kb|interactionset.7"
     run_cmonkey --help
     run_cmonkey --version
 
@@ -74,10 +68,12 @@ use Carp;
 
 use Getopt::Long;
 use Bio::KBase::cmonkey::Client;
+use Config::Simple;
+use Bio::KBase::Auth;
 use Bio::KBase::AuthToken;
 use Bio::KBase::AuthUser;
 
-my $usage = "Usage: run_cmonkey [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]\n";
+my $usage = "Usage: run_cmonkey [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference>]\n";
 
 my $url        = "http://140.221.85.173:7078/";
 my $ws         = "";
@@ -87,8 +83,6 @@ my $motifs     = 0;
 my $networks   = 0;
 my $operons    = "null";
 my $string     = "null";
-my $user       = "";
-my $pw         = "";
 my $help       = 0;
 my $version    = 0;
 
@@ -101,8 +95,6 @@ GetOptions("help"       => \$help,
            "networks"    => \$networks,
            "operons:s"    => \$operons,
            "string:s"    => \$string,
-           "user=s"    => \$user,
-           "pw=s"    => \$pw,
            "url=s"     => \$url) 
            or exit(1);
 
@@ -115,7 +107,7 @@ print "VERSION\n";
 print "1.0\n";
 print "\n";
 print "SYNOPSIS\n";
-print "run_cmonkey [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference> --user=<username> --pw=<password>]\n";
+print "run_cmonkey [--url=http://140.221.85.173:7078/ --ws=<workspace name> --input=<expression data series reference> --genome=<genome reference> --motifs --networks --operons=<operons data reference> --string=<STRING data reference>]\n";
 print "\n";
 print "DESCRIPTION\n";
 print "INPUT:            This command requires the URL of the service, workspace name, and run parameters.\n";
@@ -139,17 +131,13 @@ print "--operons         Workspace reference of operons data set.\n";
 print "\n";
 print "--string          Workspace reference of STRING data set.\n";
 print "\n";
-print "--user            User name for access to workspace.\n";
-print "\n";
-print "--pw              Password for access to workspace.\n";
-print "\n";
 print "--help            Display help message to standard out and exit with error code zero; \n";
 print "                  ignore all other command-line arguments.  \n";
 print "--version         Print version information. \n";
 print "\n";
 print " \n";
 print "EXAMPLES \n";
-print "run_cmonkey --url=http://140.221.85.173:7078/ --ws=AKtest --input=\"AKtest/Halobacterium_sp_NRC1_series\" --genome=\"AKtest/kb|genome.9\" --motifs --networks --operons=\"AKtest/kb|interactionset.8\" --string=\"AKtest/kb|interactionset.7\" --user=<username> --pw=<password>\n";
+print "run_cmonkey --url=http://140.221.85.173:7078/ --ws=AKtest --input=\"AKtest/Halobacterium_sp_NRC1_series\" --genome=\"AKtest/kb|genome.9\" --motifs --networks --operons=\"AKtest/kb|interactionset.8\" --string=\"AKtest/kb|interactionset.7\"\n";
 print "\n";
 print "This command will return a Job object ID.\n";
 print "\n";
@@ -175,9 +163,22 @@ unless (@ARGV == 0){
     exit(1);
 };
 
+my $token='';
+my $user="";
+my $pw="";
 my $auth_user = Bio::KBase::AuthUser->new();
-my $token = Bio::KBase::AuthToken->new( user_id => $user, password => $pw);
-$auth_user->get( token => $token->token );
+my $kbConfPath = $Bio::KBase::Auth::ConfPath;
+
+if (defined($ENV{KB_RUNNING_IN_IRIS})) {
+        $token = $ENV{KB_AUTH_TOKEN};
+} elsif ( -e $kbConfPath ) {
+        my $cfg = new Config::Simple($kbConfPath);
+        $user = $cfg->param("authentication.user_id");
+        $pw = $cfg->param("authentication.password");
+        $cfg->close();
+        $token = Bio::KBase::AuthToken->new( user_id => $user, password => $pw);
+        $auth_user->get( token => $token->token );
+}
 
 if ($token->error_message){
 	print $token->error_message."\n\n";
