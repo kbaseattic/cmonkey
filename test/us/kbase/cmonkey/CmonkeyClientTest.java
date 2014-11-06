@@ -25,12 +25,12 @@ public class CmonkeyClientTest {
 	private static final String PASSWORD = "";
 	private static final String workspaceName = "AKtest";//"ENIGMA_KBASE";//
 //	private String serverUrl = "http://kbase.us/services/cmonkey/";
-	private String serverUrl = "http://140.221.85.173:7078";
+	private String serverUrl = "http://140.221.67.196:7112/";//this is a new enigma instance, old was "http://140.221.85.173:7078";
 //	private String serverUrl = "http://localhost:7049";
 	private String quickTestSeriesRef = "AKtest/test_Halobacterium_sp_expression_series";
-	private String testSeriesRef = "AKtest/Halobacterium_sp_expression_series";//"ENIGMA_KBASE/Halobacterium_sp_expression_series";//"ENIGMA_KBASE/D_vulgaris_Hildenborough_expression_series";//
+	private String testSeriesRef = "myws2/myname";//"AKtest/Halobacterium_sp_expression_series";//"ENIGMA_KBASE/Halobacterium_sp_expression_series";//"ENIGMA_KBASE/D_vulgaris_Hildenborough_expression_series";//
 	private String genomeRef = "AKtest/Halobacterium_sp_NRC-1";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1";//"ENIGMA_KBASE/Desulfovibrio_vulgaris_Hildenborough";//
-	private String testStringNetworkRef = "AKtest/Halobacterium_sp_STRING";//"ENIGMA_KBASE/Halobacterium_sp_STRING";//"ENIGMA_KBASE/D_vulgaris_STRING";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_string";
+	private String testStringNetworkRef = "AKtest/Halobacterium_sp_STRING";//"ENIGMA_KBASE/Halobacterium_sp_STRING";//"ENIGMA_KBASE/D_vulgaris_STRING";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_string";//"myws2/halo-string";
 	private String testOperonNetworkRef = "AKtest/Halobacterium_sp_operons";//"ENIGMA_KBASE/Halobacterium_sp_operons";//"AKtest/D_vulgaris_Hildenborough_operons";//"ENIGMA_KBASE/Halobacterium_sp_NRC-1_operons";
 
 	private static final String WS_SERVICE_URL = "https://kbase.us/services/ws";
@@ -222,4 +222,24 @@ public class CmonkeyClientTest {
 	        throw e;
 	    }
 	}
+	
+	@Test
+	public void testJobStatus() throws Exception {
+		String jobId = "53a516afe4b0796ed8e47132";
+
+		AuthToken token = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		URL jobServiceUrl = new URL(UJS_SERVICE_URL);
+		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, token);
+		
+		Tuple7<String,String,String,Long,String,Long,Long> t = jobClient.getJobStatus(jobId);
+		System.out.println(t.getE1());
+		System.out.println(t.getE2());
+		System.out.println("Status"+t.getE3());//Status
+		System.out.println(t.getE4());
+		System.out.println(t.getE5());
+		System.out.println(t.getE6());
+		System.out.println(t.getE7());
+
+	}
+
 }

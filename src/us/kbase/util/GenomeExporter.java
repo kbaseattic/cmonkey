@@ -40,27 +40,15 @@ public class GenomeExporter {
 		ContigSet contigSet = WsDeluxeUtil.getObjectFromWsByRef(contigSetRef, token).getData().asClassInstance(ContigSet.class);
 		for (Contig contig : contigSet.getContigs()){
 			BufferedWriter writer = null;
-			try {
 				writer = new BufferedWriter(new FileWriter(workDir + filePrefix + "_" + contig.getName()));
 				if (contig.getSequence() != null){
 					writer.write(contig.getSequence());
 				}
-			} catch (IOException e) {
-				System.out.println(e.getLocalizedMessage());
-			} finally {
-				try {
-					if (writer != null)
-						writer.close();
-				} catch (IOException e) {
-					System.out.println(e.getLocalizedMessage());
-				}
-			}
 		}
 	}
 	
-	public static void writeFeaturesFile(List<Feature> features, Genome genome, String filePrefix, String workDir){
+	public static void writeFeaturesFile(List<Feature> features, Genome genome, String filePrefix, String workDir) throws IOException{
 		BufferedWriter writer = null;
-		try {
 			writer = new BufferedWriter(new FileWriter(workDir + filePrefix + FEATURES));
 			writer.write("-- dump date   	20121212_172621\n-- class       	Genbank::Feature\n-- table       	feature\n-- table       	main\n" +
 					"-- field 1	id\n-- field 2	type\n-- field 3	name\n-- field 4	contig\n-- field 5	start_pos\n-- field 6	end_pos\n-- field 7	strand\n-- field 8	description\n" + 
@@ -89,51 +77,32 @@ public class GenomeExporter {
 					writer.write("\t" + feature.getLocation().get(0).getE2().toString() + ".." + endPos.toString());
 				}
 				writer.write("\t" + genome.getScientificName());//organism
-				if (feature.getAliases().size() > 2) {
+				if ((feature.getAliases() != null)&&(feature.getAliases().size() > 2)) {
 					writer.write("\t" + feature.getAliases().get(2)); //gene name
 				} else {
-					writer.write(feature.getId());
+					writer.write("\t" + feature.getId());
 				}
 				writer.write("\n");
 			}
-		} catch (IOException e) {
-			System.out.println(e.getLocalizedMessage());
-		} finally {
-			try {
-				if (writer != null)
-					writer.close();
-			} catch (IOException e) {
-				System.out.println(e.getLocalizedMessage());
-			}
-		}
 	}
 
 	
-	public static void writeFeatureNamesFile(List<Feature> features, String filePrefix, String workDir){
+	public static void writeFeatureNamesFile(List<Feature> features, String filePrefix, String workDir) throws IOException{
 		BufferedWriter writer = null;
-		try {
 			writer = new BufferedWriter(new FileWriter(workDir + filePrefix + FEATURENAMES));
 			writer.write("-- class       	Genbank::Feature\n-- table       	feature_names\n-- id	names");
 			for (Feature feature: features){
 //				writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(1) + "\tprimary");
 				writer.write("\n" + feature.getId() + "\t" + feature.getId() + "\tprimary");
-				writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(1) + "\talternate");
-				writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(0) + "\talternate");
-				for (int i = 2; i < feature.getAliases().size(); i++){
-					writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(i) + "\talternate");
+				if (feature.getAliases() != null){
+					writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(1) + "\talternate");
+					writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(0) + "\talternate");
+					for (int i = 2; i < feature.getAliases().size(); i++){
+						writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(i) + "\talternate");
+					}
 				}
 			}
 			writer.write("\n");
-		} catch (IOException e) {
-			System.out.println(e.getLocalizedMessage());
-		} finally {
-			try {
-				if (writer != null)
-					writer.close();
-			} catch (IOException e) {
-				System.out.println(e.getLocalizedMessage());
-			}
-		}
 	}	
 	
 }
