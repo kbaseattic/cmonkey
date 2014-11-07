@@ -277,7 +277,7 @@ public class CmonkeyServerImpl {
 
 	protected static String prepareCacheFiles(String cachePath,
 			CmonkeyRunParameters params, String token, FileWriter writer)
-			throws TokenFormatException, IOException, JsonClientException {
+			throws Exception {
 		// get genome, contigset and export
 		String genomeName = GenomeExporter.writeGenome(params.getGenomeRef(),
 				"my_favorite_pet", cachePath, token);

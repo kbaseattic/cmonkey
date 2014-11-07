@@ -17,6 +17,7 @@ import us.kbase.auth.AuthService;
 import us.kbase.auth.AuthToken;
 import us.kbase.common.service.Tuple11;
 import us.kbase.common.service.Tuple8;
+import us.kbase.kbasegenomes.ContigSet;
 import us.kbase.workspace.GetModuleInfoParams;
 import us.kbase.workspace.ListObjectsParams;
 import us.kbase.workspace.ModuleInfo;
@@ -267,7 +268,7 @@ public class TestWorkspaceDeluxeCm {
 	@Test
 	public void testWsReadObjectByRef() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String ref = "AKtest/Halobacterium_sp_expression_sample_0";
+		String ref = "2150/32267/1";
 		//String exampleWs = "networks_typed_objects_examples";
 		
 		ObjectData output = WsDeluxeUtil.getObjectFromWsByRef(ref, authToken.toString());
@@ -276,7 +277,11 @@ public class TestWorkspaceDeluxeCm {
 		writer.write(output.getData().toString());
 		writer.close();
 
-		System.out.println(output.getData().toString());
+		//System.out.println(output.getData().toString());
+		ContigSet contigSet = output.getData().asClassInstance(ContigSet.class);
+		System.out.println(contigSet.getName());
+		System.out.println(contigSet.getContigs().get(0).getName());
+		
 		assertNotNull(output);
 	}	
 

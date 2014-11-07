@@ -56,14 +56,14 @@ public class CmonkeyClientTest {
 		String resultId = "";
 
 		String status = "";
-		Integer waitingTime = 2;
+		Double waitingTime = 2.0;
 		URL jobServiceUrl = new URL(UJS_SERVICE_URL);
 		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, token);
 		
 		while (!status.equalsIgnoreCase("finished")){
 			
 			try {
-			    Thread.sleep(120000);
+			    Thread.sleep(6000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -74,13 +74,13 @@ public class CmonkeyClientTest {
 				//System.out.println(t.getE1());
 				//System.out.println(t.getE2());
 				status = t.getE3();
-				//System.out.println(t.getE3());//Status
+				System.out.println(t.getE3());//Status
 				//System.out.println(t.getE4());
 				//System.out.println(t.getE5());
 				//System.out.println(t.getE6());
 				//System.out.println(t.getE7());
 				System.out.println("Waiting time: "+ waitingTime.toString() + " minutes");
-				waitingTime += 2;
+				waitingTime += 0.1;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

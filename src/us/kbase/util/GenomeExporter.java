@@ -14,10 +14,10 @@ import us.kbase.kbasegenomes.Genome;
 
 public class GenomeExporter {
 
-	private static final String FEATURES = "_features";
-	private static final String FEATURENAMES = "_feature_names";
+	private static final String FEATURES = "features.tab";//private static final String FEATURES = "_features";
+	private static final String FEATURENAMES = "feature_names.tab";//private static final String FEATURENAMES = "_feature_names";
 
-	public static String writeGenome (String genomeRef, String filePrefix, String workDir, String token) throws TokenFormatException, IOException, JsonClientException{
+	public static String writeGenome (String genomeRef, String filePrefix, String workDir, String token) throws Exception{
 		Genome genome = WsDeluxeUtil.getObjectFromWsByRef(genomeRef, token).getData().asClassInstance(Genome.class);
 		String returnVal = null;
 		if (genome != null) {
@@ -38,18 +38,20 @@ public class GenomeExporter {
 	
 	public static void writeContigFiles(String contigSetRef, String filePrefix, String workDir, String token) throws TokenFormatException, IOException, JsonClientException {
 		ContigSet contigSet = WsDeluxeUtil.getObjectFromWsByRef(contigSetRef, token).getData().asClassInstance(ContigSet.class);
+		Integer contigNumber = 0; 
 		for (Contig contig : contigSet.getContigs()){
 			BufferedWriter writer = null;
-				writer = new BufferedWriter(new FileWriter(workDir + filePrefix + "_" + contig.getName()));
+				writer = new BufferedWriter(new FileWriter(workDir + contigNumber.toString() + ".tab"));//writer = new BufferedWriter(new FileWriter(workDir + filePrefix + "_" + contig.getName()));
 				if (contig.getSequence() != null){
 					writer.write(contig.getSequence());
 				}
+			contigNumber++;
 		}
 	}
 	
-	public static void writeFeaturesFile(List<Feature> features, Genome genome, String filePrefix, String workDir) throws IOException{
+	public static void writeFeaturesFile(List<Feature> features, Genome genome, String filePrefix, String workDir) throws Exception{
 		BufferedWriter writer = null;
-			writer = new BufferedWriter(new FileWriter(workDir + filePrefix + FEATURES));
+			writer = new BufferedWriter(new FileWriter(workDir + FEATURES)); //writer = new BufferedWriter(new FileWriter(workDir + filePrefix + FEATURES));
 			writer.write("-- dump date   	20121212_172621\n-- class       	Genbank::Feature\n-- table       	feature\n-- table       	main\n" +
 					"-- field 1	id\n-- field 2	type\n-- field 3	name\n-- field 4	contig\n-- field 5	start_pos\n-- field 6	end_pos\n-- field 7	strand\n-- field 8	description\n" + 
 					"-- field 9	chrom_position\n-- field 10	organism\n-- field 11	GeneID\n-- header\n-- id	type	name	contig	start_pos	end_pos	strand	description	chrom_position	organism	GeneID\n");
@@ -65,7 +67,19 @@ public class GenomeExporter {
 				} else {
 */					writer.write("\t" + feature.getId()); //or primary name
 //				}
-				writer.write("\t" + feature.getLocation().get(0).getE1()); //contig
+				String contigId = feature.getLocation().get(0).getE1();
+				Integer contigNumber = 0;
+				boolean featureContigNotFound = true;
+				for (String contigIdInSet: genome.getContigIds()) {
+					if (contigIdInSet.equals(contigId)) {
+						writer.write("\t" + contigNumber.toString()); //contig
+						featureContigNotFound = false;
+						break;
+					}
+					contigNumber++;
+				}
+				if (featureContigNotFound) throw new Exception ("Contig ID not found for feature" + feature.getId());
+				//writer.write("\t" + feature.getLocation().get(0).getE1()); //contig
 				writer.write("\t" + feature.getLocation().get(0).getE2().toString()); //start position
 				Long endPos = feature.getLocation().get(0).getE2() + feature.getLocation().get(0).getE4() - 1;
 				writer.write("\t" + endPos.toString()); //end pos
@@ -89,7 +103,7 @@ public class GenomeExporter {
 	
 	public static void writeFeatureNamesFile(List<Feature> features, String filePrefix, String workDir) throws IOException{
 		BufferedWriter writer = null;
-			writer = new BufferedWriter(new FileWriter(workDir + filePrefix + FEATURENAMES));
+		writer = new BufferedWriter(new FileWriter(workDir + FEATURENAMES)); //writer = new BufferedWriter(new FileWriter(workDir + filePrefix + FEATURENAMES));
 			writer.write("-- class       	Genbank::Feature\n-- table       	feature_names\n-- id	names");
 			for (Feature feature: features){
 //				writer.write("\n" + feature.getId() + "\t" + feature.getAliases().get(1) + "\tprimary");

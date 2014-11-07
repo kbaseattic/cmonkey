@@ -131,7 +131,7 @@ public class TestKbaseUtils {
 	@Test
 	public void testGenomeExport() throws Exception {
 		String genomeRef = "nwportal:nwportal_data/hal.genome";//"AKtest/kb|genome.9";
-		GenomeExporter.writeGenome(genomeRef, null, null, token.toString());
+		GenomeExporter.writeGenome(genomeRef, "", "", token.toString());
 		
 		fail("Not yet implemented");
 	}
