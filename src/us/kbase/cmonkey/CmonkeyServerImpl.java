@@ -95,9 +95,12 @@ public class CmonkeyServerImpl {
 			CmonkeyRunParameters params, String jobId, String token,
 			String currentDir) throws Exception {
 		// Let's start!
-		if (jobId != null)
+		String aweTaskId = "";
+		if (jobId != null) {
+			aweTaskId = getJobStatus(jobId, token) + " ";
 			updateJobProgress(jobId,
-					"AWE task started. Preparing input...", token);
+					aweTaskId+"AWE task started. Preparing input...", token);
+		}
 		// get expression data
 		ExpressionSeries series;
 		try {
@@ -209,7 +212,7 @@ public class CmonkeyServerImpl {
 		// cross fingers and run cmonkey-python
 		if (jobId != null)
 			updateJobProgress(jobId,
-					"Input prepared. Starting cMonkey program...", token);
+					aweTaskId+"Input prepared. Starting cMonkey program...", token);
 		Integer exitVal = executeCommand(commandLine, jobPath, jobId, token);
 		if (exitVal != null) {
 			writer.write("ExitValue: " + exitVal.toString() + "\n");
@@ -220,7 +223,7 @@ public class CmonkeyServerImpl {
 		}
 		// parse results
 		if (jobId != null)
-			updateJobProgress(jobId, "cMonkey finished. Processing output...",
+			updateJobProgress(jobId, aweTaskId+"cMonkey finished. Processing output...",
 					token);
 		String sqlFile = jobPath + "out/cmonkey_run.db";
 		writer.write(sqlFile + "\n");
@@ -378,6 +381,15 @@ public class CmonkeyServerImpl {
 		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, new AuthToken(token));
 		jobClient.updateJobProgress(jobId, AuthService.login(CmonkeyServerConfig.SERVICE_LOGIN, new String(CmonkeyServerConfig.SERVICE_PASSWORD)).getToken().toString(), status, 1L,
 				dateFormat.format(date));
+	}
+
+	protected static String getJobStatus(String jobId,
+			String token) throws UnauthorizedException, IOException,
+			JsonClientException, AuthException {
+		URL jobServiceUrl = new URL(CmonkeyServerConfig.JOB_SERVICE_URL);
+		UserAndJobStateClient jobClient = new UserAndJobStateClient(jobServiceUrl, new AuthToken(token));
+		String retVal = jobClient.getJobStatus(jobId).getE3();
+		return retVal;
 	}
 
 	protected static void finishJob(String jobId, String wsId, String objectId,
