@@ -192,7 +192,7 @@ public class CmonkeySqlite {
 	}
 
 	public String buildCmonkeyRunResult(CmonkeyRunResult cmonkeyRunResult, String genomeName)
-			throws IOException, JsonClientException, SQLException {
+			throws IOException, JsonClientException, SQLException, NullPointerException {
 		//cmonkeyRunResult.setId(getKbaseId(CmonkeyRunResult.class.getSimpleName()));
 		CmonkeyNetwork network = new CmonkeyNetwork();
 		network.setGenomeName(genomeName);

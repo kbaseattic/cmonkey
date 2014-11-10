@@ -228,7 +228,22 @@ public class CmonkeyServerImpl {
 		String sqlFile = jobPath + "out/cmonkey_run.db";
 		writer.write(sqlFile + "\n");
 		writer.flush();
-		String status = parseCmonkeySql(sqlFile, cmonkeyRunResult, genomeName);
+		String status;
+		try {
+			status = parseCmonkeySql(sqlFile, cmonkeyRunResult, genomeName);
+		} catch (NullPointerException e1) {
+			finishJobWithError(jobId, e1.getMessage(), "SQL database error. Missing some data?", token);
+			e1.printStackTrace();
+			throw new Exception ("SQL database error. Missing some data?");
+		} catch (SQLException e1) {
+			finishJobWithError(jobId, e1.getMessage(), "SQL error. Missing some data?", token);
+			e1.printStackTrace();
+			throw new Exception ("SQL error. Missing some data?");
+		} catch (IOException e1) {
+			finishJobWithError(jobId, e1.getMessage(), "Database file error", token);
+			e1.printStackTrace();
+			throw new Exception ("Database file error");
+		}
 		if (status != null) {
 			writer.write("Error: " + status);
 			if (jobId != null)
@@ -527,7 +542,7 @@ public class CmonkeyServerImpl {
 	protected static String parseCmonkeySql(String sqlFile,
 			CmonkeyRunResult cmonkeyRunResult, String genomeName)
 			throws ClassNotFoundException, SQLException, IOException,
-			JsonClientException {
+			JsonClientException, NullPointerException {
 		CmonkeySqlite database = new CmonkeySqlite(sqlFile);
 		String status = database.buildCmonkeyRunResult(cmonkeyRunResult,
 				genomeName);
