@@ -41,10 +41,11 @@ public class GenomeExporter {
 		Integer contigNumber = 0; 
 		for (Contig contig : contigSet.getContigs()){
 			BufferedWriter writer = null;
-				writer = new BufferedWriter(new FileWriter(workDir + contigNumber.toString() + ".tab"));//writer = new BufferedWriter(new FileWriter(workDir + filePrefix + "_" + contig.getName()));
-				if (contig.getSequence() != null){
-					writer.write(contig.getSequence());
-				}
+			writer = new BufferedWriter(new FileWriter(workDir + contigNumber.toString() + ".tab"));//writer = new BufferedWriter(new FileWriter(workDir + filePrefix + "_" + contig.getName()));
+			if (contig.getSequence() != null){
+				writer.write(contig.getSequence());
+			}
+			writer.close();
 			contigNumber++;
 		}
 	}
@@ -97,7 +98,9 @@ public class GenomeExporter {
 					writer.write("\t" + feature.getId());
 				}
 				writer.write("\n");
+				
 			}
+			writer.close();
 	}
 
 	
@@ -117,6 +120,7 @@ public class GenomeExporter {
 				}
 			}
 			writer.write("\n");
+			writer.close();
 	}	
 	
 }
