@@ -19,7 +19,7 @@ public class TestKbaseUtils {
 
 	private static final String USER_NAME = "";
 	private static final String PASSWORD = "";
-	private static final String workspaceName = "";
+	private static final String workspaceName = "AKtest";
 	private static AuthToken token = null;
 	private String testGenomeRef = "ENIGMA_KBASE/Halobacterium_sp_NRC-1";//"ENIGMA_KBASE/Desulfovibrio_vulgaris_Hildenborough";//
 

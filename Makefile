@@ -2,6 +2,7 @@ TOP_DIR = ../..
 include $(TOP_DIR)/tools/Makefile.common
 KB_RUNTIME ?= /kb/runtime
 DEPLOY_RUNTIME ?= $(KB_RUNTIME)
+JAVA_RUNTIME ?= $(KB_RUNTIME)/java
 KB_TOP ?= /kb/deployment
 TARGET ?= $(KB_TOP)
 CURR_DIR = $(shell pwd)
@@ -89,6 +90,7 @@ deploy-sh-scripts:
 	mkdir -p $(TARGET)/shbin; \
 	export KB_TOP=$(TARGET); \
 	export KB_RUNTIME=$(DEPLOY_RUNTIME); \
+	export JAVA_HOME=$(JAVA_RUNTIME); \
 	for src in $(SRC_SH) ; do \
 		basefile=`basename $$src`; \
 		base=`basename $$src .sh`; \

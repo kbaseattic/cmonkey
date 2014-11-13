@@ -79,7 +79,7 @@ public class GenomeExporter {
 					}
 					contigNumber++;
 				}
-				if (featureContigNotFound) throw new Exception ("Contig ID not found for feature" + feature.getId());
+				if (featureContigNotFound) throw new Exception ("Contig ID not found for feature " + feature.getId());
 				//writer.write("\t" + feature.getLocation().get(0).getE1()); //contig
 				writer.write("\t" + feature.getLocation().get(0).getE2().toString()); //start position
 				Long endPos = feature.getLocation().get(0).getE2() + feature.getLocation().get(0).getE4() - 1;

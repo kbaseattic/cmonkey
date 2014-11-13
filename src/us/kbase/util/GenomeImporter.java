@@ -132,7 +132,7 @@ public class GenomeImporter {
 					//System.out.println(line);
 					featureStrings.add(line);
 					String[] fields = line.split("\t");
-					contigNames.put(fields[3], "contig");
+					contigNames.put(fields[3], getKbaseId("Contig"));
 				}
 			}
 			br.close();
@@ -162,11 +162,12 @@ public class GenomeImporter {
 		contigSet.setMd5(thedigest.toString());
 		contigSet.setId(genome.getId()+"_contigset");
 		
-		HashMap<String, String> contigIds = new HashMap<String, String>();
+/*		HashMap<String, String> contigIds = new HashMap<String, String>();
 		for (Contig contig : contigSet.getContigs()){
 			contigIds.put(contig.getName(), contig.getId());
 		}
-		List<String> contigIdsList = new ArrayList<String>(contigIds.values());
+*/
+		List<String> contigIdsList = new ArrayList<String>(contigNames.values());
 		genome.setContigIds(contigIdsList);
 		String organismName = null;
 
@@ -222,7 +223,7 @@ public class GenomeImporter {
 */
 			
 			Tuple4<String, Long, String, Long> region = new Tuple4<String, Long, String, Long>();
-			region.setE1(fields[3]);
+			region.setE1(contigNames.get(fields[3]));
 			region.setE2(Long.parseLong(fields[4]));
 			region.setE3(fields[6]);
 			region.setE4(Long.parseLong(fields[5]) - Long.parseLong(fields[4]) + 1L);
@@ -318,14 +319,14 @@ public class GenomeImporter {
 					//System.out.println(line);
 					featureStrings.add(line);
 					String[] fields = line.split("\t");
-					contigNames.put(fields[3], "contig");
+					contigNames.put(fields[3], getKbaseId("Contig"));
 				}
 			}
 			br.close();
 		} catch (IOException e) {
 			System.out.println(e.getLocalizedMessage());
 		}
-		
+
 		ContigSet contigSet = readContigs(contigNames);
 		contigSet.setSourceId(this.filePrefix);
 
@@ -349,11 +350,12 @@ public class GenomeImporter {
 				
 		
 		
-		HashMap<String, String> contigIds = new HashMap<String, String>();
+/*		HashMap<String, String> contigIds = new HashMap<String, String>();
 		for (Contig contig : contigSet.getContigs()){
 			contigIds.put(contig.getName(), contig.getId());
 		}
-		List<String> contigIdsList = new ArrayList<String>(contigIds.values());
+*/
+		List<String> contigIdsList = new ArrayList<String>(contigNames.values());
 		genome.setContigIds(contigIdsList);
 		String organismName = null;
 
@@ -390,7 +392,7 @@ public class GenomeImporter {
 			feature.setId(getKbaseId("Feature")); // no more external IDs for features!
 			
 			Tuple4<String, Long, String, Long> region = new Tuple4<String, Long, String, Long>();
-			region.setE1(fields[3]);
+			region.setE1(contigNames.get(fields[3]));
 			region.setE2(Long.parseLong(fields[4]));
 			region.setE3(fields[6]);
 			region.setE4(Long.parseLong(fields[5]) - Long.parseLong(fields[4]) + 1L);
@@ -432,6 +434,7 @@ public class GenomeImporter {
 			HashMap<String, String> contigNames) {
 		
 		ContigSet contigSet = new ContigSet();
+		contigSet.setId(getKbaseId("ContigSet"));
 		List<Contig> contigs = new ArrayList<Contig>();
 		
 		for (String accession : contigNames.keySet()){
@@ -459,8 +462,7 @@ public class GenomeImporter {
 					}
 				}
 
-				String id = getKbaseId("Contig");
-				Contig contig = new Contig().withId(id).withSequence(sequence).withName(accession);
+				Contig contig = new Contig().withId(contigNames.get(accession)).withSequence(sequence).withName(accession);
 				byte[] bytesOfMessage = null;
 				try {
 					bytesOfMessage = sequence.getBytes("UTF-8");

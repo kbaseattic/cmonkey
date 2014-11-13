@@ -187,7 +187,7 @@ public class CmonkeyServerImpl {
 		// prepare cache files
 		String genomeName;
 		try {
-			genomeName = prepareCacheFiles(jobPath + "cache/", params,
+			genomeName = prepareCacheFiles(jobId, jobPath + "cache/", params,
 					token, writer);
 		} catch (TokenFormatException e1) {
 			finishJobWithError(jobId, e1.getMessage(), "Genome data download/write error", token);
@@ -290,20 +290,34 @@ public class CmonkeyServerImpl {
 		}
 	}
 
-	protected static String prepareCacheFiles(String cachePath,
+	protected static String prepareCacheFiles(String jobId, String cachePath,
 			CmonkeyRunParameters params, String token, FileWriter writer)
 			throws Exception {
 		// get genome, contigset and export
-		String genomeName = GenomeExporter.writeGenome(params.getGenomeRef(),
+		String genomeName = "";
+		try {
+			genomeName = GenomeExporter.writeGenome(params.getGenomeRef(),
 				"my_favorite_pet", cachePath, token);
+		} catch (Exception e) {
+			finishJobWithError(jobId, e.getMessage(), "Genome data export error", token);
+			e.printStackTrace();
+			throw new Exception ("Genome data export error");
+		}
 		writer.write("Genome files created\n");
 		writer.flush();
 		// get operons and export
 		gc();
 		if (!((params.getOperomeRef() == null) || (params.getOperomeRef()
 				.equals("")))) {
-			NetworkExporter.exportOperons(params.getOperomeRef(), "1",
-					cachePath, token);
+			try {
+				NetworkExporter.exportOperons(params.getOperomeRef(), "1",
+						cachePath, token);
+			} catch (Exception e) {
+				finishJobWithError(jobId, e.getMessage(), "Operons data export error", token);
+				e.printStackTrace();
+				throw new Exception ("Operons data export error");
+			}
+
 			writer.write("Operons file created\n");
 			writer.flush();
 		}
@@ -311,8 +325,15 @@ public class CmonkeyServerImpl {
 		gc();
 		if (!((params.getNetworkRef() == null) || (params.getNetworkRef()
 				.equals("")))) {
-			NetworkExporter.exportString(params.getNetworkRef(), "1",
-					cachePath, token);
+			try {
+				NetworkExporter.exportString(params.getNetworkRef(), "1",
+						cachePath, token);
+			} catch (Exception e) {
+				finishJobWithError(jobId, e.getMessage(), "STRING data export error", token);
+				e.printStackTrace();
+				throw new Exception ("STRING data export error");
+			}
+			
 			writer.write("String file created\n");
 			writer.flush();
 		}
