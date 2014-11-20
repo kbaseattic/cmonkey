@@ -63,9 +63,11 @@ public class ExpressionSeriesImporter {
 		HashMap<String,String> aliases = new HashMap<String, String>(); 
 		for (Feature f : genome.getFeatures()){
 			String id = f.getId();
-			for (String a : f.getAliases()){
-				//System.out.println("alias = " + a + " : id = " + id);
-				aliases.put(a, id);
+			if (f.getAliases() != null){
+				for (String a : f.getAliases()){
+					//System.out.println("alias = " + a + " : id = " + id);
+					aliases.put(a, id);
+				}
 			}
 		}
 		return aliases;
@@ -159,7 +161,7 @@ public class ExpressionSeriesImporter {
 			sample.setType("microarray");
 			sample.setNumericalInterpretation("undefined");
 			sample.setExternalSourceDate("undefined");
-			sample.setGenomeId(genomeId);
+			sample.setGenomeId(workspaceName + "/" + genomeId);//(genomeId);
 			sample.setExpressionLevels(dataValues.get(i));
 			String sampleName = null;
 			if (namePrefix == null) {
@@ -177,7 +179,7 @@ public class ExpressionSeriesImporter {
 						
 		}
 		Map<String, List<String>> sampleIdsList = new HashMap<String, List<String>>();
-		sampleIdsList.put(genomeId, sampleRefs);
+		sampleIdsList.put(workspaceName + "/" + genomeId, sampleRefs);
 		series.setGenomeExpressionSampleIdsMap(sampleIdsList);
 		if (namePrefix == null) {
 			WsDeluxeUtil.saveObjectToWorkspace(UObject.transformObjectToObject(series, UObject.class), "KBaseExpression.ExpressionSeries", workspaceName, series.getId(), token.toString());

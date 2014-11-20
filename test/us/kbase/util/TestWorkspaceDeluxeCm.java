@@ -18,6 +18,7 @@ import us.kbase.auth.AuthToken;
 import us.kbase.common.service.Tuple11;
 import us.kbase.common.service.Tuple8;
 import us.kbase.kbasegenomes.ContigSet;
+import us.kbase.kbasegenomes.Genome;
 import us.kbase.workspace.GetModuleInfoParams;
 import us.kbase.workspace.ListObjectsParams;
 import us.kbase.workspace.ModuleInfo;
@@ -32,7 +33,7 @@ public class TestWorkspaceDeluxeCm {
 
 	private static final String USER_NAME = "";
 	private static final String PASSWORD = "";
-	private static final String workspaceName = "ENIGMA_KBASE";
+	private static final String workspaceName = "nwportal:nwportal_data";//"ENIGMA_KBASE";
 
 	@Test
 	public void testRegisterModule() throws Exception {
@@ -252,7 +253,7 @@ public class TestWorkspaceDeluxeCm {
 	@Test
 	public void testWsReadObject() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String name = "test_Halobacterium_sp_expression_series";
+		String name = "eco.genome";
 		//String exampleWs = "networks_typed_objects_examples";
 		
 		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace("AKtest", name, authToken.toString());
@@ -261,14 +262,14 @@ public class TestWorkspaceDeluxeCm {
 		writer.write(output.getData().toString());
 		writer.close();
 
-		System.out.println(output.getData().toString());
+		//System.out.println(output.getData().toString());
 		assertNotNull(output);
 	}	
 
 	@Test
 	public void testWsReadObjectByRef() throws Exception {
 		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
-		String ref = "2150/32267/1";
+		String ref = "2672/13/1";
 		//String exampleWs = "networks_typed_objects_examples";
 		
 		ObjectData output = WsDeluxeUtil.getObjectFromWsByRef(ref, authToken.toString());
@@ -278,9 +279,9 @@ public class TestWorkspaceDeluxeCm {
 		writer.close();
 
 		//System.out.println(output.getData().toString());
-		ContigSet contigSet = output.getData().asClassInstance(ContigSet.class);
-		System.out.println(contigSet.getName());
-		System.out.println(contigSet.getContigs().get(0).getName());
+		Genome genome = output.getData().asClassInstance(Genome.class);
+		System.out.println(genome.getScientificName());
+		//System.out.println(genome.getContigs().get(0).getName());
 		
 		assertNotNull(output);
 	}	
@@ -300,5 +301,16 @@ public class TestWorkspaceDeluxeCm {
 			objectsIdentity.add(objectIdentity);
 		}
 		WsDeluxeUtil.wsClient(authToken.toString()).deleteObjects(objectsIdentity);
+	}
+	
+	@Test
+	public void testWsCopyObject() throws Exception {
+		AuthToken authToken = AuthService.login(USER_NAME, new String(PASSWORD)).getToken();
+		String name = "eco.genome";
+		
+		ObjectData output = WsDeluxeUtil.getObjectFromWorkspace("AKtest", name, authToken.toString());
+		
+		
 	}	
+
 }

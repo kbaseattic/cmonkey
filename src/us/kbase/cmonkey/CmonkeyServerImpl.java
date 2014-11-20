@@ -369,7 +369,7 @@ public class CmonkeyServerImpl {
 				+ " --rsat_organism my_favorite_pet --rsat_dir "
 				+ cacheDirectory + " --ratios " + inputFile + " --cache "
 				+ cacheDirectory + " --out " + outputDirectory
-				+ " --config /etc/cmonkey-python/config.ini ";
+				+ " --config " + CmonkeyServerConfig.CMONKEY_DIRECTORY + "config/config.ini ";
 		// Set options
 		if (params.getMotifsScoring() == 0L) {
 			commandLine += " --nomotifs";

@@ -91,9 +91,9 @@ public class TestKbaseUtils {
 	@Test
 	public void testSeriesImport() throws Exception {
 		//To use KBase IDs for samples and series, set namePrefix to null 
-		String fileName = "/home/kbase/Documents/dvh/dvu-ratios.tsv";//"test/hal-ratios.tsv";//
-		String genomeId = "Desulfovibrio_vulgaris_Hildenborough";//"Halobacterium_sp_NRC-1";//
-		String namePrefix = "D_vulgaris_Hildenborough_expression";//"Halobacterium_sp_expression";//
+		String fileName = "/home/kbase/Documents/dvh/eco-ratios.tsv";//"test/hal-ratios.tsv";//
+		String genomeId = "eco.genome";//"Desulfovibrio_vulgaris_Hildenborough";//"Halobacterium_sp_NRC-1";//
+		String namePrefix = "test_expression";//"Halobacterium_sp_expression";//
 		ExpressionSeriesImporter importer = new ExpressionSeriesImporter (genomeId, fileName, workspaceName, token.toString());
 		List<String> result = importer.importExpressionSeriesFile(namePrefix);
 		
