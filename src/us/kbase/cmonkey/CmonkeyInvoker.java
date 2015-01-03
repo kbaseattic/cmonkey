@@ -169,7 +169,7 @@ public class CmonkeyInvoker {
 		    }
 		    else if( line.hasOption( "test" ) ) {
 		    	// return nothing and exit
-		    	System.exit(0);;
+		    	System.exit(0);
 		    }
 		    else {
 		    	if ( validateInput(line)){

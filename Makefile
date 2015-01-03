@@ -26,7 +26,7 @@ WS_SERVICE_URL ?= https://kbase.us/services/ws
 
 default: compile compile-worker
 
-deploy: distrib deploy-client deploy-service
+deploy: distrib deploy-client
 
 deploy-all: distrib deploy-client deploy-worker
 
