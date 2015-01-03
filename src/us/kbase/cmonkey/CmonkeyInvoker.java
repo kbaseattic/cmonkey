@@ -28,6 +28,11 @@ public class CmonkeyInvoker {
                 .withArgName("help")
                 .create() );
 
+		options.addOption( OptionBuilder.withLongOpt( "test" )
+                .withDescription( "for testing only" )
+                .withArgName("test")
+                .create() );
+
 		options.addOption( OptionBuilder.withLongOpt( "method" )
                 .withDescription( "available methods: build_cmonkey_network_job_from_ws" )
                 .hasArg(true)
@@ -161,6 +166,10 @@ public class CmonkeyInvoker {
 		    	HelpFormatter formatter = new HelpFormatter();
 		    	formatter.printHelp( "java -jar /kb/deployment/cmonkey/cmonkey_cluster.jar [parameters]", options );
 
+		    }
+		    else if( line.hasOption( "test" ) ) {
+		    	// return nothing and exit
+		    	System.exit(0);;
 		    }
 		    else {
 		    	if ( validateInput(line)){

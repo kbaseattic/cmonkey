@@ -53,7 +53,7 @@ my $progress = {
 
 
 #1 help
-$test_command = $command_line." --help";
+$test_command = $command_line." --test";
 print $test_command."\n\n";
 system ($test_command);
 
