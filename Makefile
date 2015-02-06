@@ -20,7 +20,7 @@ TPAGE_ARGS = --define kb_top=$(TARGET) --define kb_runtime=$(KB_RUNTIME) --defin
 DEPLOY_JAR = $(KB_TOP)/lib/jars/cmonkey
 TMP_DIR = /var/tmp/cmonkey
 UJS_SERVICE_URL ?= https://kbase.us/services/userandjobstate
-AWE_CLIENT_URL ?= http://140.221.67.190:7080/job
+AWE_CLIENT_URL ?= http://bio-data-1.mcs.anl.gov/services/awe/job
 ID_SERVICE_URL ?= https://kbase.us/services/idserver
 WS_SERVICE_URL ?= https://kbase.us/services/ws
 
